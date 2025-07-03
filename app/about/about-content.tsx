@@ -88,7 +88,7 @@ export default function AboutContent() {
                 <div className="gap-5 flex flex-col justify-center px-6">
                     <motion.div
                         className="gap-5 flex flex-col justify-center"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         <Breadcrumb>
                             <BreadcrumbList>
@@ -103,190 +103,190 @@ export default function AboutContent() {
                         </Breadcrumb>
                         <motion.h1 
                             className="text-4xl font-bold my-4"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                         >
                             关于
                         </motion.h1>
-                        <motion.p variants={itemVariants}>
+                        <motion.p variants={itemVariants as any}>
                             叮~您有一份关于猫颜的简介，请查收
                         </motion.p>
                     </motion.div>
                     
                     <motion.h2
                         className="text-2xl font-bold my-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         我是谁
                     </motion.h2>
                     
                     <motion.p
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         Hi~ 我是猫颜，一个全栈工程师
                     </motion.p>
                     
                     <motion.h2
                         className="text-2xl font-bold my-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         我的技能
                     </motion.h2>
                     
                     <motion.h3
                         className="text-xl font-bold"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         前端
                     </motion.h3>
                     
                     <motion.ul
                         className="flex flex-col space-y-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><FaHtml5 /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaHtml5 /></motion.div>
                             HTML +
-                            <motion.div variants={iconVariants}><FaCss3 /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaCss3 /></motion.div>
                             CSS +
-                            <motion.div variants={iconVariants}><FaJs /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaJs /></motion.div>
                             JS
                         </motion.li>
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><FaReact /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaReact /></motion.div>
                             React +
-                            <motion.div variants={iconVariants}><SiVite /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiVite /></motion.div>
                             Vite +
-                            <motion.div variants={iconVariants}><SiTailwindcss /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiTailwindcss /></motion.div>
                             Tailwind +
-                            <motion.div variants={iconVariants}><SiTypescript /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiTypescript /></motion.div>
                             TypeScript
                         </motion.li>
                     </motion.ul>
 
                     <motion.h3
                         className="text-xl font-bold"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         后端
                     </motion.h3>
                     
                     <motion.ul
                         className="flex flex-col space-y-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><FaJava /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaJava /></motion.div>
                             Java
                         </motion.li>
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><SiSpring /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiSpring /></motion.div>
                             Spring +
-                            <motion.div variants={iconVariants}><SiSpringboot /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiSpringboot /></motion.div>
                             SpringBoot +
-                            <motion.div variants={iconVariants}><SiMysql /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiMysql /></motion.div>
                             MySQL +
-                            <motion.div variants={iconVariants}><FaDatabase /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaDatabase /></motion.div>
                             Mybatis +
-                            <motion.div variants={iconVariants}><SiSpringsecurity /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiSpringsecurity /></motion.div>
                             Satoken
                         </motion.li>
                     </motion.ul>
 
                     <motion.h3
                         className="text-xl font-bold"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         大数据
                     </motion.h3>
                     
                     <motion.ul
                         className="flex flex-col space-y-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><FaJava /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaJava /></motion.div>
                             Java +
-                            <motion.div variants={iconVariants}><FaPython /></motion.div>
+                            <motion.div variants={iconVariants as any}><FaPython /></motion.div>
                             Python
                         </motion.li>
                         <motion.li 
                             className="flex items-center gap-2 text-md"
-                            variants={itemVariants}
+                            variants={itemVariants as any}
                             whileHover={{ x: 10 }}
                         >
                             <div className="bg-gray-300 rounded-full w-2 h-2 mx-4"></div>
-                            <motion.div variants={iconVariants}><SiApachehadoop /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiApachehadoop /></motion.div>
                             Hadoop +
-                            <motion.div variants={iconVariants}><SiApachehive /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiApachehive /></motion.div>
                             Hive +
-                            <motion.div variants={iconVariants}><SiApachespark /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiApachespark /></motion.div>
                             Spark +
-                            <motion.div variants={iconVariants}><SiApachekafka /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiApachekafka /></motion.div>
                             Kafka +
-                            <motion.div variants={iconVariants}><SiApacheflink /></motion.div>
+                            <motion.div variants={iconVariants as any}><SiApacheflink /></motion.div>
                             Flink
                         </motion.li>
                     </motion.ul>
 
                     <motion.h2
                         className="text-2xl font-bold my-2"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         联系我
                     </motion.h2>
                     
                     <motion.ul
                         className="flex items-center space-x-3"
-                        variants={itemVariants}
+                        variants={itemVariants as any}
                     >
                         <motion.div
-                            variants={iconVariants}
+                            variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <FaGithub className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
                         </motion.div>
                         <motion.div
-                            variants={iconVariants}
+                            variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <SiGmail className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
                         </motion.div>
                         <motion.div
-                            variants={iconVariants}
+                            variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <SiBilibili className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
                         </motion.div>
                         <motion.div
-                            variants={iconVariants}
+                            variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >

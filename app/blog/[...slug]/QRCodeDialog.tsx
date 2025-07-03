@@ -25,7 +25,7 @@ export default function QRCodeDialog({ url, title, open, onOpenChange }: QRCodeD
             微信扫码分享
           </DialogTitle>
           <DialogDescription>
-            请使用微信扫描二维码分享"{title}"
+            请使用微信扫描二维码分享{title}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center p-6">

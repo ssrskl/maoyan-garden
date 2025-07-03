@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import QRCodeDialog from './QRCodeDialog.tsx';
+import QRCodeDialog from './QRCodeDialog';
 
 interface ShareButtonProps {
   icon: React.ReactNode;

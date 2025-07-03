@@ -74,7 +74,7 @@ export default function Home() {
       >
         <motion.p 
           className="text-2xl md:text-5xl tracking-widest"
-          variants={itemVariants}
+          variants={itemVariants as any}
         >
           你好，我是
         </motion.p>
@@ -86,13 +86,13 @@ export default function Home() {
           style={{
             WebkitTextFillColor: "transparent",
           }}
-          variants={itemVariants}
+          variants={itemVariants as any}
         >
           猫颜
         </motion.strong>
         
         <motion.div
-          variants={itemVariants}
+          variants={itemVariants as any}
         >
           <TypeAnimation
             className="text-2xl tracking-widest"
@@ -110,7 +110,7 @@ export default function Home() {
         
         <motion.p
           className="text-2xl md:text-5xl tracking-widest"
-          variants={waveText}
+          variants={waveText as any}
           initial="hidden"
           animate="visible"
         >
@@ -131,7 +131,7 @@ export default function Home() {
               <motion.span
                 key={index}
                 className={className}
-                variants={waveLetter}
+                variants={waveLetter as any}
                 // 添加永久波浪动画
                 animate={{ 
                   y: [0, char === " " ? 0 : -5, 0],
@@ -152,36 +152,34 @@ export default function Home() {
         
         <motion.p
           className="text-base md:text-2xl text-muted-foreground tracking-widest"
-          variants={itemVariants}
+          variants={itemVariants as any}
         >
           一花一世界，一叶一菩提。
         </motion.p>
         
         <motion.div
           className="flex space-x-4"
-          variants={itemVariants}
+          variants={itemVariants as any}
         >
           <motion.div
             className="border-2 p-2 rounded-lg shadow-md cursor-pointer"
-            onClick={() => { navigate({ to: "/blog" }) }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            我的博客
+            <Link href="/blog">我的博客</Link>
           </motion.div>
           <motion.div
             className="border-2 p-2 rounded-lg shadow-md cursor-pointer"
-            onClick={() => { navigate({ to: "/about" }) }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            关于我
+            <Link href="/about">关于我</Link>
           </motion.div>
         </motion.div>
 
         <motion.ul
           className="flex space-x-4"
-          variants={itemVariants}
+          variants={itemVariants as any}
         ></motion.ul>
         
         <motion.div 
