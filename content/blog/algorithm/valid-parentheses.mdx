@@ -1,0 +1,61 @@
+---
+title: 有效的括号
+description: 有效的括号
+date: 2025-07-03 22:30:00
+tags: ["算法", "括号匹配", "栈"]
+published: true
+---
+## 题目
+
+给定一个只包括 '\('，'\)'，'\{'，'\}'，'\['，'\]' 的字符串 s ，判断字符串是否有效。
+
+有效字符串需满足：
+
+1. 左括号必须用相同类型的右括号闭合。
+2. 左括号必须以正确的顺序闭合。
+3. 每个右括号都有一个对应的相同类型的左括号。
+
+**示例 1：**
+
+输入：s = "()"
+输出：true
+
+**示例 2：**
+
+输入：s = "()[]{}"
+输出：true
+
+**示例 3：**
+
+输入：s = "(]"
+输出：false
+
+**示例 4：**
+
+输入：s = "([)]"
+输出：false
+
+## 解题思路
+### 方法一：栈
+1. 如果是左括号，则入栈
+2. 如果是右括号，则判断栈顶是否为对应的左括号，如果是，则出栈，否则返回 false
+3. 如果栈为空，则返回 true
+4. 如果栈不为空，则返回 false
+
+```python showLineNumbers
+def isValid(self, s: str) -> bool:
+stack = []
+for c in s:
+    if c in "({[":
+    stack.append(c)
+    elif c == ")":
+    if not stack or stack.pop() != "(":
+        return False
+    elif c == "}":
+    if not stack or stack.pop() != "{":
+        return False
+    elif c == "]":
+    if not stack or stack.pop() != "[":
+        return False
+return not stack
+```

@@ -10,53 +10,26 @@ import { MobileNav } from "./mobile-nav";
 import { ModeToggle } from "./mode-toggle";
 import { FaCat, FaGithub, FaRegLightbulb, FaTags } from "react-icons/fa";
 import { SiSearxng } from "react-icons/si";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { SearchDialog } from "./search-dialog";
 
 
 export function SiteHeader() {
   const scroll = useScroll(() => document);
-  // const [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  // useEffect(() => {
+  //   const down = (e: KeyboardEvent) => {
+  //     if (e.key === "j" && e.ctrlKey && e.metaKey) {
+  //       e.preventDefault();
+  //       setSearchOpen(true);
+  //       return;
+  //     }
+  //   }
+  //   window.addEventListener("keydown", down);
+  //   return () => window.removeEventListener("keydown", down);
+  // }, []);
   return (
-    // <header className="z-10 sticky top-0 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-    //   <div className="container flex h-14 max-w-screen-2xl items-center">
-    //     <MainNav />
-    //     <div className="flex flex-1 items-center justify-end space-x-2">
-    //       <nav className="flex items-center">
-    //         <Link
-    //           href={siteConfig.links.github}
-    //           target="_blank"
-    //           rel="noreferrer"
-    //         >
-    //           <div
-    //             className={cn(
-    //               buttonVariants({ variant: "ghost" }),
-    //               "w-10 px-0 hidden sm:inline-flex"
-    //             )}
-    //           >
-    //             <Icons.gitHub className="h-4 w-4" />
-    //             <span className="sr-only">GitHub</span>
-    //           </div>
-    //         </Link>
-    //         <Link
-    //           href={siteConfig.links.twitter}
-    //           target="_blank"
-    //           rel="noreferrer"
-    //         >
-    //           <div
-    //             className={cn(
-    //               buttonVariants({ variant: "ghost" }),
-    //               "w-10 px-0 hidden sm:inline-flex"
-    //             )}
-    //           >
-    //             <Icons.twitter className="h-4 w-4" />
-    //             <span className="sr-only">Twitter</span>
-    //           </div>
-    //         </Link>
-    //         <ModeToggle />
-    //         <MobileNav />
-    //       </nav>
-    //     </div>
-    //   </div>
-    // </header>
     <>
       <header
         className={cn(
@@ -92,14 +65,12 @@ export function SiteHeader() {
             <Link href="/tags" className="sm:hidden">
               <FaTags className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
             </Link>
-            <SiSearxng
-              className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle"
-              onClick={() => {
-                // setSearchOpen(true);
-              }}
-            />
+            <Link href="/search">
+              <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
+            </Link>
           </div>
         </div>
+        {/* <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} /> */}
       </header>
       {/* <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} /> */}
 

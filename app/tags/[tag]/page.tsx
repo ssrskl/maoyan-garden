@@ -30,9 +30,9 @@ export const generateStaticParams = () => {
 
 export default function TagPage({ params }: TagPageProps) {
   const { tag } = params;
-  const title = tag.split("-").join(" ");
-
-  const allPosts = getPostsByTagSlug(posts, tag);
+  const decodedTag = decodeURIComponent(tag);
+  const title = decodedTag.split("-").join(" ");
+  const allPosts = getPostsByTagSlug(posts, decodedTag);
   const displayPosts = allPosts.filter(post => post.published);
   const tags = getAllTags(posts);
   const sortedTags = sortTagsByCount(tags);
