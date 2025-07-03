@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { cn, formatDate } from "@/lib/utils";
 import { Tag } from "./tag";
+import { toFromNow } from "@/lib/time";
 
 interface PostItemProps {
   slug: string;
@@ -20,7 +21,7 @@ export function PostItem({
   tags,
 }: PostItemProps) {
   return (
-    <article className="flex flex-col gap-2 border-border border-b py-3">
+    <article className="flex flex-col gap-2 border-border border-b py-3 mx-4">
       <div>
         <h2 className="text-2xl font-bold">
           <Link href={"/" + slug}>{title}</Link>
@@ -37,7 +38,8 @@ export function PostItem({
           <dt className="sr-only">Published On</dt>
           <dd className="text-sm sm:text-base font-medium flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            <time dateTime={date}>{formatDate(date)}</time>
+            {/* <time dateTime={date}>{formatDate(date)}</time> */}
+            {toFromNow(Date.parse(date))}
           </dd>
         </dl>
         <Link

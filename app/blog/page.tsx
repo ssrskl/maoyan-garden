@@ -1,17 +1,25 @@
+"use client"
 import { posts } from "#site/content";
 import { PostItem } from "@/components/post-item";
 import { QueryPagination } from "@/components/query-pagination";
 import { Tag } from "@/components/tag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from '@/components/ui/skeleton';
 import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { Metadata } from "next";
+import { motion } from "framer-motion";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { MdOutlineDateRange, MdOutlineRemoveRedEye } from "react-icons/md";
+import { toFromNow } from "@/lib/time";
+import Link from "next/link";
+import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 
-export const metadata: Metadata = {
-  title: "My blog",
-  description: "This is a description",
-};
+// export const metadata: Metadata = {
+//   title: "My blog",
+//   description: "This is a description",
+// };
 
-const POSTS_PER_PAGE = 5;
+const POSTS_PER_PAGE = 8;
 
 interface BlogPageProps {
   searchParams: {
@@ -19,7 +27,7 @@ interface BlogPageProps {
   };
 }
 
-export default async function BlogPage({ searchParams }: BlogPageProps) {
+export default function BlogPage({ searchParams }: BlogPageProps) {
   const currentPage = Number(searchParams?.page) || 1;
   const sortedPosts = sortPosts(posts.filter((post) => post.published));
   const totalPages = Math.ceil(sortedPosts.length / POSTS_PER_PAGE);
@@ -33,24 +41,64 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const sortedTags = sortTagsByCount(tags);
 
   return (
-    <div className="container max-w-4xl py-6 lg:py-10">
-      <div className="flex flex-col items-start gap-4 md:flex-row md:justify-between md:gap-8">
-        <div className="flex-1 space-y-4">
-          <h1 className="inline-block font-black text-4xl lg:text-5xl">Blog</h1>
-          <p className="text-xl text-muted-foreground">
-            My ramblings on all things web dev.
-          </p>
-        </div>
-      </div>
-      <div className="grid grid-cols-12 gap-3 mt-8">
-        <div className="col-span-12 col-start-1 sm:col-span-8">
-          <hr />
-          {displayPosts?.length > 0 ? (
-            <ul className="flex flex-col">
-              {displayPosts.map((post) => {
+    <motion.div
+      className="flex justify-center pt-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="flex md:w-2/3 sm:w-full"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="gap-5 flex flex-col justify-center px-6 w-full">
+          <motion.div
+            className="gap-5 flex flex-col justify-center"
+            variants={fadeInUp}
+          >
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">首页</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/" className='font-blod text-black'>博客</BreadcrumbLink>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <motion.h1
+              className="text-4xl font-bold my-4"
+              variants={itemVariants}
+            >
+              博客
+            </motion.h1>
+            <motion.p variants={itemVariants}>
+              这里是写的一些博客文章
+            </motion.p>
+          </motion.div>
+
+          {/* 博客文章列表 */}
+
+          <motion.ul
+            className="columns-1 md:columns-2 gap-4 w-full mt-6 list-none space-y-4"
+            variants={containerVariants}
+          >
+            {displayPosts.length > 0 ? (
+              displayPosts.map((post) => {
                 const { slug, date, title, description, tags } = post;
                 return (
-                  <li key={slug}>
+                  <motion.li
+                    key={slug}
+                    className="rounded-lg break-inside-avoid mb-4"
+                    variants={itemVariants}
+                    whileHover={{
+                      scale: 1.02,
+                      transition: { duration: 0.2 }
+                    }}
+                  >
                     <PostItem
                       slug={slug}
                       date={date}
@@ -58,29 +106,24 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       description={description}
                       tags={tags}
                     />
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p>Nothing to see here yet</p>
+                  </motion.li>
+                )
+              })
+            ) : (
+              <div>暂无数据</div>
+            )}
+            
+          </motion.ul>
+
+          {/* 分页器 */}
+          {totalPages > 1 && (
+            <QueryPagination 
+              totalPages={totalPages} 
+              className="justify-end mt-4"
+            />
           )}
-          <QueryPagination
-            totalPages={totalPages}
-            className="justify-end mt-4"
-          />
         </div>
-        <Card className="col-span-12 row-start-3 h-fit sm:col-span-4 sm:col-start-9 sm:row-start-1">
-          <CardHeader>
-            <CardTitle>Tags</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {sortedTags?.map((tag) => (
-              <Tag tag={tag} key={tag} count={tags[tag]} />
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
