@@ -27,6 +27,7 @@ import {
     SiTailwindcss,
     SiTypescript,
     SiVite,
+    SiDatabricks,
 } from "react-icons/si";
 
 // 定义容器动画变体
@@ -249,7 +250,9 @@ export default function AboutContent() {
                             <motion.div variants={iconVariants as any}><SiApachekafka /></motion.div>
                             Kafka +
                             <motion.div variants={iconVariants as any}><SiApacheflink /></motion.div>
-                            Flink
+                            Flink +
+                            <motion.div variants={iconVariants as any}><SiDatabricks /></motion.div>
+                            Databricks
                         </motion.li>
                     </motion.ul>
 

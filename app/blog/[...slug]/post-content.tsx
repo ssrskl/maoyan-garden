@@ -16,6 +16,7 @@ import { ArticleTag } from "./ArticleTag";
 import { getTagIcon } from "./TagIcons";
 import ShareButton from "./ShareButton";
 import TableOfContents from "@/components/table-of-contents";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PostContentProps {
   post: Post;

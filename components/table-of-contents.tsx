@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface Heading {
   id: string;
@@ -16,7 +17,8 @@ export default function TableOfContents() {
   // 在客户端渲染后提取标题
   useEffect(() => {
     const extractHeadings = () => {
-      const headingElements = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      // const headingElements = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      const headingElements = document.querySelectorAll("h1, h2, h3");
       const headings: Heading[] = Array.from(headingElements).map((el) => ({
         id: el.id,
         text: el.textContent || "",
@@ -28,19 +30,33 @@ export default function TableOfContents() {
     extractHeadings();
     // 监听滚动事件来高亮当前标题
     const handleScroll = () => {
-      const headingElements = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      // const headingElements = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      const headingElements = document.querySelectorAll("h1, h2, h3");
+      const viewportHeight = window.innerHeight;
+      const viewportCenter = viewportHeight / 2;
+      const viewportTop = 80;
 
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const heading = headingElements[i];
+      let closestHeading = null;
+      let closestDistance = Infinity;
+      
+      // 找出距离视口顶部最近的标题
+      Array.from(headingElements).forEach((heading) => {
         const rect = heading.getBoundingClientRect();
-
-        if (rect.top <= 100) {
-          setActiveId(heading.id);
-          break;
+        const distance = Math.abs(rect.top-viewportTop);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestHeading = heading;
         }
+      });
+
+      // 类型断言，确保 closestHeading 是 HTMLElement
+      if (
+        closestHeading &&
+        (closestHeading as HTMLElement).id !== activeId
+      ) {
+        setActiveId((closestHeading as HTMLElement).id);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -62,6 +78,7 @@ export default function TableOfContents() {
   }
 
   return (
+    <ScrollArea className="max-h-[calc(100vh-170px)] overflow-y-auto">
     <div className="mb-8">
       <h3 className="mb-3 text-lg font-medium">文章目录</h3>
       <div className="space-y-1 border-l-2 border-gray-200">
@@ -74,9 +91,9 @@ export default function TableOfContents() {
               heading.level === 1 && "font-semibold pl-2",
               heading.level === 2 && "pl-4",
               heading.level === 3 && "pl-6",
-              heading.level === 4 && "pl-8",
-              heading.level === 5 && "pl-10",
-              heading.level === 6 && "pl-12",
+              // heading.level === 4 && "pl-8",
+              // heading.level === 5 && "pl-10",
+              // heading.level === 6 && "pl-12",
               activeId === heading.id && "text-primary font-medium border-l-2 border-primary -ml-0.5"
             )}
             onClick={(e) => {
@@ -87,7 +104,8 @@ export default function TableOfContents() {
             {heading.text}
           </a>
         ))}
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
-} 
+}

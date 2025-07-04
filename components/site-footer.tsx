@@ -3,7 +3,6 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { SiSinaweibo, SiTencentqq, SiWechat, SiZhihu } from "react-icons/si";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-
 export function SiteFooter() {
   return (
     <footer className="flex pb-32 w-full pt-48 items-start justify-center space-y-4 ">
@@ -12,7 +11,7 @@ export function SiteFooter() {
           <div className="flex justify-between items-center space-x-4">
             <div className="flex items-center space-x-4">
               <Avatar>
-                <AvatarImage src={"https://avatars.githubusercontent.com/u/18780761?v=4"} />
+                <AvatarImage src={"/avatar.png"} />
                 <AvatarFallback>MY</AvatarFallback>
               </Avatar>
               <div className="text-lg font-bold">猫颜的个人博客</div>

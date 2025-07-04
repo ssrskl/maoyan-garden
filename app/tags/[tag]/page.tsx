@@ -76,7 +76,7 @@ export default function TagPage({ params }: TagPageProps) {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {sortedTags?.map((t) => (
-              <Tag tag={t} key={t} count={tags[t]} current={slug(t) === tag} />
+              <Tag tag={t} key={t} count={tags[t]} current={slug(t) === decodedTag} />
             ))}
           </CardContent>
         </Card>
