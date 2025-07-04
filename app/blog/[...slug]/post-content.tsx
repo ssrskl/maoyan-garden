@@ -25,7 +25,7 @@ interface PostContentProps {
 export default function PostContent({ post }: PostContentProps) {
   return (
     <div className="flex justify-center pt-10">
-      <div className="flex w-2/3 max-w-screen-xl px-4">
+      <div className="flex md:w-2/3 lg:w-2/3 w-full max-w-screen-xl px-4">
         <div className="gap-5 flex flex-col justify-center w-full">
           <motion.div
             className="gap-5 flex flex-col justify-center"
