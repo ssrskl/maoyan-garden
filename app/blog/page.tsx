@@ -73,10 +73,10 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
               className="text-4xl font-bold my-4"
               variants={itemVariants}
             >
-              博客
+              文章
             </motion.h1>
             <motion.p variants={itemVariants}>
-              这里是写的一些博客文章
+            文以载道，言以明志。
             </motion.p>
           </motion.div>
 

@@ -35,7 +35,7 @@ export default function PostContent({ post }: PostContentProps) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/blog">博客</BreadcrumbLink>
+                  <BreadcrumbLink href="/blog">文章</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -56,6 +56,15 @@ export default function PostContent({ post }: PostContentProps) {
                   >
                     {post.title}
                   </motion.h1>
+                  {/* 标签 */}
+                  <motion.div
+                    className='flex flex-wrap gap-2 my-6'
+                    variants={staggerContainer}
+                  >
+                    {post.tags?.map((tag: any, index: number) => (
+                      <Tag tag={tag} key={index} />
+                    ))}
+                  </motion.div>
                   <motion.div
                     className="flex items-center text-gray-500 text-sm my-2"
                     variants={slideUp}
@@ -79,25 +88,6 @@ export default function PostContent({ post }: PostContentProps) {
                     <MDXContent code={post.body} />
                   </motion.div>
                 </div>
-
-                {/* 标签 */}
-                {/* <motion.div
-                                    className='flex flex-wrap gap-2 mt-36'
-                                    variants={staggerContainer}
-                                >
-                                    {post.tags.map((tag: any, index: number) => (
-                                        <motion.div
-                                            key={tag.tag_name}
-                                            initial="hidden"
-                                            transition={{
-                                                delay: index * 0.1,
-                                                duration: 0.5
-                                            }}
-                                        >
-                                            <ArticleTag icon={getTagIcon(tag.tag_name)} tagName={tag.tag_name} />
-                                        </motion.div>
-                                    ))}
-                                </motion.div> */}
               </motion.div>
               {/* 侧边栏 */}
               <motion.div

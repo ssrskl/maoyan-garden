@@ -50,7 +50,7 @@ export function SiteHeader() {
           </Link>
           <div className="h-16 flex-1 hidden sm:flex justify-end items-center gap-12 text-base font-medium mr-8">
             <Link href="/" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">主页</Link>
-            <Link href="/blog" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">博客</Link>
+            <Link href="/blog" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">文章</Link>
             <Link href="/tags" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">标签</Link>
             {/* <Link href="/markdown-demo" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">测试</Link> */}
             <Link href="/about" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">关于我</Link>
@@ -61,10 +61,7 @@ export function SiteHeader() {
               className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle"
               onClick={() => window.open("https://github.com/ssrskl")}
             />
-            <FaRegLightbulb className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
-            <Link href="/tags" className="sm:hidden">
-              <FaTags className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
-            </Link>
+            <ModeToggle />
             <Link href="/search">
               <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
             </Link>
