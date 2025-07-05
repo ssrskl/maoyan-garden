@@ -81,7 +81,7 @@ export default function AboutContent() {
             transition={{ duration: 0.5 }}
         >
             <motion.div 
-                className="grid w-2/3"
+                className="grid w-full sm:w-2/3"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"

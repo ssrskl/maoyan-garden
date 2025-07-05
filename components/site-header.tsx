@@ -13,6 +13,8 @@ import { SiSearxng } from "react-icons/si";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SearchDialog } from "./search-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { FaBars } from "react-icons/fa6";
 
 
 export function SiteHeader() {
@@ -37,35 +39,40 @@ export function SiteHeader() {
           (scroll?.top ?? 0) > 60 && "bg-background/50 border-b border-border/70"
         )}
       >
-        <div className="w-full flex items-center h-16 p-4 sm:p-8 md:max-w-screen-md 2xl:max-w-screen-xl">
-          <FaCat className={"text-3xl"} />
-          <Link
-            href={"/"}
-            className={cn("mr-4 hidden sm:flex")}
-            aria-label={"猫颜"}
-          >
-            <span className="ml-2 font-semibold text-primary text-base">
-              {"猫颜的数字花园"}
-            </span>
-          </Link>
-          <div className="h-16 flex-1 hidden sm:flex justify-end items-center gap-12 text-base font-medium mr-8">
-            <Link href="/" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">主页</Link>
-            <Link href="/blog" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">文章</Link>
-            <Link href="/tags" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">标签</Link>
-            {/* <Link href="/markdown-demo" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">测试</Link> */}
-            <Link href="/about" className="hidden sm:flex hover:text-primary hover:font-bold hover:underline">关于我</Link>
-          </div>
-
-          <div className="flex sm:flex-none justify-end items-center space-x-2">
-            <FaGithub
-              className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle"
-              onClick={() => window.open("https://github.com/ssrskl")}
-            />
-            <ModeToggle />
-            <Link href="/search">
-              <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
+        <div className="w-full sm:w-2/3 flex justify-between items-center h-16 p-4 sm:p-8 md:max-w-screen-md 2xl:max-w-screen-xl">
+          <div className=" flex justify-center items-center">
+            <FaCat className={"text-3xl"} />
+            <Link
+              href={"/"}
+              className={cn("mr-4 hidden sm:flex")}
+              aria-label={"猫颜"}
+            >
+              <span className="ml-2 font-semibold text-primary text-base">
+                {"猫颜的数字花园"}
+              </span>
             </Link>
           </div>
+
+          <div className="flex justify-center items-center">
+            <div className="h-16  flex justify-end items-center gap-4 sm:gap-12 text-base font-medium mr-8">
+              <Link href="/" className=" flex hover:text-primary hover:font-bold hover:underline">主页</Link>
+              <Link href="/blog" className=" flex hover:text-primary hover:font-bold hover:underline">文章</Link>
+              <Link href="/tags" className=" flex hover:text-primary hover:font-bold hover:underline">标签</Link>
+              <Link href="/about" className=" flex hover:text-primary hover:font-bold hover:underline">关于我</Link>
+            </div>
+
+            <div className="flex justify-end items-center space-x-2">
+              <FaGithub
+                className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle"
+                onClick={() => window.open("https://github.com/ssrskl")}
+              />
+              <ModeToggle />
+              <Link href="/search">
+                <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
+              </Link>
+            </div>
+          </div>
+
         </div>
         {/* <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} /> */}
       </header>
