@@ -2,13 +2,13 @@
 
 import { MDXContent } from "@/components/mdx-components";
 import { Tag } from "@/components/tag";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { containerVariants, fadeIn, fadeInUp, slideUp, staggerContainer } from "@/styles/animation";
 import { Post } from "#site/content";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { MdOutlineDateRange } from "react-icons/md";
 import { toFromNow } from "@/lib/time";
-import { Bookmark } from "lucide-react";
+import { Bookmark, ArrowUp } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FaLink } from "react-icons/fa6";
 import { SiFacebook, SiGmail, SiSinaweibo, SiTencentqq, SiWechat, SiX, SiZhihu } from "react-icons/si";
@@ -17,12 +17,42 @@ import { getTagIcon } from "./TagIcons";
 import ShareButton from "./ShareButton";
 import TableOfContents from "@/components/table-of-contents";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect, useState } from "react";
 
 interface PostContentProps {
   post: Post;
 }
 
 export default function PostContent({ post }: PostContentProps) {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // 向下滚动时显示按钮，向上滚动时隐藏按钮
+      if (currentScrollY > lastScrollY) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+      
+      lastScrollY = currentScrollY;
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <div className="flex justify-center pt-10">
       <div className="flex md:w-2/3 lg:w-2/3 w-full max-w-screen-xl px-4">
@@ -152,8 +182,24 @@ export default function PostContent({ post }: PostContentProps) {
               </motion.div>
             </div>
           </motion.div>
-        </div >
+        </div>
       </div>
+      
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            className="fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg z-50"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowUp size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 } 
