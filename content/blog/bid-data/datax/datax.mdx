@@ -451,3 +451,56 @@ ll /opt/module/datax/job/import
 
 数据源为 MySQL，所以要使用 MySQLReader
 目的地为 HDFS，所以使用 HDFSWriter
+
+export const dataxQuizData = [
+  {
+    question: "DataX 的核心设计理念是什么，它主要用来解决什么问题？",
+    options: [
+      "一个分布式计算框架，用于替代 MapReduce",
+      "一个用于实现稳定高效数据同步的离线数据同步工具",
+      "一个实时流处理引擎，用于实时数据分析",
+      "一个数据可视化平台，用于制作报表"
+    ],
+    correctAnswer: "一个用于实现稳定高效数据同步的离线数据同步工具",
+    explanation: "DataX 的核心定位是离线数据同步工具。它通过提供稳定、高效的数据同步功能，致力于解决各种异构数据源之间的数据传输问题，充当数据仓库和数据系统之间的“搬运工”。"
+  },
+  {
+    question: "在 DataX 的架构中，Reader 和 Writer 插件分别扮演什么角色？",
+    options: [
+      "Reader 用于读取配置，Writer 用于写入日志",
+      "Reader 是数据读取模块，Writer 是数据写入模块",
+      "Reader 负责任务调度，Writer 负责资源分配",
+      "Reader 和 Writer 是同一个概念的不同叫法"
+    ],
+    correctAnswer: "Reader 是数据读取模块，Writer 是数据写入模块",
+    explanation: "这是 DataX 的核心插件化设计。Reader 插件负责从指定的数据源（如 MySQL, HDFS）读取数据，而 Writer 插件则负责将这些数据写入到目标数据源（如 Hive, Oracle），这种解耦的设计让 DataX 具备了高度的可扩展性。"
+  },
+  {
+    question: "一个 DataX 的同步作业（Job）被拆分后，实际执行数据同步的最小单元是什么？",
+    options: [
+      "Worker",
+      "Task",
+      "Channel",
+      "Executor"
+    ],
+    correctAnswer: "Task",
+    explanation: "DataX 会将一个 Job 切分成多个独立的 Task。每个 Task 负责一部分数据的同步，它们可以并发执行，从而大大提高了整个数据同步任务的效率。理解 Job 和 Task 的关系是掌握 DataX 工作原理的关键。"
+  },
+  {
+    question: "在 DataX 的配置中，`channel` 参数主要控制什么，它对性能有何影响？",
+    options: [
+      "控制日志输出的通道数量",
+      "定义数据源的连接池大小",
+      "设置任务并发数，即 Task 的并行度",
+      "指定数据传输的网络端口"
+    ],
+    correctAnswer: "设置任务并发数，即 Task 的并行度",
+    explanation: "Channel（通道）的数量直接决定了任务的并发度。增加 Channel 数量意味着会启动更多的 Task 并发执行，这能显著提升数据同步的速度。但它也会消耗更多的内存和 CPU 资源，因此需要根据实际的机器配置和数据源负载来寻找一个最佳的平衡点，这是一个非常重要的性能调优细节。"
+  }
+];
+
+## DataX 知识小测验
+
+读完了理论，是时候来一场实战演练了！看看您对 DataX 的掌握程度如何？
+
+<QuizBar questions={dataxQuizData} />
