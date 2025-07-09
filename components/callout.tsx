@@ -15,13 +15,13 @@ export function Callout({
   return (
     <div className="relative my-6 mr-6">
       <div className="absolute top-0 left-0 z-10">
-        <div className="w-12 h-12 bg-white rounded-full flex justify-center items-center">
+        <div className="w-12 h-12 bg-white dark:bg-background rounded-full flex justify-center items-center">
           {type === "info" && <MdInfoOutline className="w-8 h-8 text-[#4433FF]" />}
           {type === "warning" && <MdOutlineWarning className="w-8 h-8 text-[#FF9900]" />}
           {type === "danger" && <MdOutlineDangerous className="w-8 h-8 text-[#FF0000]" />}
         </div>
       </div>
-      <div className={cn("relative top-6 left-6  border-l-4 py-2 px-4",
+      <div className={cn("relative top-6 left-6  border-l-4 py-2 px-4 dark:bg-primary/10",
         {
           "border-[#4433FF] bg-[#E8F1FC]": type === "info",
           "border-[#FF9900] bg-[#FFF3E0]": type === "warning",

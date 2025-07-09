@@ -81,7 +81,7 @@ export default function TableOfContents() {
     <ScrollArea className="max-h-[calc(100vh-170px)] overflow-y-auto">
     <div className="mb-8">
       <h3 className="mb-3 text-lg font-medium">文章目录</h3>
-      <div className="space-y-1 border-l-2 border-gray-200">
+      <div className="space-y-1 border-l-2 border-gray-200 dark:border-gray-800">
         {headings.map((heading) => (
           <a
             key={heading.id}

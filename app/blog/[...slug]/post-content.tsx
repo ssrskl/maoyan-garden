@@ -112,7 +112,7 @@ export default function PostContent({ post }: PostContentProps) {
                   </motion.div>
 
                   <motion.div
-                    className="mt-6 prose prose-slate max-w-none"
+                    className="mt-6 prose prose-slate max-w-none dark:prose-invert"
                     variants={slideUp}
                   >
                     <MDXContent code={post.body} />
