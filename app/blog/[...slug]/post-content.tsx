@@ -80,12 +80,12 @@ export default function PostContent({ post }: PostContentProps) {
                 variants={slideUp}
               >
                 <div className='lg:border-r-2 lg:border-gray-200 pt-16 lg:pr-6'>
-                  <motion.h1
+                  <motion.div
                     className="text-3xl font-bold mt-4"
                     variants={slideUp}
                   >
                     {post.title}
-                  </motion.h1>
+                  </motion.div>
                   {/* 标签 */}
                   <motion.div
                     className='flex flex-wrap gap-2 my-6'

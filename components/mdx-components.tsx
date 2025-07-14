@@ -14,6 +14,9 @@ const components = {
   Callout,
   LinkCard,
   QuizBar,
+  a: (props: React.HTMLAttributes<HTMLAnchorElement>) => {
+    return <a {...props} target="_blank" />;
+  },
 };
 
 interface MdxProps {
