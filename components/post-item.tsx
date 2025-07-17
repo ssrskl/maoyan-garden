@@ -32,7 +32,9 @@ export function PostItem({
           <Tag tag={tag} key={tag} />
         ))}
       </div>
-      <div className="max-w-none text-muted-foreground">{description}</div>
+      <div className="max-w-none text-muted-foreground line-clamp-4">
+        {description}
+      </div>
       <div className="flex justify-between items-center">
         <dl>
           <dt className="sr-only">Published On</dt>

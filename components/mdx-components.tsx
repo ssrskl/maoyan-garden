@@ -4,6 +4,13 @@ import { Callout } from "./callout";
 import { LinkCard } from "./linkcard";
 import { QuizBar } from "./quiz-bar";
 import React from "react";
+import SplitLayout from "./split-layout";
+import Zoom from 'react-medium-image-zoom'
+import "react-medium-image-zoom/dist/styles.css";
+import { BookCard } from "./book-card";
+import { TooltipProvider } from "./ui/tooltip";
+
+
 const useMDXComponent = (code: string) => {
   const fn = new Function(code);
   return fn({ ...runtime }).default;
@@ -17,6 +24,15 @@ const components = {
   a: (props: React.HTMLAttributes<HTMLAnchorElement>) => {
     return <a {...props} target="_blank" />;
   },
+  SplitLayout,
+  img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
+    return (
+      <Zoom>
+        <img {...props} />;
+      </Zoom>
+    );
+  },
+  BookCard,
 };
 
 interface MdxProps {
@@ -27,5 +43,7 @@ interface MdxProps {
 // 每当 PostContent 组件的状态（showBackToTop）发生改变，React 就会重新渲染 PostContent 组件以及它的所有子组件，以确保界面和最新的状态同步。
 export const MDXContent = React.memo(function MDXContent({ code }: MdxProps) {
   const Component = useMDXComponent(code);
-  return <Component components={components} />;
+  return (
+      <Component components={components} />
+  );
 });
