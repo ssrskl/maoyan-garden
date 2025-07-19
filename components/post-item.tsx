@@ -12,7 +12,7 @@ interface PostItemProps {
   description?: string;
   date: string;
   tags?: Array<string>;
-  status: "seedling" | "growing" | "evergreen"; // --- 2. 添加 status 属性 ---
+  status?: "seedling" | "growing" | "evergreen"; // --- 2. 添加 status 属性 ---
 }
 
 export function PostItem({
@@ -20,7 +20,7 @@ export function PostItem({
   title,
   description,
   date,
-  tags,
+  tags
 }: PostItemProps) {
   return (
     <article className="flex flex-col gap-2 border-border border-b py-3 mx-4">
