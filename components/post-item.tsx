@@ -4,6 +4,7 @@ import { buttonVariants } from "./ui/button";
 import { cn, formatDate } from "@/lib/utils";
 import { Tag } from "./tag";
 import { toFromNow } from "@/lib/time";
+import { StatusBadge } from "./status-badge"; // --- 1. 导入组件 ---
 
 interface PostItemProps {
   slug: string;
@@ -11,6 +12,7 @@ interface PostItemProps {
   description?: string;
   date: string;
   tags?: Array<string>;
+  status: "seedling" | "growing" | "evergreen"; // --- 2. 添加 status 属性 ---
 }
 
 export function PostItem({
@@ -23,9 +25,12 @@ export function PostItem({
   return (
     <article className="flex flex-col gap-2 border-border border-b py-3 mx-4">
       <div>
-        <h2 className="text-2xl font-bold">
-          <Link href={"/" + slug}>{title}</Link>
-        </h2>
+        {/* --- 4. 在标题旁边显示状态 --- */}
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">
+            <Link href={"/" + slug}>{title}</Link>
+          </h2>
+        </div>
       </div>
       <div className="flex gap-2">
         {tags?.map((tag) => (
@@ -40,7 +45,6 @@ export function PostItem({
           <dt className="sr-only">Published On</dt>
           <dd className="text-sm sm:text-base font-medium flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            {/* <time dateTime={date}>{formatDate(date)}</time> */}
             {toFromNow(Date.parse(date))}
           </dd>
         </dl>

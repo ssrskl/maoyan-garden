@@ -19,6 +19,10 @@ const posts = defineCollection({
       date: s.isodate(),
       published: s.boolean().default(true),
       tags: s.array(s.string()).optional(),
+      // --- 新增 status 字段 ---
+      status: s
+        .enum(["seedling", "growing", "evergreen"])
+        .default("seedling"),
       body: s.mdx(),
     })
     .transform(computedFields),

@@ -104,8 +104,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                       date={date}
                       title={title}
                       description={description}
-                      tags={tags}
-                    />
+                      tags={tags} status={post.status}                    />
                   </motion.li>
                 )
               })

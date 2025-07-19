@@ -19,6 +19,7 @@ import TableOfContents from "@/components/table-of-contents";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
 import { QuizBar } from "@/components/quiz-bar";
+import { StatusBadge } from "@/components/status-badge";
 
 interface PostContentProps {
   post: Post;
@@ -85,6 +86,17 @@ export default function PostContent({ post }: PostContentProps) {
                     variants={slideUp}
                   >
                     {post.title}
+                  </motion.div>
+                  {/* 状态 */}
+                  <motion.div
+                    className="flex items-center flex-wrap gap-x-4 gap-y-2 my-6"
+                    variants={slideUp}
+                  >
+                    <StatusBadge status={post.status} />
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <MdOutlineDateRange className="mr-1" />
+                      {toFromNow(Date.parse(post.date))}
+                    </div>
                   </motion.div>
                   {/* 标签 */}
                   <motion.div

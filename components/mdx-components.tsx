@@ -28,7 +28,7 @@ const components = {
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
       <Zoom>
-        <img {...props} />;
+        <img {...props} />
       </Zoom>
     );
   },
