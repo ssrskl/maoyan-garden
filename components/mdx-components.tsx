@@ -11,6 +11,7 @@ import { BookCard } from "./book-card";
 import { TooltipProvider } from "./ui/tooltip";
 import { Sidenote } from "./sidenote";
 import { Dialogue, SpeechBubble } from "./dialogue";
+import Link from "next/link";
 
 
 const useMDXComponent = (code: string) => {
@@ -38,6 +39,7 @@ const components = {
     );
   },
   BookCard,
+  Link,
 };
 
 interface MdxProps {

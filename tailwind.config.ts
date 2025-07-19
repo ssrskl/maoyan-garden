@@ -19,6 +19,26 @@ const config = {
       },
     },
     extend: {
+      backgroundColor: {
+        'solid-info': '0 0 4px rgba(68, 51, 255, 0.5)'
+      },
+      dropShadow: {
+        // 添加这个新的样式
+        'icon-bg-light': [
+          '0 3px 0 white',
+          '3px 0 0 white',
+          '0 -3px 0 white',
+          '-3px 0 0 white',
+          '1.5px 1.5px 0 white',
+          '-1.5px -1.5px 0 white',
+          '1.5px -1.5px 0 white',
+          '-1.5px 1.5px 0 white'
+        ],
+        'icon-bg-dark': [
+          '0 3px 0 black', '3px 0 0 black', '0 -3px 0 black', '-3px 0 0 black',
+          '1.5px 1.5px 0 black', '-1.5px -1.5px 0 black', '1.5px -1.5px 0 black', '-1.5px 1.5px 0 black'
+        ]
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

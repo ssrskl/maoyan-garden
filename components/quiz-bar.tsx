@@ -166,9 +166,9 @@ export function QuizBar({ questions }: QuizProps) {
                       onClick={() => handleAnswerSelect(option)}
                       className={cn(
                         "w-full justify-start h-auto py-3 text-left",
-                        isAnswered && isSelected && !isCorrect && "bg-red-200 text-red-800 hover:bg-red-300",
-                        isAnswered && isCorrect && "bg-green-200 text-green-800 hover:bg-green-300",
-                        !isAnswered && isSelected && "bg-primary/10"
+                        isAnswered && isSelected && !isCorrect && "bg-red-300 text-red-800 hover:bg-red-400",
+                        isAnswered && isCorrect && "bg-green-300 text-green-800 hover:bg-green-400",
+                        !isAnswered && isSelected && "bg-primary"
                       )}
                       variant={isSelected ? "default" : "outline"}
                       disabled={isAnswered}

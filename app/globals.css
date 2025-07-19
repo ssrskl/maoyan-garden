@@ -88,9 +88,9 @@
       width: 200px;
       /* 旁注的宽度 */
       margin-left: -240px;
-      /* 关键：将旁注拉出主内容流，放到右边空白处 */
+      /* 关键：将旁注拉出主内容流，放到左边空白处 */
       margin-bottom: 1rem;
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       line-height: 1.6;
       color: hsl(var(--muted-foreground));
       opacity: 0.9;
