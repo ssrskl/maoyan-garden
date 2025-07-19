@@ -10,6 +10,7 @@ import "react-medium-image-zoom/dist/styles.css";
 import { BookCard } from "./book-card";
 import { TooltipProvider } from "./ui/tooltip";
 import { Sidenote } from "./sidenote";
+import { Dialogue, SpeechBubble } from "./dialogue";
 
 
 const useMDXComponent = (code: string) => {
@@ -23,6 +24,8 @@ const components = {
   LinkCard,
   QuizBar,
   Sidenote,
+  Dialogue,
+  SpeechBubble,
   a: (props: React.HTMLAttributes<HTMLAnchorElement>) => {
     return <a {...props} target="_blank" />;
   },
