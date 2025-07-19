@@ -9,6 +9,7 @@ import Zoom from 'react-medium-image-zoom'
 import "react-medium-image-zoom/dist/styles.css";
 import { BookCard } from "./book-card";
 import { TooltipProvider } from "./ui/tooltip";
+import { Sidenote } from "./sidenote";
 
 
 const useMDXComponent = (code: string) => {
@@ -21,6 +22,7 @@ const components = {
   Callout,
   LinkCard,
   QuizBar,
+  Sidenote,
   a: (props: React.HTMLAttributes<HTMLAnchorElement>) => {
     return <a {...props} target="_blank" />;
   },
