@@ -41,9 +41,9 @@ export function BookCard({
 
                 {/* 书籍信息 (这部分保持不变) */}
                 <div className="flex flex-col gap-3 flex-1">
-                    <h3 className="text-2xl font-bold text-primary group-hover:text-primary/90">
+                    <div className="text-2xl font-bold text-primary group-hover:text-primary/90">
                         {title}
-                    </h3>
+                    </div>
                     <p className="text-md text-muted-foreground font-medium">作者：{author}</p>
 
                     <div className="flex items-center gap-1.5" title={`评分: ${rating} / 5`}>

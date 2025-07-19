@@ -27,9 +27,6 @@ const components = {
   Sidenote,
   Dialogue,
   SpeechBubble,
-  a: (props: React.HTMLAttributes<HTMLAnchorElement>) => {
-    return <a {...props} target="_blank" />;
-  },
   SplitLayout,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
