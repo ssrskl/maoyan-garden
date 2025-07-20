@@ -31,21 +31,17 @@ export function MobileNav() {
         </MobileLink>
         <div className="flex flex-col gap-3 mt-3">
           <MobileLink onOpenChange={setOpen} href="/blog">
-            Blog
+            文章
+          </MobileLink>
+          <MobileLink onOpenChange={setOpen} href="/archive">
+            归档
+          </MobileLink>
+          <MobileLink onOpenChange={setOpen} href="/tags">
+            标签
           </MobileLink>
           <MobileLink onOpenChange={setOpen} href="/about">
-            About
+            关于我
           </MobileLink>
-          <Link target="_blank" rel="noreferrer" href={siteConfig.links.github}>
-            GitHub
-          </Link>
-          <Link
-            target="_blank"
-            rel="noreferrer"
-            href={siteConfig.links.twitter}
-          >
-            Twitter
-          </Link>
         </div>
       </SheetContent>
     </Sheet>
