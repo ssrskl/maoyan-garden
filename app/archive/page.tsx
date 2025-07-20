@@ -73,10 +73,10 @@ export default function ArchivePage() {
               className="text-4xl font-bold my-4"
               variants={itemVariants}
             >
-              文章归档
+              归档
             </motion.h1>
             <motion.p variants={itemVariants}>
-              在这里，时光被镌刻成了文字。
+            人生到处知何似，应似飞鸿踏雪泥
             </motion.p>
           </motion.div>
 

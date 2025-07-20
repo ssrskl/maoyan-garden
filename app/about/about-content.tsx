@@ -33,9 +33,9 @@ import {
 // 定义容器动画变体
 const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
         opacity: 1,
-        transition: { 
+        transition: {
             when: "beforeChildren",
             staggerChildren: 0.1,
             duration: 0.3
@@ -46,11 +46,11 @@ const containerVariants = {
 // 定义子元素动画变体
 const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { 
-        y: 0, 
+    visible: {
+        y: 0,
         opacity: 1,
-        transition: { 
-            type: "spring", 
+        transition: {
+            type: "spring",
             stiffness: 100,
             damping: 12
         }
@@ -60,11 +60,11 @@ const itemVariants = {
 // 图标动画变体
 const iconVariants = {
     hidden: { scale: 0, opacity: 0 },
-    visible: { 
-        scale: 1, 
+    visible: {
+        scale: 1,
         opacity: 1,
-        transition: { 
-            type: "spring", 
+        transition: {
+            type: "spring",
             stiffness: 200,
             damping: 10
         }
@@ -74,13 +74,13 @@ const iconVariants = {
 
 export default function AboutContent() {
     return (
-        <motion.div 
+        <motion.div
             className="flex justify-center pt-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
-            <motion.div 
+            <motion.div
                 className="grid w-full sm:w-2/3"
                 variants={containerVariants}
                 initial="hidden"
@@ -102,49 +102,49 @@ export default function AboutContent() {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <motion.h1 
+                        <motion.h1
                             className="text-4xl font-bold my-4"
                             variants={itemVariants as any}
                         >
                             关于
                         </motion.h1>
                         <motion.p variants={itemVariants as any}>
-                            叮~您有一份关于猫颜的简介，请查收
+                            行到水穷处，坐看云起时
                         </motion.p>
                     </motion.div>
-                    
+
                     <motion.h2
                         className="text-2xl font-bold my-2"
                         variants={itemVariants as any}
                     >
                         我是谁
                     </motion.h2>
-                    
+
                     <motion.p
                         variants={itemVariants as any}
                     >
                         Hi~ 我是猫颜，一个全栈工程师
                     </motion.p>
-                    
+
                     <motion.h2
                         className="text-2xl font-bold my-2"
                         variants={itemVariants as any}
                     >
                         我的技能
                     </motion.h2>
-                    
+
                     <motion.h3
                         className="text-xl font-bold"
                         variants={itemVariants as any}
                     >
                         前端
                     </motion.h3>
-                    
+
                     <motion.ul
                         className="flex flex-col space-y-2"
                         variants={itemVariants as any}
                     >
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -157,7 +157,7 @@ export default function AboutContent() {
                             <motion.div variants={iconVariants as any}><FaJs /></motion.div>
                             JS
                         </motion.li>
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -180,12 +180,12 @@ export default function AboutContent() {
                     >
                         后端
                     </motion.h3>
-                    
+
                     <motion.ul
                         className="flex flex-col space-y-2"
                         variants={itemVariants as any}
                     >
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -194,7 +194,7 @@ export default function AboutContent() {
                             <motion.div variants={iconVariants as any}><FaJava /></motion.div>
                             Java
                         </motion.li>
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -219,12 +219,12 @@ export default function AboutContent() {
                     >
                         大数据
                     </motion.h3>
-                    
+
                     <motion.ul
                         className="flex flex-col space-y-2"
                         variants={itemVariants as any}
                     >
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -235,7 +235,7 @@ export default function AboutContent() {
                             <motion.div variants={iconVariants as any}><FaPython /></motion.div>
                             Python
                         </motion.li>
-                        <motion.li 
+                        <motion.li
                             className="flex items-center gap-2 text-md"
                             variants={itemVariants as any}
                             whileHover={{ x: 10 }}
@@ -262,7 +262,7 @@ export default function AboutContent() {
                     >
                         联系我
                     </motion.h2>
-                    
+
                     <motion.ul
                         className="flex items-center space-x-3"
                         variants={itemVariants as any}
