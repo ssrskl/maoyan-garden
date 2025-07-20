@@ -42,9 +42,16 @@ export function sortTagsByCount(tags: Record<string, number>) {
 }
 
 export function getPostsByTagSlug(posts: Array<Post>, tag: string) {
+  // 对传入的 tag 进行解码，确保中文能够正确匹配
+  const decodedTag = decodeURIComponent(tag);
+  
   return posts.filter(post => {
     if (!post.tags) return false
+    
+    // 对每个标签创建 slug，并检查是否匹配
     const slugifiedTags = post.tags.map(tag => slug(tag))
-    return slugifiedTags.includes(tag)
+    
+    // 同时检查原始标签值（对于中文）和 slug 值（对于英文）
+    return slugifiedTags.includes(decodedTag) || post.tags.some(t => slug(t) === decodedTag);
   })
 }
