@@ -94,9 +94,7 @@ export default function ArchivePage() {
                       whileHover={{x:10}}
                       className="py-1"
                     >
-                      {/* --- 主要响应式布局改动点 --- */}
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        {/* 左侧：日期和标题 */}
                         <div className="flex items-baseline gap-4">
                           <span className="text-muted-foreground text-sm font-mono flex-shrink-0">
                             {post.date.substring(5, 10)}
@@ -109,8 +107,6 @@ export default function ArchivePage() {
                             {post.title}
                           </Link>
                         </div>
-
-                        {/* 右侧：标签 (在小屏幕上会换行) */}
                         <div className="flex items-center gap-2 flex-shrink-0 pt-2 sm:pt-0 pl-12 sm:pl-0">
                           {post.tags?.map((tag) => (
                             <Tag key={tag} tag={tag} />
