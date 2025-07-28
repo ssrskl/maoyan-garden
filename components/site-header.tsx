@@ -6,6 +6,7 @@ import { ModeToggle } from "./mode-toggle";
 import { FaCat, FaGithub } from "react-icons/fa";
 import { SiSearxng } from "react-icons/si";
 import { MobileNav } from "./mobile-nav"; // --- 1. Import the MobileNav component ---
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "./ui/menubar";
 
 export function SiteHeader() {
   const scroll = useScroll(() => document);
@@ -38,6 +39,7 @@ export function SiteHeader() {
             <nav className="hidden sm:flex items-center gap-3 sm:gap-6 text-base font-medium">
               <Link href="/" className="hover:text-primary hover:font-bold transition-colors">主页</Link>
               <Link href="/blog" className="hover:text-primary hover:font-bold transition-colors">文章</Link>
+              <Link href="/books" className="hover:text-primary hover:font-bold transition-colors">书架</Link>
               <Link href="/archive" className="hover:text-primary hover:font-bold transition-colors">归档</Link>
               <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors">标签</Link>
               <Link href="/about" className="hover:text-primary hover:font-bold transition-colors">关于我</Link>
@@ -52,7 +54,7 @@ export function SiteHeader() {
               <Link href="/search">
                 <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
               </Link>
-              
+
               {/* --- 3. Mobile Navigation (only visible on small screens) --- */}
               <div className="sm:hidden">
                 <MobileNav />

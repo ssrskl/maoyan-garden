@@ -1,0 +1,81 @@
+---
+title: 上升的温度
+description: 编写解决方案，找出与之前（昨天的）日期相比温度更高的所有日期的 id 。
+date: 2025-07-29 00:32:00
+tags: ["算法", "SQL", "窗口函数","LAG","日期计算"]
+published: true
+status: evergreen
+---
+# 题目
+题目：[上升的温度](https://leetcode.cn/problems/rising-temperature/description/)
+
+Weather 表：
+```text
++----+------------+-------------+
+| id | recordDate | Temperature |
++----+------------+-------------+
+| 1  | 2015-01-01 | 10          |
+| 2  | 2015-01-02 | 25          |
+| 3  | 2015-01-03 | 20          |
+| 4  | 2015-01-04 | 30          |
++----+------------+-------------+
+```
+编写解决方案，找出与之前（昨天的）日期相比温度更高的所有日期的 id 。返回结果 无顺序要求 。
+```text
++----+
+| id |
++----+
+| 2  |
+| 4  |
++----+
+```
+2015-01-02 的温度比前一天高（10 -> 25）,2015-01-04 的温度比前一天高（20 -> 30）
+
+# 前置知识
+
+## LAG 函数
+`LAG` 窗口函数返回位于分区中当前行的上方（之前）的某个给定偏移量位置的行的值。
+例如：
+```sql showLineNumbers {3,4}
+SELECT 
+    *,
+    LAG(temperature,1) over(order by recorddate) as pre_temperature,
+    LAG(recorddate,1) over(order by recorddate) as pre_recorddate
+FROM Weather
+```
+获得上一条数据的温度和日期
+```text
+| id | recordDate | temperature | pre_temperature | pre_recorddate |
+| -- | ---------- | ----------- | --------------- | -------------- |
+| 1  | 2015-01-01 | 10          | null            | null           |
+| 2  | 2015-01-02 | 25          | 10              | 2015-01-01     |
+| 3  | 2015-01-03 | 20          | 25              | 2015-01-02     |
+| 4  | 2015-01-04 | 30          | 20              | 2015-01-03     |
+```
+## 日期计算
+我们可以使用 `DATEDIFF` 函数来计算日期的差值。
+
+
+# 解题思路
+通过使用 `LAG` 函数，我们可以先**日期**进行排序，然后使用 `LAG` 函数来获取上一条数据的温度`pre_temperature`以及日期`pre_recorddate`。
+```sql showLineNumbers {3}
+SELECT 
+    *,
+    LAG(temperature,1) over(order by id) as pre_temperature,
+    LAG(recorddate,1) over(order by id) as pre_recorddate
+FROM Weather
+```
+再找出今日的温度比昨日高的数据的`id`即可，并且日期的差值为1。
+```sql
+SELECT
+    t.id
+FROM (
+    SELECT 
+    *,
+    LAG(temperature,1) over(order by recorddate) as pre_temperature,
+    LAG(recorddate,1) over(order by recorddate) as pre_recorddate
+FROM Weather
+) t
+WHERE t.temperature > t.pre_temperature
+AND DATEDIFF(recorddate,pre_recorddate) = 1
+```
