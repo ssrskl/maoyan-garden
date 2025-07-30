@@ -6,7 +6,9 @@ import { ModeToggle } from "./mode-toggle";
 import { FaCat, FaGithub } from "react-icons/fa";
 import { SiSearxng } from "react-icons/si";
 import { MobileNav } from "./mobile-nav"; // --- 1. Import the MobileNav component ---
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "./ui/menubar";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 export function SiteHeader() {
   const scroll = useScroll(() => document);
@@ -39,9 +41,25 @@ export function SiteHeader() {
             <nav className="hidden sm:flex items-center gap-3 sm:gap-6 text-base font-medium">
               <Link href="/" className="hover:text-primary hover:font-bold transition-colors">主页</Link>
               <Link href="/blog" className="hover:text-primary hover:font-bold transition-colors">文章</Link>
-              <Link href="/books" className="hover:text-primary hover:font-bold transition-colors">书架</Link>
-              <Link href="/archive" className="hover:text-primary hover:font-bold transition-colors">归档</Link>
-              <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors">标签</Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div className="hover:text-primary hover:font-bold transition-colors cursor-pointer">花园</div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/archive" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">归档</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">标签</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/books" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">书架</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/gallery" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">相册</Link>
+                  </DropdownMenuItem>   
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Link href="/about" className="hover:text-primary hover:font-bold transition-colors">关于我</Link>
             </nav>
 

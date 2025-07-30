@@ -1,15 +1,11 @@
 "use client"
-import { buttonVariants } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
 import { cn, sortPosts } from "@/lib/utils";
 import { posts } from "#site/content";
 import Link from "next/link";
-import { PostItem } from "@/components/post-item";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 
 export default function Home() {
-  const latestPosts = sortPosts(posts).slice(0, 5);
   // 定义容器动画变体
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -166,7 +162,7 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Link href="/blog">我的博客</Link>
+            <Link href="/blog">文章</Link>
           </motion.div>
           <motion.div
             className="border-2 p-2 rounded-lg shadow-md cursor-pointer"
