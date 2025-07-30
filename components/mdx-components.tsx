@@ -5,13 +5,14 @@ import { LinkCard } from "./linkcard";
 import { QuizBar } from "./quiz-bar";
 import React from "react";
 import SplitLayout from "./split-layout";
-import Zoom from 'react-medium-image-zoom'
+// import Zoom from 'react-medium-image-zoom'
+
 import "react-medium-image-zoom/dist/styles.css";
 import { BookCard } from "./book-card";
-import { TooltipProvider } from "./ui/tooltip";
 import { Sidenote } from "./sidenote";
 import { Dialogue, SpeechBubble } from "./dialogue";
 import Link from "next/link";
+import { PhotoView } from "react-photo-view";
 
 
 const useMDXComponent = (code: string) => {
@@ -30,9 +31,9 @@ const components = {
   SplitLayout,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
-      <Zoom>
-        <img {...props} />
-      </Zoom>
+      <PhotoView src={props.src}>
+        <img {...props} />  
+      </PhotoView>
     );
   },
   BookCard,
