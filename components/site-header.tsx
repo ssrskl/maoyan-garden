@@ -53,10 +53,10 @@ export function SiteHeader() {
                     <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">标签</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/books" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">书架</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link href="/gallery" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">相册</Link>
+                  </DropdownMenuItem>   
+                  <DropdownMenuItem asChild>
+                    <Link href="/moments" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">时刻</Link>
                   </DropdownMenuItem>   
                 </DropdownMenuContent>
               </DropdownMenu>

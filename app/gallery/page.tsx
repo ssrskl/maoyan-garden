@@ -25,11 +25,11 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
     {
         id: "1",
-        src: "/gallery/yinghua.jpg",
-        alt: "山间溪流",
+        src: "/gallery/shanghai-1.jpg",
+        alt: "红绿交错",
         tags: ["自然", "风景"],
-        date: "2023-05-12",
-        description: "清晨的山间溪流，薄雾缭绕"
+        date: "2025-03-02",
+        description: "偶步西廊下，幽兰一朵开"
     }
 ];
 
