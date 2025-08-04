@@ -13,6 +13,7 @@ import { Sidenote } from "./sidenote";
 import { Dialogue, SpeechBubble } from "./dialogue";
 import Link from "next/link";
 import { PhotoView } from "react-photo-view";
+import { AlgorithmVisualizer } from "./algorithm-visualizer";
 
 
 const useMDXComponent = (code: string) => {
@@ -38,6 +39,7 @@ const components = {
   },
   BookCard,
   Link,
+  AlgorithmVisualizer
 };
 
 interface MdxProps {

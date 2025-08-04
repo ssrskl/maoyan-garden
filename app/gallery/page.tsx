@@ -25,7 +25,7 @@ interface GalleryImage {
 const galleryImages: GalleryImage[] = [
     {
         id: "1",
-        src: "/gallery/shanghai-1.jpg",
+        src: "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/gallery/shanghai-1.jpg?x-oss-process=image/quality,q_80",
         alt: "红绿交错",
         tags: ["自然", "风景"],
         date: "2025-03-02",
