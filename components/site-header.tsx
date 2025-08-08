@@ -5,9 +5,7 @@ import { useScroll } from "ahooks";
 import { ModeToggle } from "./mode-toggle";
 import { FaCat, FaGithub } from "react-icons/fa";
 import { SiSearxng } from "react-icons/si";
-import { MobileNav } from "./mobile-nav"; // --- 1. Import the MobileNav component ---
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
+import { MobileNav } from "./mobile-nav";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 export function SiteHeader() {

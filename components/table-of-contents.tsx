@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ui/scroll-area";
+import { motion, useScroll } from "framer-motion";
 
 interface Heading {
   id: string;
@@ -13,6 +14,15 @@ interface Heading {
 export default function TableOfContents() {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
+  const { scrollYProgress } = useScroll();
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      setProgress(Math.round(latest * 100));
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
 
   // 在客户端渲染后提取标题
   useEffect(() => {
@@ -80,7 +90,7 @@ export default function TableOfContents() {
   return (
     <ScrollArea className="max-h-[calc(100vh-170px)] overflow-y-auto">
     <div className="mb-8">
-      <h3 className="mb-3 text-lg font-medium">文章目录</h3>
+      <h3 className="mb-3 text-lg font-medium">文章目录 <span className="text-primary">{progress}%</span></h3>
       <div className="space-y-1 border-l-2 border-gray-200 dark:border-gray-800">
         {headings.map((heading) => (
           <a

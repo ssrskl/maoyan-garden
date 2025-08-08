@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { Providers } from "@/components/providers";
 import { siteConfig } from "@/config/site";
 import { SiteFooter } from "@/components/site-footer";
+import { ReadingProgress } from "@/components/reading-progress";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
