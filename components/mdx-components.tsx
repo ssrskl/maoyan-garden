@@ -14,6 +14,13 @@ import { Dialogue, SpeechBubble } from "./dialogue";
 import Link from "next/link";
 import { PhotoView } from "react-photo-view";
 import { AlgorithmVisualizer } from "./algorithm-visualizer";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 
 const useMDXComponent = (code: string) => {
@@ -39,7 +46,15 @@ const components = {
   },
   BookCard,
   Link,
-  AlgorithmVisualizer
+  AlgorithmVisualizer,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 };
 
 interface MdxProps {
