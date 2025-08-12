@@ -28,6 +28,7 @@ const posts = defineCollection({
     .transform(computedFields),
 });
 
+
 export default defineConfig({
   root: "content",
   output: {

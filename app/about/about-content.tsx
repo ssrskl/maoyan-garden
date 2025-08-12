@@ -29,6 +29,9 @@ import {
     SiVite,
     SiDatabricks,
 } from "react-icons/si";
+import { join } from 'path';
+import { readdirSync } from "fs";
+
 
 // 定义容器动画变体
 const containerVariants = {
