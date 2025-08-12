@@ -74,9 +74,13 @@ export default function ShareButton({
     }
     
     if (platform === '复制链接') {
-      navigator.clipboard.writeText(currentUrl)
-        .then(() => toast.success('链接已复制到剪贴板'))
-        .catch(() => toast.error('复制失败，请手动复制'));
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(currentUrl)
+          .then(() => toast.success('链接已复制到剪贴板'))
+          .catch(() => toast.error('复制失败，请手动复制'));
+      } else {
+        toast.error('当前环境不支持剪贴板功能，请手动复制链接');
+      }
       return;
     }
     
@@ -122,4 +126,4 @@ export default function ShareButton({
       )}
     </>
   );
-} 
+}
