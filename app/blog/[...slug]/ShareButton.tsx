@@ -45,6 +45,33 @@ export function buildShareUrl(platform: string, url: string, title?: string): st
   }
 }
 
+function fallbackCopy(text: string) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+
+  // Avoid scrolling to bottom
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.position = "fixed";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      toast.success('链接已复制到剪贴板');
+    } else {
+      toast.error('复制失败，请手动复制');
+    }
+  } catch (err) {
+    toast.error('复制失败，请手动复制');
+  }
+
+  document.body.removeChild(textArea);
+}
+
 export default function ShareButton({ 
   icon, 
   platform, 
@@ -74,13 +101,15 @@ export default function ShareButton({
     }
     
     if (platform === '复制链接') {
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(currentUrl)
-          .then(() => toast.success('链接已复制到剪贴板'))
-          .catch(() => toast.error('复制失败，请手动复制'));
-      } else {
-        toast.error('当前环境不支持剪贴板功能，请手动复制链接');
+      if (!navigator.clipboard) {
+        fallbackCopy(currentUrl);
+        return;
       }
+      navigator.clipboard.writeText(currentUrl).then(function() {
+        toast.success('链接已复制到剪贴板');
+      }, function() {
+        fallbackCopy(currentUrl);
+      });
       return;
     }
     
@@ -88,13 +117,10 @@ export default function ShareButton({
       setShowQRCode(true);
       return;
     }
-    
     // 获取分享链接
     const shareUrl = buildShareUrl(platform, currentUrl, pageTitle);
-    
     // 打开分享窗口
     window.open(shareUrl, `分享到${platform}`, 'width=600,height=500,menubar=no,toolbar=no');
-    toast.success(`已打开${platform}分享窗口`);
   };
 
   return (

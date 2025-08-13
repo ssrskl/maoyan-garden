@@ -14,6 +14,7 @@ import { Dialogue, SpeechBubble } from "./dialogue";
 import Link from "next/link";
 import { PhotoView } from "react-photo-view";
 import { AlgorithmVisualizer } from "./algorithm-visualizer";
+import { DictTooltip } from "./dict-tooltip";
 import {
   Accordion,
   AccordionContent,
@@ -37,6 +38,7 @@ const components = {
   Dialogue,
   SpeechBubble,
   SplitLayout,
+  DictTooltip,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
       <PhotoView src={props.src}>

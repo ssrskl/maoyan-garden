@@ -1,3 +1,4 @@
+import rehypeDict from "./lib/rehype-dict";
 import { defineConfig, defineCollection, s } from "velite";
 import rehypeSlug from "rehype-slug";
 import rehypePrettyCode from "rehype-pretty-code";
@@ -41,6 +42,7 @@ export default defineConfig({
   collections: { posts },
   mdx: {
     rehypePlugins: [
+      rehypeDict,
       rehypeSlug,
       [rehypePrettyCode, { theme: "github-dark" }],
       [

@@ -144,7 +144,7 @@ export default function PostContent({ post }: PostContentProps) {
                   whileHover={{ scale: 1.03 }}
                 >
                   <Avatar>
-                    <AvatarImage src='https://avatars.githubusercontent.com/u/18780761?v=4' />
+                    <AvatarImage src='/avatar.png' />
                   </Avatar>
                   <div className="flex flex-col space-y-3 ">
                     <div className="font-bold text-sm">猫颜</div>
