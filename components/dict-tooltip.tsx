@@ -11,7 +11,7 @@ export function DictTooltip({ children }: { children: React.ReactNode }) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
-        <span className="underline decoration-dotted cursor-pointer">{children}</span>
+        <span className="underline decoration-dotted cursor-pointer hover:font-bold">{children}</span>
       </HoverCardTrigger>
       <HoverCardContent className="z-40">
         <div className="flex flex-col">

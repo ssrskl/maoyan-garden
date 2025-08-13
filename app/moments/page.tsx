@@ -55,9 +55,33 @@ const initialMoments: Moment[] = [
       "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan4.jpg?x-oss-process=image/quality,q_80",
       "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan5.jpg?x-oss-process=image/quality,q_80",
     ],
-    timestamp: new Date(Date.now() - 3600000), // 1小时前
+    timestamp: new Date(2025, 5, 1), // 1小时前
     location: "广州火炉山",
     likes: 24,
+    liked: false,
+  },
+    {
+    id: "2",
+    user: {
+      id: "u1",
+      name: "猫颜",
+      avatar: "/avatar.png"
+    },
+    content: "第三段实习喽 ！！字节的饭还是相当不戳的！！！",
+    images: [
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship1.png?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship2.png?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship3.png?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship4.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship5.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship6.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship7.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship8.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship9.jpg?x-oss-process=image/quality,q_80",
+    ],
+    timestamp: new Date(2025, 8, 6), // 1小时前
+    location: "上海新江湾",
+    likes: 99,
     liked: false,
   },
 ];
@@ -121,15 +145,15 @@ export default function MomentsPage() {
           <motion.p variants={itemVariants}>
             墨染风云呈画卷，文描岁月载沧桑
           </motion.p>
-          <main className="divide-y divide-gray-100">
+          <main className="">
             {/* 朋友圈动态列表 */}
-            {moments.map((moment) => (
+            {[...moments].reverse().map((moment) => (
               <motion.article
                 key={moment.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="p-4"
+                className="p-4 mb-12"
               >
                 {/* 作者信息 */}
                 <div className="flex items-start gap-3">
@@ -162,7 +186,7 @@ export default function MomentsPage() {
 
                 {/* 图片 */}
                 {moment.images && moment.images.length > 0 && (
-                  <div className={`grid gap-3 mt-3 grid-cols-3 p-3`}>
+                  <div className={`grid w-4/5 gap-3 mt-3 grid-cols-3 p-3`}>
                     {moment.images.map((src, index) => (
                       <div
                         key={index}
