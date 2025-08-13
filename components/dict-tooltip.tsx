@@ -13,7 +13,7 @@ export function DictTooltip({ children }: { children: React.ReactNode }) {
       <HoverCardTrigger asChild>
         <span className="underline decoration-dotted cursor-pointer">{children}</span>
       </HoverCardTrigger>
-      <HoverCardContent className="z-0">
+      <HoverCardContent className="z-40">
         <div className="flex flex-col">
           <div className="font-bold">{term.term}</div>
           <div className="flex items-center space-x-2">

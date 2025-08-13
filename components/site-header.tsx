@@ -14,7 +14,7 @@ export function SiteHeader() {
     <>
       <header
         className={cn(
-          "w-full sticky top-0 backdrop-blur transition-[background-color,border-width] border-x-0 flex justify-center z-20",
+          "w-full sticky top-0 backdrop-blur transition-[background-color,border-width] border-x-0 flex justify-center z-50",
           (scroll?.top ?? 0) > 60 && "bg-background/50 shadow-sm"
         )}
       >
