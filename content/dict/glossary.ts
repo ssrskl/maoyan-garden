@@ -44,6 +44,26 @@ export const glossary = [
         ],
     },
     {
+        term: "Spark",
+        definition: "Apache Spark 是一个开源的分布式大数据处理引擎，主要用于高效处理大规模数据集（从 GB 到 PB 级），支持多种计算场景，是当前大数据生态中最核心的技术之一。",
+        contributors: "猫颜",
+        type: "大数据/数据处理",
+        links: [
+            {
+                name: "Spark 官方文档",
+                url: "https://spark.apache.org/",
+            },
+            {
+                name: "Spark 核心",
+                url: "/blog/bid-data/spark/spark-core",
+            },
+            {
+                name: "Spark 架构分析",
+                url: "/blog/bid-data/spark/spark-architecture-analysis",
+            }
+        ],
+    },
+    {
         term: "差分攻击",
         definition: "差分攻击一般是指通过比较分析有特定区别的明文在通过加密后的变化传播情况来对密码算法进行破解的手段。在隐私保护领域，差分攻击一般指通过观察统计数据的变化，来识别某个被统计对象信息的攻击手段。对应的防御技术为差分隐私。",
         contributors: "猫颜",
@@ -64,4 +84,11 @@ export const glossary = [
         type: "大数据/数据分析",
         links: [],
     },
+    {
+        term: "Landing",
+        definition: "在职场环境中，它指的是新员工在加入公司后，完成入职流程并开始正式工作之前的一段适应期或过渡期。这一过程被形象地称为“着陆”或“落地”，因此用Landing来描述。Landing的目的是为了帮助新员工尽快融入公司，适应新的工作环境和业务流程，从而发挥其工作价值。",
+        contributors: "猫颜",
+        type: "专有名词",
+        links: [],
+    }
 ];

@@ -2,25 +2,14 @@
 import { useState, useEffect } from "react";
 import {
   Heart,
-  MessageCircle,
   Share2,
-  MoreHorizontal,
-  Search
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import { toFromNow } from "@/lib/time";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 import { PhotoView } from "react-photo-view";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // 定义朋友圈动态类型
 interface Moment {
