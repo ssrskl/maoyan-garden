@@ -1,32 +1,56 @@
-## NextJS 14, Tailwind, Shadcn UI, MDX and Velite Blog Template
+# 猫颜的数字花园
 
-<p align="center">
- <img src="https://i.imgur.com/VgnktQH.png" width="400">
-</p>
+## 项目简介
+本项目是一个基于Next.js的数字花园（Digital Garden），旨在作为个人知识管理与分享的平台。用户可通过该平台发布技术博客、生活记录、知识卡片等内容，支持标签分类、搜索、归档等功能，同时具备响应式设计以适配不同设备。
 
-In this repo is a simple implementation of a markdown static blog, a demo can be seen [here](https://my-first-blog-dusky.vercel.app/), Features include:
-- MDX Components
-- Shadcn UI
-- Pagination
-- Dynamic Open Graph Image
-- Syntax Highlighting in code block
+### 核心信息
+- 项目名称：猫颜的数字花园
+- 作者：猫颜
+- 官方链接：[示例链接](https://example.com)（开发中）
+- 描述：个人知识分享与记录的数字空间，涵盖技术、阅读、生活等多领域内容。
 
-### Learning Points
-Hopefully, from this project and the video, you can learn:
-- NextJS 14 basics (layouts, app router etc)
-- NextJS SEO
-- NextJS Dynamic Graph Images
-- [Velite](https://velite.js.org/) Setup and usage
-- [Shadcn/ui](https://ui.shadcn.com/) setup and usage
-- Custom components in MDX
-- Tailwind styling
+---
 
-## YouTube
+## 技术架构
+项目采用现代化前端技术栈，核心依赖与工具链如下：
 
-You can follow along with me as we build this on YouTube. The commits will line up with the GitHub chapters so you can easily see what changed in each section.
+### 框架与运行时
+- **Next.js 14**：作为前端框架，利用其静态站点生成（SSG）、服务端渲染（SSR）能力优化性能与SEO；支持App Router实现更灵活的路由管理。
+- **React 18**：UI渲染核心库，结合React Hooks实现状态管理与组件逻辑。
 
-[![YouTube Video](https://img.youtube.com/vi/tSI98g3PDyE/0.jpg)](https://youtu.be/tSI98g3PDyE?si=fBBR3S3XWhhQyYON)
+### 样式与组件
+- **Tailwind CSS 3.3**：原子化CSS框架，配合`tailwind-merge`优化类名合并，`tailwindcss-animate`提供动画支持；`@tailwindcss/typography`增强MDX内容排版。
+- **Radix UI**：集成多个交互组件（如Accordion、Dialog、Tooltip等），提供无样式基础组件，通过Tailwind自定义样式。
+- **Framer Motion 12**：实现页面过渡与组件动画，提升交互体验。
 
+### 开发工具与规范
+- **TypeScript 5**：强类型检查，保障代码可维护性。
+- **ESLint + Next.js ESLint配置**：代码风格检查与错误预防。
+- **Velite**：内容处理工具（见`next.config.mjs`），支持MDX文件的动态构建与监听。
 
-## Credits
-Much of the design of this project is taken from shadcn in his projects, such as [shadcn/ui](https://ui.shadcn.com/) and [Taxonomy](https://tx.shadcn.com/)
+### 其他依赖
+- **dayjs**：时间格式化工具。
+- **ahooks**：常用React Hooks库，简化状态逻辑。
+- **sonner**：轻量级通知组件。
+- **rehype-pretty-code**：MDX代码块高亮与美化。
+
+---
+
+## 功能特性
+- **内容管理**：支持MDX格式的博客、知识卡片撰写，自动生成标签、归档页面。
+- **交互功能**：包含搜索框、图片预览、代码高亮、响应式导航等实用功能。
+- **主题切换**：支持暗/亮模式切换（基于`next-themes`）。
+- **多端适配**：通过Tailwind的响应式类名，适配PC、平板、手机等设备。
+
+---
+
+## 未来规划
+- [x] 添加字典功能，方便用户查询专业术语。
+- [ ] 完善项目文档，包括技术栈说明、部署指南等。
+- [ ] 完善移动端的适配，减少移动端的 Bug。
+- [ ] 开发知识图谱功能，展示内容之间的关联关系。
+
+---
+
+## 贡献与反馈
+欢迎通过[GitHub仓库](https://github.com/jolbol1)提交Issue或PR，共同完善数字花园！
