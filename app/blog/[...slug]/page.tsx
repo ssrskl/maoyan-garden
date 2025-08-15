@@ -4,7 +4,7 @@ import "@/styles/mdx.css";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 import { Tag } from "@/components/tag";
-import PostContent from "./post-content";
+import PostContent  from "./post-content";
 
 interface PostPageProps {
   params: {
@@ -71,5 +71,9 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  return <PostContent post={post} />;
+  return (
+    <> 
+      <PostContent post={post} />
+    </>
+  );
 }

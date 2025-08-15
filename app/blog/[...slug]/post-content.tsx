@@ -3,23 +3,20 @@
 import { MDXContent } from "@/components/mdx-components";
 import { Tag } from "@/components/tag";
 import { motion, AnimatePresence } from "framer-motion";
-import { containerVariants, fadeIn, fadeInUp, slideUp, staggerContainer } from "@/styles/animation";
+import { fadeIn, slideUp, staggerContainer } from "@/styles/animation";
 import { Post } from "#site/content";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { MdOutlineDateRange } from "react-icons/md";
 import { toFromNow } from "@/lib/time";
-import { Bookmark, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FaLink } from "react-icons/fa6";
 import { SiFacebook, SiGmail, SiSinaweibo, SiTencentqq, SiWechat, SiX, SiZhihu } from "react-icons/si";
-import { ArticleTag } from "./ArticleTag";
-import { getTagIcon } from "./TagIcons";
 import ShareButton from "./ShareButton";
 import TableOfContents from "@/components/table-of-contents";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
-import { QuizBar } from "@/components/quiz-bar";
 import { StatusBadge } from "@/components/status-badge";
+import Giscus from "@giscus/react";
 
 interface PostContentProps {
   post: Post;
@@ -128,6 +125,25 @@ export default function PostContent({ post }: PostContentProps) {
                     variants={slideUp}
                   >
                     <MDXContent code={post.body} />
+                    <div className="flex flex-col">
+                      <div className="text-2xl font-bold mt-12 mb-4">评论</div>
+                      <Giscus
+                        id="comments"
+                        repo="ssrskl/maoyan-garden"
+                        repoId="R_kgDOPGLUOA"
+                        category="Announcements"
+                        categoryId="DIC_kwDOPGLUOM4CuM02"
+                        mapping="pathname"
+                        strict="0"
+                        reactionsEnabled="1"
+                        emitMetadata="0"
+                        inputPosition="bottom"
+                        theme="light"
+                        lang="zh-CN"
+                        loading="eager"
+                      />
+                    </div>
+
                   </motion.div>
                 </div>
               </motion.div>
@@ -192,6 +208,7 @@ export default function PostContent({ post }: PostContentProps) {
                   <TableOfContents />
                 </motion.div>
               </motion.div>
+
             </div>
           </motion.div>
         </div>
