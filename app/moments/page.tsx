@@ -10,70 +10,7 @@ import { toFromNow } from "@/lib/time";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 import { PhotoView } from "react-photo-view";
-
-// 定义朋友圈动态类型
-interface Moment {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  content: string;
-  images?: string[];
-  timestamp: Date;
-  location?: string;
-  likes: number;
-  liked: boolean;
-}
-
-// 模拟数据
-const initialMoments: Moment[] = [
-  {
-    id: "1",
-    user: {
-      id: "u1",
-      name: "猫颜",
-      avatar: "/avatar.png"
-    },
-    content: "夜爬火炉山+猫猫，猫猫果然是那种你看着有一只在那里，然后去摸一摸，待会儿就会冒出很多只的动物₍˄·͈༝·͈˄*₎◞ ̑̑",
-    images: [
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan1.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan2.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan3.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan4.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/huolushan5.jpg?x-oss-process=image/quality,q_80",
-    ],
-    timestamp: new Date(2025, 5, 1), // 1小时前
-    location: "广州火炉山",
-    likes: 24,
-    liked: false,
-  },
-    {
-    id: "2",
-    user: {
-      id: "u1",
-      name: "猫颜",
-      avatar: "/avatar.png"
-    },
-    content: "第三段实习喽 ！！字节的饭还是相当不戳的！！！",
-    images: [
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship1.png?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship2.png?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship3.png?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship4.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship5.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship6.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship7.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship8.jpg?x-oss-process=image/quality,q_80",
-      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/internship9.jpg?x-oss-process=image/quality,q_80",
-    ],
-    timestamp: new Date(2025, 8, 6), // 1小时前
-    location: "上海新江湾",
-    likes: 99,
-    liked: false,
-  },
-];
+import {Moment,initialMoments} from "./moments"
 
 // 格式化时间显示
 const formatTime = (date: Date) => {
@@ -121,7 +58,7 @@ export default function MomentsPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/moments" className='font-bold text-black'>时刻</BreadcrumbLink>
+                <BreadcrumbLink href="/moments" className='font-bold text-black'>瞬华</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -129,7 +66,7 @@ export default function MomentsPage() {
             className="text-4xl font-bold my-4"
             variants={itemVariants}
           >
-            时刻
+            瞬华
           </motion.h1>
           <motion.p variants={itemVariants}>
             墨染风云呈画卷，文描岁月载沧桑

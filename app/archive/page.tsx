@@ -64,7 +64,7 @@ export default function ArchivePage() {
                     href="/archive"
                     className="font-bold text-black"
                   >
-                    归档
+                    藏籍
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -73,7 +73,7 @@ export default function ArchivePage() {
               className="text-4xl font-bold my-4"
               variants={itemVariants}
             >
-              归档
+              藏籍
             </motion.h1>
             <motion.p variants={itemVariants}>
             人生到处知何似，应似飞鸿踏雪泥

@@ -40,7 +40,7 @@ export default function TagsPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className='font-blod text-black'>标签</BreadcrumbLink>
+                  <BreadcrumbLink href="/" className='font-blod text-black'>标笺</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -48,7 +48,7 @@ export default function TagsPage() {
               className="text-4xl font-bold my-4"
               variants={itemVariants}
             >
-              标签
+              标笺
             </motion.h1>
             <motion.p variants={itemVariants}>
               片叶不知秋，孤木不成林

@@ -62,7 +62,7 @@ export default function GalleryPage() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/gallery" className='font-bold text-black'>相册</BreadcrumbLink>
+                                    <BreadcrumbLink href="/gallery" className='font-bold text-black'>影函</BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -70,7 +70,7 @@ export default function GalleryPage() {
                             className="text-4xl font-bold my-4"
                             variants={itemVariants}
                         >
-                            相册
+                            影函
                         </motion.h1>
                         <motion.p variants={itemVariants}>
                             人面不知何处去，桃花依旧笑春风

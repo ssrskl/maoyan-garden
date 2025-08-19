@@ -45,16 +45,16 @@ export function SiteHeader() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem asChild>
-                    <Link href="/archive" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">归档</Link>
+                    <Link href="/archive" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">藏籍</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">标签</Link>
+                    <Link href="/tags" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">标笺</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/gallery" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">相册</Link>
+                    <Link href="/gallery" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">影函</Link>
                   </DropdownMenuItem>   
                   <DropdownMenuItem asChild>
-                    <Link href="/moments" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">时刻</Link>
+                    <Link href="/moments" className="hover:text-primary hover:font-bold transition-colors cursor-pointer">瞬华</Link>
                   </DropdownMenuItem>   
                 </DropdownMenuContent>
               </DropdownMenu>
