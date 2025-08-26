@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,15 +5,9 @@ import { motion } from "framer-motion";
 import {
   BookOpen,
   PenTool,
-  Clock,
-  CheckCircle,
-  BarChart2,
-  Calendar,
   TrendingUp,
   Target,
-  Coffee,
   Moon,
-  Sun
 } from "lucide-react";
 import {
   Card,
@@ -44,10 +37,8 @@ import {
   Pie,
   Cell
 } from "recharts";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import {
   containerVariants,
   fadeInUp,

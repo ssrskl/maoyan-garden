@@ -1,6 +1,5 @@
 "use client"
-import { cn, sortPosts } from "@/lib/utils";
-import { posts } from "#site/content";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";

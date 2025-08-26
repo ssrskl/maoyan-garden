@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import "@/styles/mdx.css";
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
-import { Tag } from "@/components/tag";
 import PostContent  from "./post-content";
 
 interface PostPageProps {

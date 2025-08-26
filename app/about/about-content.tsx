@@ -28,9 +28,13 @@ import {
     SiTypescript,
     SiVite,
     SiDatabricks,
+    SiTencentqq,
+    SiWechat,
 } from "react-icons/si";
 import { join } from 'path';
 import { readdirSync } from "fs";
+import { FaQq } from "react-icons/fa6";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 
 // 定义容器动画变体
@@ -275,28 +279,47 @@ export default function AboutContent() {
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <FaGithub className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                            <FaGithub className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" onClick={() => window.open('https://github.com/ssrskl')} />
                         </motion.div>
                         <motion.div
                             variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <SiGmail className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                            <SiGmail className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" onClick={() => window.open('mailto:1071352028@qq.com')} />
                         </motion.div>
                         <motion.div
                             variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <SiBilibili className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                            <Popover>
+                                <PopoverTrigger className="mt-2">
+                                    <SiTencentqq className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <div className="flex flex-col items-center">
+                                        <img src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/qq.jpg" alt="QQ" />
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         </motion.div>
                         <motion.div
                             variants={iconVariants as any}
                             whileHover={{ scale: 1.15 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <SiJuejin className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                            <Popover>
+                                <PopoverTrigger className="mt-2">
+                                    <SiWechat className="w-10 h-10 border-2 rounded-lg p-1 cursor-pointer" />
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <div className="flex flex-col items-center">
+                                        <img src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/wechat.jpg" alt="Wechat" />
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                            
                         </motion.div>
                     </motion.ul>
                 </div>

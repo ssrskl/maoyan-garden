@@ -2,18 +2,10 @@
 import { posts } from "#site/content";
 import { PostItem } from "@/components/post-item";
 import { QueryPagination } from "@/components/query-pagination";
-import { Tag } from "@/components/tag";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from '@/components/ui/skeleton';
 import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
-import { Metadata } from "next";
 import { motion } from "framer-motion";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { MdOutlineDateRange, MdOutlineRemoveRedEye } from "react-icons/md";
-import { toFromNow } from "@/lib/time";
-import Link from "next/link";
 import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 // export const metadata: Metadata = {
 //   title: "My blog",

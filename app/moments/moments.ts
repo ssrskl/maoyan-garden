@@ -15,6 +15,31 @@ export interface Moment {
 
 export const initialMoments: Moment[] = [
   {
+    id: "0",
+    user: {
+      id: "u1",
+      name: "猫颜",
+      avatar: "/avatar.png"
+    },
+    content: "当樱花开的纷纷扬扬，当世界美好与你们环环相扣～",
+    images: [
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini1.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini2.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini3.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini4.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini5.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini6.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini7.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini8.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini9.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/dishini10.jpg?x-oss-process=image/quality,q_80",
+    ],
+    timestamp: new Date(2025, 3, 2), // 1小时前
+    location: "上海迪士尼乐园",
+    likes: 320,
+    liked: false,
+  },
+  {
     id: "1",
     user: {
       id: "u1",
@@ -69,7 +94,7 @@ export const initialMoments: Moment[] = [
     images: [
       "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/qixiangganying.jpg?x-oss-process=image/quality,q_80",
     ],
-    timestamp: new Date(2025, 8, 6), // 1小时前
+    timestamp: new Date(2025, 8, 17), // 1小时前
     location: "静安区魔方公寓",
     likes: 520,
     liked: false,

@@ -231,4 +231,4 @@ export default function PostContent({ post }: PostContentProps) {
       </AnimatePresence>
     </div>
   );
-} 
+}

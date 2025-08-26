@@ -1,6 +1,5 @@
 import { visit } from "unist-util-visit";
 import { glossary } from "@/content/dict/glossary";
-import { fromHtml } from 'hast-util-from-html'
 
 export default function rehypeDict() {
   const terms = glossary.map((item) => item.term);
