@@ -46,6 +46,23 @@ export const glossary = [
             },
         ],
     },
+    //Paimon
+    {
+        term: "Paimon",
+        definition: "Apache Paimon 是一种数据湖格式，支持使用 Flink 和 Spark 构建实时 Lakehouse 架构，用于流式和批处理操作。Paimon 创新性地结合了数据湖格式和 LSM（日志结构化合并树）结构，将实时流式更新引入数据湖架构。",
+        contributors: "猫颜",
+        type: "大数据/数据湖",
+        links: [
+            {
+                name: "Paimon 官方文档",
+                url: "https://paimon.apache.org/docs/master/",
+            },
+            {
+                name: "Paimon 数据湖",
+                url: "/blog/bid-data/paimon/paimon",
+            }
+        ],
+    },
     // Spark
     {
         term: "Spark",
@@ -66,6 +83,19 @@ export const glossary = [
                 url: "/blog/bid-data/spark/spark-architecture-analysis",
             }
         ],
+    },
+    //Flink
+    {
+        term: "Flink",
+        definition: "Apache Flink 是一个在有界数据流和无界数据流上进行有状态计算分布式处理引擎和框架。Flink 设计旨在所有常见的集群环境中运行，以任意规模和内存级速度执行计算。",
+        contributors: "猫颜",
+        type: "大数据/计算引擎",
+        links: [
+            {
+                name: "Apache Flink 文档",
+                url: "https://nightlies.apache.org/flink/flink-docs-master/zh/"
+            }
+        ]
     },
     // 差分攻击
     {
@@ -111,6 +141,30 @@ export const glossary = [
     {
         term: "RD",
         definition: "R&D, Research and Development engineer，研发工程师，对某种不存在的事物进行系统的研究和开发并具有一定经验的专业工作者,或者对已经存在的事物进行改进以达到优化目的的专业工作者。",
+        contributors: "猫颜",
+        type: "专有名词",
+        links: [],
+    },
+    // OLAP
+    {
+        term: "OLAP",
+        definition: "在线分析处理（Online Analytical Processing）OLAP 是面向 数据分析与决策 的技术，核心是 “对海量历史数据进行复杂分析”，帮助管理者发现规律、制定策略。与之对比的则是：OLTP在线事务处理（Online Transaction Processing）",
+        contributors: "猫颜",
+        type: "专有名词",
+        links: [],
+    },
+    // OLTP
+    {
+        term: "OLTP",
+        definition: "在线事务处理（Online Transaction Processing）OLTP 是面向 日常业务操作 的实时数据处理技术，核心是 “处理高频、简短的事务”，确保业务系统（如电商、银行、超市）的实时运行。与之相对应的则是：OLAP，在线分析处理（Online Analytical Processing）",
+        contributors: "猫颜",
+        type: "专有名词",
+        links: [],
+    },
+    // LSM-Tree
+    {
+        term: "LSM-Tree",
+        definition: "LSM（Log-Structured Merge-Tree，合并树结构）是对数据结构的一种设计思想，核心是将更新后的数据先储存在内存中，达到一定标准后再统一写入磁盘，不需要再单个写入，可以有效提高写的速度。",
         contributors: "猫颜",
         type: "专有名词",
         links: [],
