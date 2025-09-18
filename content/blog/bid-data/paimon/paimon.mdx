@@ -113,3 +113,36 @@ INSERT INTO t VALUES (1, 2, 2, 2, 2, 2, CAST(NULL AS INT));
 2. 聚合函数，聚合函数是指针对一些函数，这里一般是同主键的同字段的一组数据要怎么聚合， 所以在 `部分列更新` 中也可以去指定聚合函数。
 </Callout>
 
+
+## 压缩
+随着写入 LSM 树的记录越来越多，排序运行的数量也会随之增加。由于查询 LSM 树需要合并所有排序运行，过多的排序运行会导致查询性能下降，甚至内存溢出。为了限制排序运行的数量，我们需要偶尔将多个排序运行合并成一个大的排序运行。这个过程称为压缩。
+
+### 专用压缩
+专用压缩是为了解决`多个作业同时写入一张表`的情况下，我们可以选择`跳过写入器中的压缩操作`，并`运行专门的作业来执行压缩操作`。由于压缩操作仅由专用作业执行，因此写入器可以连续写入记录而无需暂停，并且永远不会发生冲突。
+
+所以在使用专用压缩作业之前，我们需要先跳过写入器中的压缩操作，这里有两种方式：
+1. 第一种是通过在创建 Paimon 表的时候设置配置信息为`'write-only' = 'true'`。
+2. 我们也可以在写入的时候使用 `SQL Hints` 来跳过压缩操作，使用如下代码
+```sql
+INSERT INTO T /*+OPTIONS('write-only' = 'true') */ SELECT ...;
+```
+然后我们就可以创建独立的压缩作业来执行压缩操作了。
+```sql
+-- 参数1: 表名
+-- 参数2: 分区, 不指定为全部分区
+-- 参数3: 排序策略: order, zorder, hilbert. 仅适用于批任务sort compaction
+-- 参数4: 排序字段: 和参数3配合使用, 指定数据需要按什么字段排序, 以逗号分隔
+-- 参数5: compaction job 参数
+
+use catalog paimon;
+-- 指定compaction全分区, 不指定参数
+CALL paimon.sys.compact('paimon_mwj.paimon_test_table', '', '', '', '');
+-- 指定compaction全分区, 指定sink并发
+CALL paimon.sys.compact('paimon_mwj.paimon_test_table', '', '', '', 'sink.parallelism=6,k1=v2');
+```
+<Callout type="warning">
+但是在使用独立的 Compaction 作业时，需要注意的是
+1. 流式Compaction只支持`Flink`作业, 且只支持`1.17`版本
+2. 流式Compaction时无需指定分区
+3. 流式Compaction初始启动或无状态启动时会从最近一次 Compact 的Snapshot开始, 对后续的Snapshot数据进行增量Compaction
+</Callout>
