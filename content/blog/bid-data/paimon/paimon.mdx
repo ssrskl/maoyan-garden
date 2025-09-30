@@ -54,15 +54,14 @@ Paimon 表的 主键表（Primary Key Table）和 非主键表（Non-Primary Key
 
 ### MOW 写入时合并
 MOW 写数据的核心是 “先记‘删除标记’，再存新数据”。
-
+![](./imgs/mow.png)
 **L0 层只存 “新数据 + 删除向量”，不直接改旧文件：** 当有数据更新 / 删除时（比如把主键 = 2 的字段从 “b” 改成 “b_new”），MOW 不会去深层（L1/L2）找旧数据文件修改，而是做两件事：
 1. 生成一个 新的 L0 层 SST 文件：里面只存 “主键 = 2，字段 = b_new” 这条新数据（相当于 “新增一页记录，写上新内容”）；
 2. 生成一个 删除向量文件（Deletion Vector File）：专门标记 “旧数据在哪里”—— 比如记录 “在 L2 层的某个 SST 文件里，主键 = 2 的那行数据已经失效”（相当于 “贴个小纸条，告诉后续‘别读这行旧的’”）。
 
 通过L0 只放 “刚产生的新数据 + 对应的删除标记”，不做任何深层修改，保证 “写得快”（和 MOR 写 L0 的效率接近），但比 MOR 多了 “提前记删除标记” 的动作。
 
-![](./imgs/mow.png)
-
+![](./imgs/mow-l0.png)
 
 **L0 层文件默认 “不可见”，必须等合并后才能用：** 和 MOR 不同（MOR 的 L0 文件写完就能被读取，读的时候再合并），MOW 对 L0 层加了 `可见性控制`，刚写好的 L0 层 SST 文件和删除向量文件，**不会直接开放给读请求**，只有等这些 L0 文件被 “合并到深层” 后，新数据才会变成 “可读”—— 这是 MOW 保证数据一致性的关键，避免读的时候拿到 “没整理的临时数据”。
 
@@ -72,6 +71,14 @@ MOW 写数据的核心是 “先记‘删除标记’，再存新数据”。
 
 **读取数据的各层逻辑：** 虽然 MOW 主要是 “写时控制层级”，但读的时候对层级的处理，也反过来体现了它对层级的控制目标（“读得快”）优先读深层（L2→L1）：因为 L2、L1 层的文件已经过合并，没有冗余数据，也不需要处理删除向量，所以读的时候会先从这些深层文件找数据，效率最高；只有深层没有时，才读 “已合并的 L0”：如果数据刚合并到 L1（还没到 L2），就读 L1；如果有极少量刚合并完的 L0 数据（理论上 MOW 会尽快合并 L0，所以这种情况很少），就读 L0—— 但此时 L0 已经过合并，里面的删除向量已经 “落地”，不会有冗余。
 
+<Callout type="warning">
+**MOW 与 changelog-producer**
+
+我们知道默认的表模式是 `MOR` 模式，而在很多的场景下，我们使用 paimon 表是为了其实时性质，希望能够快速的读取数据，所以固然我们需要去使用 `MOW` 的表模式，而在使用 `MOW` 的表模式的时候，有很多的注意事项，例如 `changelog-producer` 的配置只能使用 `lookup` ，而不能使用 `full-compaction`，原因也非常好理解。
+
+MOW 的核心是 `写时生成删除向量，合并只做增量（而非全量）` 写数据时，不直接改旧文件，而是生成 “L0 层新数据文件 + 删除向量”（标记旧数据失效），合并时，只做 增量合并（比如 L0→L1、L1→L2），不会把所有层（L0+L1+L2）一次性合并到最高层（如 L2）。这样的话就会保留了 `分层文件+删除向量` L0 存临时变更，L1/L2 存半整理 / 全整理数据，删除向量随合并 “落地”（合并时剔除标记的旧数据）。changelog-producer 的核心任务是 输出 **增量变更流**（比如 “新增了哪行、更新了哪行、删除了哪行”），它必须依赖 MOW 保留的 **增量痕迹**；而 full-compaction 的特性会直接摧毁这些痕迹，导致 changelog-producer 彻底失效。
+
+</Callout>
 
 
 
@@ -193,3 +200,83 @@ CALL paimon.sys.compact('paimon_mwj.paimon_test_table', '', '', '', 'sink.parall
 2. 流式Compaction时无需指定分区
 3. 流式Compaction初始启动或无状态启动时会从最近一次 Compact 的Snapshot开始, 对后续的Snapshot数据进行增量Compaction
 </Callout>
+
+## Changelog Producer
+Changelog Producer 如同名字所述，其作用就是`控制主键表流式写入时生成变更日志`，其核心作用是为流式读取提供 **完整 / 高效的变更记录**。
+
+### None（默认）
+不进行配置 `changelog-producer` 或者配置为 `none`，即使用默认的策略，不对写入器（SinkWriter）添加任何额外日志生成逻辑，Paimon 源（Source）仅能读取 “合并后的最终变更”（如 Key 的最新值、删除标记），不包含旧值。
+
+### Input
+**前提条件：** `假设写入 Paimon 的输入数据本身就是完整 Changelog`（如 MySQL CDC 同步的 INSERT/UPDATE/DELETE 记录、Flink 有状态计算输出的 “旧值 + 新值” 变更）；Paimon 不做额外处理，仅将所有输入记录保存到独立的 Changelog 文件中，供 Source 直接读取。
+![input.png](imgs/input.png)
+
+### Lookup
+当输入无法提供完整 Changelog，但需规避 normalize 算子的高开销；写入提交前，Paimon 会通过 `Lookup 机制` 查询 **内存 + 本地磁盘缓存** 的历史数据，获取 Key 的旧值，从而生成 “旧值 + 新值” 的完整 Changelog；同样的支持开启 Async Compaction（异步压缩），进一步降低写入延迟。
+
+![lookup.png](imgs/lookup.png)
+
+Lookup 会将查询的数据缓存在内存 + 本地磁盘缓存中，所以可以通过对应的参数进行性能调整：
+
+| 参数 | 默认值 | 描述 |
+| ----------- | ----------- | ----------- |
+| `lookup.cache-file-retention` | 1h | 缓存文件的保留时间，过期后需重新从分布式存储（DFS）读取并重建索引 |
+| `lookup.cache-max-disk-size` | 无限制 | 本地磁盘缓存的最大容量，避免磁盘被占满 |
+| `lookup.cache-max-memory-size` | 256MB | 内存缓存的最大容量，平衡内存开销与查询效率 |
+
+**关键优化配置：**
+1. `changelog-producer.row-deduplicate`：该配置是 Paimon 表级属性，仅适用于 lookup 和 full-compaction 两种 changelog-producer 策略，核心作用是避免对 “同一记录的重复更新” 生成冗余的 -U（旧值删除）和 +U（新值插入）日志，减少 Changelog 数据量和下游消费压力。配置方式如下：
+```sql
+'changelog-producer.row-deduplicate' = 'true',  -- 启用去重（默认 false）
+```
+2. `execution.checkpointing.max-concurrent-checkpoints`：该配置是 Flink 作业级 / 集群级全局配置。
+<Callout type="info">
+与 Paimon 表无关，但对 changelog-producer = 'lookup' 策略的性能至关重要。
+</Callout>
+该配置的核心作用是控制 Checkpoint 并发度，Flink 的 Checkpoint（ checkpoint ）是保障状态一致性的核心机制，默认情况下 同一时间仅允许 1 个 Checkpoint 运行（串行执行）。而该配置是指定 Flink 作业中可同时进行的 Checkpoint 最大数量，打破串行限制，提升作业吞吐量。
+
+Lookup 策略依赖 `Checkpoint 期间查询缓存的历史数据` 生成 Changelog，若 Checkpoint 串行执行（默认 1），会导致 “缓存查询” 与 “新数据写入” 相互阻塞，严重降低写入性能。增大该参数可让 Checkpoint 并行执行，缓解阻塞，提升 Lookup 策略的吞吐量。
+
+通过了解`execution.checkpointing.max-concurrent-checkpoints` 参数对 Lookup 策略的影响，我们可以更好地理解其工作原理，以及其本质作用，我们可以从下面的
+1. CheckPoint 并行逻辑
+2. CheckPoint 与 Paimon 表的关系
+
+来进行深入的了解
+
+### CheckPoint 并行逻辑
+要理解CheckPoint 并行逻辑，我们需要先了解一下串行 Checkpoint 的 `阻塞问题`即为什么需要并行。在默认的串行 Checkpoint（max-concurrent-checkpoints=1）下，“缓存查询” 与 “新数据写入” 是完全串行的，会导致严重阻塞：
+1. Flink 触发 Checkpoint 后，会要求所有算子（包括 Paimon SinkWriter）“冻结当前状态”，准备生成快照；
+2. Paimon Lookup 策略需要在此时查询 “当前状态的缓存”（旧值），生成 Changelog；
+3. 在缓存查询和 Changelog 生成期间，新数据写入会被暂停（或等待 Checkpoint 完成）—— 因为若允许新数据写入，会修改缓存状态，导致 Checkpoint 读取的旧值不准确（破坏一致性）；
+4. 只有当 Checkpoint 完全完成（快照写入持久化存储、缓存查询结束），新数据才能继续写入。
+
+所以很显然可以看到`查询等写入、写入等查询`的串行逻辑，会导致作业吞吐量随 Checkpoint 耗时增加而显著下降（比如 Checkpoint 耗时 30s，写入就会被阻塞 30s）。
+
+
+而要理解 CheckPoint 的并行逻辑，也需要明确一点`Checkpoint 并行不是 “多个 Checkpoint 同时修改同一状态”，而是通过 “状态版本隔离” 实现 “查询旧状态” 与 “写入新状态” 的并行，既保障一致性，又避免阻塞。`核心原理是：`让不同阶段的 Checkpoint 读取 “不同版本的状态”，新数据写入不影响旧版本的查询`
+
+具体过程可以分为以下几步：
+1. Checkpoint 触发时：“冻结旧版本状态”，但不阻塞新写入
+    - Flink 会为当前算子状态（包括 Paimon 的缓存）创建一个只读快照版本（Version N），这个版本的状态会被冻结—— 后续的缓存查询（Lookup 旧值）会基于这个版本进行，确保查询结果的一致性； 
+    - 新数据会写入 “新版本状态（Version N+1）”，比如新数据更新的缓存会存到 Version N+1 中，完全不影响 Version N 的只读快照；此时两个版本可以并行存在，互不干扰。
+2. 缓存查询与写入并行
+    - 在 Paimon Look 进行缓存查询的时候，查询的是 Version N 的缓存，并根据此数据生成 Changelog，由于 Version N 是只读的，并不会有新数据的写入，所以结果是准确的。
+    - 新数据持续写入 “Version N+1 的缓存” 和 MemTable，不会等待 Checkpoint N 完成 —— 比如新数据 user_id=1 的 login_count=6 会更新到 Version N+1 的缓存，而 Checkpoint N 查询的仍是 Version N 中 user_id=1 的旧值 5，两者无冲突。
+3. 版本迭代与`无任何阻塞`
+    - Flink 会自动清理 “过期的状态版本”（比如只保留最近 2-3 个版本，避免内存溢出），后续触发的 Checkpoint N+1，会基于 “Version N+1 的状态” 生成新的只读快照，此时新数据会继续写入 “Version N+2”，重复上述并行逻辑。
+    - 当 Checkpoint 触发 “创建只读快照版本” 时，Flink 会对状态加一个短暂的 “读锁”（确保创建版本时状态不被修改），这个过程通常只有几毫秒，远短于串行 Checkpoint 的秒级阻塞；所以其`并非是完全无任何阻塞`，但是时间极短，对性能影响可忽略。
+
+### Changelog 的生成原理
+
+
+### Full-Compaction
+
+full-compaction 是一种完全压缩的策略，根据上面的合并模式，我们也了解到了 full-compaction全量合并是将 L0，L1以及 L2 直接进行全部合并，生成一个新的 L2 文件，所以其合并过程较为耗时，更适合延迟更大的场景。
+
+通过配置`'changelog-producer' = 'full-compaction'`来指定 Paimon 表使用 full-compaction 策略生成 Changelog。Paimon 将比较两次完全压缩之间的结果，并将差异生成为Changelog。Changelog的延迟受完全压缩频率的影响。
+
+通过使用 COW 的表模式，即指定`'full-compaction.delta-commits' = '1'`的表属性，每个checkpoint 都会触发一次完全压缩，并生成 changelog。
+
+![](imgs/full-compaction.png)
+
+但是 full-compaction 的成本和消耗都比较高，并且其实时性较差，所以更建议使用lookup。
