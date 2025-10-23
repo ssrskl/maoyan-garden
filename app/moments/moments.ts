@@ -99,4 +99,28 @@ export const initialMoments: Moment[] = [
     likes: 520,
     liked: false,
   },
+    {
+    id: "4",
+    user: {
+      id: "u1",
+      name: "猫颜",
+      avatar: "/avatar.png"
+    },
+    content: "哈哈哈哈哈，太带派了，国庆前的一个美滋滋的团建！！！",
+    images: [
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian1.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian2.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian3.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian4.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian5.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian6.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian7.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian8.jpg?x-oss-process=image/quality,q_80",
+      "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/moments/tuanjian9.jpg?x-oss-process=image/quality,q_80",
+    ],
+    timestamp: new Date(2025, 9, 25), 
+    location: "上海新江湾",
+    likes: 1120,
+    liked: false,
+  },
 ]

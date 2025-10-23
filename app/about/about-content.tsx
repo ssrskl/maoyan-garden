@@ -132,12 +132,12 @@ export default function AboutContent() {
                     >
                         Hi~ 我是猫颜，一个全栈工程师
                     </motion.p>
-
+                    
                     <motion.h2
                         className="text-2xl font-bold my-2"
                         variants={itemVariants as any}
                     >
-                        我的技能
+                        技术栈
                     </motion.h2>
 
                     <motion.h3
@@ -319,7 +319,7 @@ export default function AboutContent() {
                                     </div>
                                 </PopoverContent>
                             </Popover>
-                            
+
                         </motion.div>
                     </motion.ul>
                 </div>
