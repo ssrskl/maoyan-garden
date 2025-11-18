@@ -132,7 +132,7 @@ export default function AboutContent() {
                     >
                         Hi~ 我是猫颜，一个全栈工程师
                     </motion.p>
-                    
+
                     <motion.h2
                         className="text-2xl font-bold my-2"
                         variants={itemVariants as any}

@@ -13,6 +13,7 @@ interface PostItemProps {
   date: string;
   tags?: Array<string>;
   status?: "seedling" | "growing" | "evergreen"; // --- 2. 添加 status 属性 ---
+  query?: string;
 }
 
 export function PostItem({
@@ -20,15 +21,29 @@ export function PostItem({
   title,
   description,
   date,
-  tags
+  tags,
+  query
 }: PostItemProps) {
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const highlight = (text?: string, q?: string) => {
+    if (!text || !q) return text;
+    const re = new RegExp(`(${escapeRegExp(q)})`, "gi");
+    const parts = text.split(re);
+    return parts.map((part, i) =>
+      re.test(part) ? (
+        <mark key={i} className="bg-yellow-200 text-inherit px-0.5 rounded-sm">{part}</mark>
+      ) : (
+        <span key={i}>{part}</span>
+      )
+    );
+  };
   return (
     <article className="flex flex-col gap-2 border-border border-b py-3 mx-4">
       <div>
         {/* --- 4. 在标题旁边显示状态 --- */}
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold">
-            <Link href={"/" + slug}>{title}</Link>
+            <Link href={"/" + slug}>{highlight(title, query)}</Link>
           </h2>
         </div>
       </div>
@@ -38,7 +53,7 @@ export function PostItem({
         ))}
       </div>
       <div className="max-w-none text-muted-foreground line-clamp-4">
-        {description}
+        {highlight(description, query)}
       </div>
       <div className="flex justify-between items-center">
         <dl>

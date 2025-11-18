@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { Search } from '@/components/search';
 import { PostItem } from '@/components/post-item';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface SearchResult {
   slug: string;
@@ -20,17 +22,19 @@ export function SearchContent() {
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [allTags, setAllTags] = useState<{ name: string; count: number }[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sort, setSort] = useState<'relevance' | 'date'>('relevance');
 
   useEffect(() => {
     async function fetchResults() {
-      if (!query) {
-        setResults([]);
-        return;
-      }
-
       setLoading(true);
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const params = new URLSearchParams();
+        if (query) params.set('q', query);
+        if (selectedTags.length) params.set('tags', selectedTags.join(','));
+        if (sort) params.set('sort', sort);
+        const response = await fetch(`/api/search?${params.toString()}`);
         const data = await response.json();
         setResults(data.results);
       } catch (error) {
@@ -42,7 +46,18 @@ export function SearchContent() {
     }
 
     fetchResults();
-  }, [query]);
+  }, [query, selectedTags, sort]);
+
+  useEffect(() => {
+    async function fetchTags() {
+      try {
+        const res = await fetch('/api/tags');
+        const data = await res.json();
+        setAllTags(data.tags || []);
+      } catch {}
+    }
+    fetchTags();
+  }, []);
 
   return (
     <>
@@ -58,6 +73,39 @@ export function SearchContent() {
         ) : (
           <p className="text-lg text-muted-foreground">请输入搜索关键词</p>
         )}
+      </div>
+
+      <div className="flex items-center gap-4 mb-6">
+        <div className="flex flex-wrap gap-2">
+          {allTags.map((t) => (
+            <Button
+              key={t.name}
+              size="sm"
+              variant={selectedTags.includes(t.name) ? 'default' : 'outline'}
+              className={cn('rounded-full')}
+              onClick={() =>
+                setSelectedTags((prev) =>
+                  prev.includes(t.name)
+                    ? prev.filter((x) => x !== t.name)
+                    : [...prev, t.name]
+                )
+              }
+            >
+              {t.name} {t.count}
+            </Button>
+          ))}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">排序</span>
+          <select
+            className="border rounded px-2 py-1 text-sm bg-background"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as 'relevance' | 'date')}
+          >
+            <option value="relevance">相关度</option>
+            <option value="date">时间</option>
+          </select>
+        </div>
       </div>
 
       {loading ? (
@@ -83,6 +131,7 @@ export function SearchContent() {
                 description={post.description}
                 date={post.date}
                 tags={post.tags}
+                query={query}
               />
             ))
           ) : query ? (
@@ -92,4 +141,4 @@ export function SearchContent() {
       )}
     </>
   );
-} 
+}

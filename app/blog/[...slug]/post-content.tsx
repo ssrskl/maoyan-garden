@@ -4,7 +4,7 @@ import { MDXContent } from "@/components/mdx-components";
 import { Tag } from "@/components/tag";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeIn, slideUp, staggerContainer } from "@/styles/animation";
-import { Post } from "#site/content";
+import { Post, posts as allPosts } from "#site/content";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { MdOutlineDateRange } from "react-icons/md";
 import { toFromNow } from "@/lib/time";
@@ -17,6 +17,7 @@ import TableOfContents from "@/components/table-of-contents";
 import { useEffect, useState } from "react";
 import { StatusBadge } from "@/components/status-badge";
 import Giscus from "@giscus/react";
+import D3RelatedGraph from "@/components/d3-related-graph";
 
 interface PostContentProps {
   post: Post;
@@ -24,12 +25,17 @@ interface PostContentProps {
 
 export default function PostContent({ post }: PostContentProps) {
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const doc = document.documentElement;
+      const scrollHeight = doc.scrollHeight - doc.clientHeight;
+      const ratio = scrollHeight > 0 ? currentScrollY / scrollHeight : 0;
+      setProgress(Math.min(1, Math.max(0, ratio)));
 
       // 向下滚动时显示按钮，向上滚动时隐藏按钮
       if (currentScrollY > lastScrollY) {
@@ -41,8 +47,9 @@ export default function PostContent({ post }: PostContentProps) {
       lastScrollY = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll as any);
   }, []);
 
   const scrollToTop = () => {
@@ -53,6 +60,12 @@ export default function PostContent({ post }: PostContentProps) {
   };
   return (
     <div className="flex justify-center pt-10 w-full">
+      {/* 阅读进度条 */}
+      <div
+        aria-hidden
+        className="fixed left-0 top-0 h-1 bg-primary z-50"
+        style={{ width: `${progress * 100}%` }}
+      />
       <div className="flex md:w-2/3 lg:w-2/3 w-full max-w-screen-xl px-4">
         <div className="gap-5 flex flex-col justify-center w-full">
           <motion.div
@@ -118,6 +131,7 @@ export default function PostContent({ post }: PostContentProps) {
                     variants={slideUp}
                   >
                     <TableOfContents />
+                    <D3RelatedGraph post={post} allPosts={allPosts} />
                   </motion.div>
 
                   <motion.div
@@ -206,6 +220,7 @@ export default function PostContent({ post }: PostContentProps) {
                   transition={{ duration: 0.5, delay: 0.6 }}
                 >
                   <TableOfContents />
+                  <D3RelatedGraph post={post} allPosts={allPosts} />
                 </motion.div>
               </motion.div>
 

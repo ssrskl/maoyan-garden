@@ -4,31 +4,49 @@ import type { Post } from '@/.velite';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const query = searchParams.get('q');
+  const query = (searchParams.get('q') || '').trim();
+  const tagsParam = (searchParams.get('tags') || '').trim();
+  const sort = (searchParams.get('sort') || 'relevance').toLowerCase();
+  const tagFilters = tagsParam ? tagsParam.split(',').map((t) => t.toLowerCase()) : [];
 
-  if (!query) {
-    return NextResponse.json({ results: [] });
-  }
+  const q = query.toLowerCase();
 
-  const lowercaseQuery = query.toLowerCase();
-  
-  // 搜索文章标题、描述和标签
-  const results = posts
-    .filter((post: Post) => post.published)
-    .filter((post: Post) => {
-      return (
-        post.title.toLowerCase().includes(lowercaseQuery) ||
-        (post.description && post.description.toLowerCase().includes(lowercaseQuery)) ||
-        (post.tags && post.tags.some((tag: string) => tag.toLowerCase().includes(lowercaseQuery)))
-      );
+  const base = posts.filter((p: Post) => p.published);
+
+  const scored = base
+    .map((p: Post) => {
+      const title = p.title.toLowerCase();
+      const desc = (p.description || '').toLowerCase();
+      const ptags = (p.tags || []).map((t) => t.toLowerCase());
+
+      const matchTitle = q ? (title.includes(q) ? 1 : 0) : 0;
+      const matchDesc = q ? (desc.includes(q) ? 1 : 0) : 0;
+      const matchTags = q ? ptags.some((t) => t.includes(q)) ? 1 : 0 : 0;
+      const score = matchTitle * 3 + matchDesc * 2 + matchTags * 2;
+
+      const passTags = tagFilters.length
+        ? ptags.some((t) => tagFilters.includes(t))
+        : true;
+
+      const passQuery = q ? score > 0 : true;
+
+      return { p, score, pass: passTags && passQuery };
     })
-    .map((post: Post) => ({
-      slug: post.slug,
-      title: post.title,
-      description: post.description || '',
-      date: post.date,
-      tags: post.tags || [],
+    .filter((x) => x.pass)
+    .sort((a, b) => {
+      if (sort === 'date') {
+        return +new Date(b.p.date) - +new Date(a.p.date);
+      }
+      if (b.score !== a.score) return b.score - a.score;
+      return +new Date(b.p.date) - +new Date(a.p.date);
+    })
+    .map(({ p }) => ({
+      slug: p.slug,
+      title: p.title,
+      description: p.description || '',
+      date: p.date,
+      tags: p.tags || [],
     }));
 
-  return NextResponse.json({ results });
-} 
+  return NextResponse.json({ results: scored });
+}
