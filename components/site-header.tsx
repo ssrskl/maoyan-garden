@@ -7,9 +7,18 @@ import { FaCat, FaGithub } from "react-icons/fa";
 import { SiSearxng } from "react-icons/si";
 import { MobileNav } from "./mobile-nav";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import CommandPalette from "./command-palette";
+import { useEffect, useState } from "react";
 
 export function SiteHeader() {
   const scroll = useScroll(() => document);
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const [isMac, setIsMac] = useState(true);
+  useEffect(() => {
+    try {
+      setIsMac(navigator.platform.toUpperCase().includes("MAC"));
+    } catch {}
+  }, []);
   return (
     <>
       <header
@@ -67,9 +76,12 @@ export function SiteHeader() {
                 onClick={() => window.open("https://github.com/ssrskl")}
               />
               <ModeToggle />
-              <Link href="/search">
+              <button onClick={() => setCmdOpen(true)} aria-label="命令面板" className="flex items-center">
                 <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
-              </Link>
+              </button>
+              <span className="hidden md:inline-flex items-center text-xs text-muted-foreground border rounded px-2 py-1">
+                {isMac ? "⌘" : "Ctrl"} K
+              </span>
 
               {/* --- 3. Mobile Navigation (only visible on small screens) --- */}
               <div className="sm:hidden">
@@ -93,6 +105,8 @@ export function SiteHeader() {
           animation: wiggle 0.5s ease-in-out;
         }
       `}</style>
+      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
     </>
   );
 }
+      

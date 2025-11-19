@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { StatusBadge } from "@/components/status-badge";
 import Giscus from "@giscus/react";
 import D3RelatedGraph from "@/components/d3-related-graph";
+import Backlinks from "@/components/backlinks";
 
 interface PostContentProps {
   post: Post;
@@ -139,6 +140,7 @@ export default function PostContent({ post }: PostContentProps) {
                     variants={slideUp}
                   >
                     <MDXContent code={post.body} />
+                    <Backlinks post={post} />
                     <div className="flex flex-col">
                       <div className="text-2xl font-bold mt-12 mb-4">评论</div>
                       <Giscus

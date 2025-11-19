@@ -21,21 +21,18 @@ interface GalleryImage {
     description?: string;
 }
 
-// 模拟相册数据 - 实际项目中可以从API或本地文件加载
-const galleryImages: GalleryImage[] = [
-    {
-        id: "1",
-        src: "https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/gallery/shanghai-1.jpg?x-oss-process=image/quality,q_80",
-        alt: "红绿交错",
-        tags: ["自然", "风景"],
-        date: "2025-03-02",
-        description: "偶步西廊下，幽兰一朵开"
-    }
-];
+import { galleryImages as data } from "@/lib/gallery-images";
 
 export default function GalleryPage() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
-    const [filteredImages, setFilteredImages] = useState<GalleryImage[]>(galleryImages);
+    const [filteredImages, setFilteredImages] = useState<GalleryImage[]>(data.map((d) => ({
+        id: d.id,
+        src: d.src,
+        alt: d.alt,
+        tags: d.tags || [],
+        date: new Date().toISOString().slice(0,10),
+        description: d.description,
+    })));
 
     return (
         <motion.div
@@ -78,45 +75,31 @@ export default function GalleryPage() {
                     </motion.div>
 
 
-                    {/* 相册展示网格 */}
-                    <motion.div
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
-                        variants={containerVariants}
-                    >
+                    {/* 瀑布流展示 */}
+                    <motion.div className="columns-1 sm:columns-2 lg:columns-3 gap-4 mt-6" variants={containerVariants}>
                         {filteredImages.map((image) => (
-                            <motion.div
-                                key={image.id}
-                                variants={itemVariants}
-                                className="group relative overflow-hidden rounded-lg bg-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
-                                <div className="relative aspect-video overflow-hidden">
+                            <motion.div key={image.id} variants={itemVariants} className="break-inside-avoid mb-4 group overflow-hidden rounded-lg bg-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+                                <div className="relative">
                                     <PhotoView src={image.src}>
                                         <img
                                             src={image.src}
                                             alt={image.alt}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 cursor-pointer"
+                                            className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03] cursor-pointer"
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                     </PhotoView>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end pointer-events-none">
-                                        <div className="p-4 text-white">
-                                            <h3 className="font-bold text-lg">{image.alt}</h3>
-                                            {image.description && (
-                                                <p className="text-sm text-gray-200">{image.description}</p>
-                                            )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-end">
+                                        <div className="p-4 text-white w-full">
+                                            {image.description && <p className="text-sm leading-relaxed">{image.description}</p>}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="p-3 flex justify-between items-center">
-                                    <span className="text-sm text-gray-500">
-                                        {new Date(image.date).toLocaleDateString()}
-                                    </span>
+                                    <span className="text-xs text-gray-500">{new Date(image.date).toLocaleDateString()}</span>
                                     <div className="flex gap-1">
-                                        {image.tags.map(tag => (
-                                            <span
-                                                key={tag}
-                                                className="text-xs bg-gray-200 px-2 py-0.5 rounded-full"
-                                            >
-                                                {tag}
-                                            </span>
+                                        {image.tags.map((tag) => (
+                                            <span key={tag} className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">{tag}</span>
                                         ))}
                                     </div>
                                 </div>
