@@ -7,9 +7,12 @@ import { useRouter } from "next/navigation";
 import { SiSearxng } from "react-icons/si";
 import { FaHome, FaBookOpen, FaTags, FaImages, FaArchive, FaInfoCircle, FaMap } from "react-icons/fa";
 import { slug as slugify } from "github-slugger";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const [value, setValue] = React.useState("");
+  const [results, setResults] = React.useState<Array<{ slug: string; title: string; description: string; date: string; tags: string[] }>>([]);
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
 
   React.useEffect(() => {
@@ -57,6 +60,30 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
     .sort((a, b) => +new Date(b.date) - +new Date(a.date))
     .slice(0, value ? 50 : 12);
 
+  React.useEffect(() => {
+    let timer: any;
+    if (value) {
+      setLoading(true);
+      timer = setTimeout(async () => {
+        try {
+          const params = new URLSearchParams();
+          params.set("q", value);
+          params.set("sort", "relevance");
+          const res = await fetch(`/api/search?${params.toString()}`);
+          const data = await res.json();
+          setResults(data.results || []);
+        } catch {
+          setResults([]);
+        } finally {
+          setLoading(false);
+        }
+      }, 200);
+    } else {
+      setResults([]);
+    }
+    return () => timer && clearTimeout(timer);
+  }, [value]);
+
   const tagMap: Record<string, number> = {};
   posts.forEach((p) => {
     if (!p.published) return;
@@ -77,7 +104,7 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 overflow-hidden sm:max-w-xl border rounded-xl shadow-xl">
-        <Command label="命令面板" className="bg-background px-4">
+        <Command label="命令面板" className="bg-background px-4" shouldFilter={false}>
           <div className="flex items-center gap-2 px-4 py-3 border-b">
             <SiSearxng className="w-5 h-5 text-muted-foreground" />
             <Command.Input
@@ -88,7 +115,8 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
               className="w-full px-0 py-0 outline-none bg-transparent text-sm"
             />
           </div>
-          <Command.List className="max-h-[60vh] overflow-auto py-2">
+          <ScrollArea className="max-h-[60vh] h-[60vh]">
+          <Command.List className="py-2">
             <Command.Empty className="px-4 py-6 text-center text-sm text-muted-foreground">没有找到相关内容</Command.Empty>
             <Command.Group heading="导航" className="px-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -137,7 +165,7 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
             </Command.Group>
             <Command.Separator className="my-2" />
             <Command.Group heading={value ? "文章" : "最新文章"} className="px-2">
-              {filtered.map((p) => (
+              {(value ? results : filtered).map((p) => (
                 <Command.Item
                   key={p.slug}
                   onSelect={() => go(`/${p.slug}`)}
@@ -151,8 +179,12 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
                   </div>
                 </Command.Item>
               ))}
+              {value && !loading && results.length === 0 && (
+                <div className="px-4 py-3 text-center text-sm text-muted-foreground">没有找到相关内容</div>
+              )}
             </Command.Group>
           </Command.List>
+          </ScrollArea>
         </Command>
       </DialogContent>
     </Dialog>

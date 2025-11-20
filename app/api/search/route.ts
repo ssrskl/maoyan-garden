@@ -18,11 +18,13 @@ export async function GET(request: Request) {
       const title = p.title.toLowerCase();
       const desc = (p.description || '').toLowerCase();
       const ptags = (p.tags || []).map((t) => t.toLowerCase());
+      const body = (p.body || '').toLowerCase();
 
       const matchTitle = q ? (title.includes(q) ? 1 : 0) : 0;
       const matchDesc = q ? (desc.includes(q) ? 1 : 0) : 0;
-      const matchTags = q ? ptags.some((t) => t.includes(q)) ? 1 : 0 : 0;
-      const score = matchTitle * 3 + matchDesc * 2 + matchTags * 2;
+      const matchTags = q ? (ptags.some((t) => t.includes(q)) ? 1 : 0) : 0;
+      const matchBody = q ? (body.includes(q) ? 1 : 0) : 0;
+      const score = matchTitle * 4 + matchDesc * 2 + matchTags * 2 + matchBody * 2;
 
       const passTags = tagFilters.length
         ? ptags.some((t) => tagFilters.includes(t))

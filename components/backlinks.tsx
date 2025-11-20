@@ -19,15 +19,15 @@ export default function Backlinks({ post }: { post: Post }) {
 
   if (!list.length) return null;
   return (
-    <div className="mt-12">
-      <div className="text-2xl font-bold mb-4">被引用于</div>
-      <div className="divide-y divide-border rounded-md border">
+    <div className="mt-8">
+      <div className="text-lg font-semibold mb-3 text-muted-foreground">被引用于</div>
+      <div className="rounded-md border divide-y divide-border">
         {list.map((p) => (
-          <div key={p.slug} className="p-4">
-            <Link href={`/${p.slug}`} className="font-medium hover:underline">
+          <div key={p.slug} className="px-2 py-1">
+            <Link href={`/${p.slug}`} className="text-sm font-medium hover:underline">
               {p.title}
             </Link>
-            {p.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</p>}
+            {p.description && <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{p.description}</p>}
           </div>
         ))}
       </div>
