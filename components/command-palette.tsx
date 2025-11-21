@@ -119,7 +119,7 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
           <Command.List className="py-2">
             <Command.Empty className="px-4 py-6 text-center text-sm text-muted-foreground">没有找到相关内容</Command.Empty>
             <Command.Group heading="导航" className="px-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 px-4 py-2">
                 {[
                   { label: "主页", href: "/", icon: <FaHome />, desc: "回到首页" },
                   { label: "文章", href: "/blog", icon: <FaBookOpen />, desc: "浏览全部文章" },
@@ -149,7 +149,7 @@ export default function CommandPalette({ open, onOpenChange }: { open: boolean; 
             </Command.Group>
             <Command.Separator className="my-2" />
             <Command.Group heading={value ? "标签" : "热门标签"} className="px-2">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-4 py-2">
                 {tagResults.map((t) => (
                   <Command.Item
                     key={t.name}
