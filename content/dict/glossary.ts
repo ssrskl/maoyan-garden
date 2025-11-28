@@ -84,17 +84,46 @@ export const glossary = [
             }
         ],
     },
+    // Shuffle
+    {
+        term: "Shuffle",
+        definition: "Shuffle 是 Spark 中一个重要的操作，用于在分布式计算中重新分布数据，以支持后续的计算操作。在 Spark 中，每个 RDD（Resilient Distributed Dataset）都有一个或多个分区，每个分区的数据可能分布在不同的节点上。当需要对 RDD 进行转换操作（如 map、filter、reduceByKey 等）时，Spark 会将每个分区的数据发送到负责处理该分区的节点上执行。然而，在某些情况下，不同节点上的数据需要进行合并或聚合，这就需要进行 Shuffle 操作。",
+        contributors: "猫颜",
+        type: "大数据/数据处理",
+        aliases: ["shuffle"],
+        links: [
+            {
+                name: "Spark Shuffle",
+                url: "/blog/bid-data/spark/spark-shuffle",
+            }
+        ],
+    },
     //Flink
     {
         term: "Flink",
         definition: "Apache Flink 是一个在有界数据流和无界数据流上进行有状态计算分布式处理引擎和框架。Flink 设计旨在所有常见的集群环境中运行，以任意规模和内存级速度执行计算。",
         contributors: "猫颜",
         type: "大数据/计算引擎",
+        aliases: ["Apache Flink"],
         links: [
             {
                 name: "Apache Flink 文档",
                 url: "https://nightlies.apache.org/flink/flink-docs-master/zh/"
             }
+        ]
+    },
+    // Docker
+    {
+        term: "Docker",
+        definition: "Docker 是一个开源的容器化平台，用于打包、分发与运行应用及其依赖。通过镜像（Image）和容器（Container）的机制，Docker 在不同环境中提供一致的运行时，并结合 Docker Compose 支持多服务编排，常用于开发、测试与部署环节的标准化与自动化。",
+        contributors: "猫颜",
+        type: "中间件/容器化",
+        aliases: ["Docker Engine", "Docker Compose"],
+        links: [
+            { name: "Docker 官方文档", url: "https://docs.docker.com/" },
+            { name: "Docker Compose 文档", url: "https://docs.docker.com/compose/" },
+            { name: "Docker CLI 参考", url: "https://docs.docker.com/engine/reference/commandline/docker/" },
+            { name: "Docker 入门与实践（站内）", url: "/blog/middleware/docker/docker" }
         ]
     },
     // 差分攻击

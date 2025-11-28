@@ -1,0 +1,62 @@
+---
+title: 数据开发常用
+description: 在进行数据开发的过程中，我们会经常使用到一些函数，针对 Spark 作业进行参数配置以及对作业的运维。
+date: 2025-11-26 10:32
+tags: ["大数据", "Hive", "Spark"]
+published: true
+status: growing
+---
+
+# Spark 作业的基本运行原理
+![](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2016/1f1ddad5.png)
+如图中所示，提交作业后会启动一个 Driver 进程（本地或集群节点上，取决于 deploy-mode），Driver 首先去资源管理器（如 YARN）要资源，让集群在多台机器上启动多个 Executor 进程。每个 Executor 都有自己的内存和 CPU 核心。然后Driver 把你的代码拆成多个阶段（stage），再把每个阶段切成很多最小计算单元（task），分发到各个 Executor 去并行执行。每个 task 都跑同一段逻辑，但处理的数据分片不同。一个阶段的所有 task 完成后，会把中间结果写到各节点本地磁盘；然后Driver就会调度运行下一个stage。<Sidenote>Stage 的划分是根据 Shuffle 类型的算子来进行划分的，Shuffle 类型的算子包括 `groupByKey`、`reduceByKey`、`join`、`cogroup` 等。</Sidenote>下一个stage的task的输入数据就是上一个stage输出的中间结果。如此循环往复，直到将我们自己编写的代码逻辑全部执行完，并且计算完所有的数据，得到我们想要的结果为止。
+
+
+
+# 常用函数
+## 时间函数
+时间函数是在开发中最常用的函数之一了，因为很多的分区都使用的是时间分区，以及时间有各种各样的格式以及需要进行各种计算，所以熟练的掌握时间的处理可以极大的提高我们的开发效率。
+
+`to_date`：返回日期字符串的日期值。只针对特定格式的日期字符串，例如 `yyyy-MM-dd` 不支持 `yyyyMMdd`。
+```sql
+SELECT to_date('2025-11-26 10:32:00') AS date;
+-- 输出：2025-11-26
+SELECT to_date('20251126') AS date;
+-- 输出 NULL
+```
+
+`from_unixtime`：转化当前时间戳为日期字符串。
+<Sidenote>
+第一个参数为10位的时间戳，如果是13位必须`cast(13位时间戳/1000 as bigint)` 转换后再进行实践转换
+</Sidenote>
+```sql
+SELECT from_unixtime(1700998320) AS date;
+-- 输出：2025-11-26 10:32:00
+SELECT from_unixtime(1700998320000,'yyyy-MM-dd HH:mm:ss') AS date;
+-- 输出：2025-11-26 10:32:00
+```
+
+`unix_timestamp`：返回日期字符串的时间戳。
+```sql
+SELECT unix_timestamp('2025-11-26 10:32:00') AS timestamp;
+-- 输出：1700998320
+SELECT unix_timestamp('20251126','yyyyMMdd');
+-- 输出：1764115200
+```
+# 任务优化
+## 数据倾斜
+数据倾斜是指在Spark计算过程中，由于数据分布不均匀，导致某些节点处理的数据量远超其他节点，形成计算负载的"长尾效应"。这种现象会显著降低集群整体吞吐量，甚至引发OOM导致任务失败。
+
+**数据倾斜发生的现象：** 绝大多数task执行得都非常快，但个别task执行极慢。比如，总共有1000个task，997个task都在1分钟之内执行完了，但是剩余两三个task却要一两个小时。这种情况很常见。
+
+**数据倾斜发生的原理：** 在进行shuffle的时候，必须将各个节点上相同的key拉取到某个节点上的一个task来进行处理，比如按照key进行聚合或join等操作。此时如果某个key对应的数据量特别大的话，就会发生数据倾斜。比如大部分key对应10条数据，但是个别key却对应了100万条数据，那么大部分task可能就只会分配到10条数据，然后1秒钟就运行完了；但是个别task可能分配到了100万数据，要运行一两个小时。因此，整个Spark作业的运行进度是由运行时间最长的那个task决定的。
+![](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2016/b6cbcfd9.png)
+
+
+
+## 背压
+
+# 参考
+- [Spark性能优化指南——高级篇](https://tech.meituan.com/2016/05/12/spark-tuning-pro.html)
+
+- [Spark性能优化指南——基础篇](https://tech.meituan.com/2016/04/29/spark-tuning-basic.html)

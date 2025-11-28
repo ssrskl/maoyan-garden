@@ -15,6 +15,7 @@ import Link from "next/link";
 import { PhotoView } from "react-photo-view";
 import { AlgorithmVisualizer } from "./algorithm-visualizer";
 import { DictTooltip } from "./dict-tooltip";
+import CodeBlock from "./code-block";
 import {
   Accordion,
   AccordionContent,
@@ -68,6 +69,9 @@ interface MdxProps {
 export const MDXContent = React.memo(function MDXContent({ code }: MdxProps) {
   const Component = useMDXComponent(code);
   return (
-      <Component components={components} />
+      <Component components={{
+        ...components,
+        pre: CodeBlock,
+      }} />
   );
 });
