@@ -14,6 +14,8 @@ status: growing
 
 
 # 常用函数
+
+
 ## 时间函数
 时间函数是在开发中最常用的函数之一了，因为很多的分区都使用的是时间分区，以及时间有各种各样的格式以及需要进行各种计算，所以熟练的掌握时间的处理可以极大的提高我们的开发效率。
 
@@ -43,18 +45,226 @@ SELECT unix_timestamp('2025-11-26 10:32:00') AS timestamp;
 SELECT unix_timestamp('20251126','yyyyMMdd');
 -- 输出：1764115200
 ```
+
+## 条件函数
+`if`： 三目运算符，根据条件返回不同的值。
+```sql
+SELECT if(1=1,'true','false') AS result;
+-- 输出：true
+SELECT if(1=2,'true','false') AS result;
+-- 输出：false
+```
+
+`case when`： 多分支条件判断，根据不同的条件返回不同的值。
+```sql
+SELECT case when 1=1 then 'true' when 1=2 then 'false' else 'unknown' end AS result;
+-- 输出：true
+SELECT case when 1=2 then 'true' else 'false' end AS result;
+-- 输出：false
+```
+<Callout type="warning">
+case when 语法是有短路求值的，如果满足第一个when 判断条件，就不会继续往下判断，这点需要注意，如果满足多个when条件，优先取的值when要放在前面。
+</Callout>
+
+`coalesce`：返回第一个非空值。如果所有参数都是空值，返回空值。
+```sql
+SELECT coalesce(null,'a','b','c') AS result;
+-- 输出：a
+SELECT coalesce(null,null,null) AS result;
+-- 输出：null
+```
+
+`nvl`：如果第一个参数为null，返回第二个参数；否则返回第一个参数。
+```sql
+SELECT nvl(null,'a') AS result;
+-- 输出：a
+SELECT nvl('b','a') AS result;
+-- 输出：b
+```
+
+## 数值计算函数
+`rand`：返回一个0到1之间的随机数，也可以用于随机取样。
+```sql
+SELECT rand() AS random_number;
+-- 输出：0.12345678901234567890
+```
+例如我们想获取随机的1000 条数据
+```sql
+SELECT * FROM table_name
+order by rand()
+limit 1000
+```
+
+`round`：四舍五入到指定的小数位数。
+```sql
+SELECT round(1.2345,2) AS result;
+-- 输出：1.23
+```
+
+`ceil`：向上取整，返回大于或等于该值的最小整数。
+```sql
+SELECT ceil(1.2345) AS result;
+-- 输出：2
+```
+
+`floor`：向下取整，返回小于或等于该值的最大整数。
+```sql
+SELECT floor(1.2345) AS result;
+-- 输出：1
+```
+
+## 窗口函数
+窗口函数是在 SQL 中用于对结果集进行分组计算的函数。它可以在不改变结果行数的情况下，为每一行添加额外的计算结果。窗口函数通常与 `OVER` 子句一起使用，用于指定窗口的范围和分区。
+
+`lead`: 返回分组内当前行后面的第n行的值。如果当前行后面没有足够的行，则返回 NULL。
+```sql
+SELECT lead(salary,1) OVER (PARTITION BY dept ORDER BY uid) AS next_salary;
+```
+`lag`: 返回分组内当前行前面的第n行的值。如果当前行前面没有足够的行，则返回 NULL。
+```sql
+SELECT lag(salary,1) OVER (PARTITION BY dept ORDER BY uid) AS prev_salary;
+```
+
+`lead`和`lag` 函数通常可以用于去计算**波峰波谷**，例如常见的面试题如下：找到价格波动的波峰和波谷。
+| item_id  | time_point       | price | 备注     |
+| :------- | :--------------- | :---- | :------------------------- |
+| item_001 | 2023-12-01 10:00 | 100   | 初始价格                   |
+| item_001 | 2023-12-01 10:01 | 120   | 上升                       |
+| item_001 | 2023-12-01 10:02 | 150   | **波峰** (前值120，后值130) |
+| item_001 | 2023-12-01 10:03 | 130   | 下降                       |
+| item_001 | 2023-12-01 10:04 | 110   | 下降                       |
+| item_001 | 2023-12-01 10:05 | 80    | **波谷** (前值110，后值90)  |
+| item_001 | 2023-12-01 10:06 | 90    | 上升                       |
+| item_001 | 2023-12-01 10:07 | 90    | 平稳                       |
+| item_001 | 2023-12-01 10:08 | 160   | **波峰** (前值90，后值100)  |
+| item_001 | 2023-12-01 10:09 | 100   | 剧烈下降                   |
+
+我们可以用下面的方法来判断：
+```sql {8,9}
+SELECT  *,
+        CASE
+            WHEN lead_time_price>price AND lag_time_price>price THEN '波谷'
+            WHEN lead_time_price<price AND lag_time_price<price THEN '波峰'
+        END price_type
+FROM    (
+            SELECT  *,
+                    lead(price, 1) OVER (PARTITION BY item_id ORDER BY time_point ) AS lead_time_price,
+                    lag(price, 1) OVER ( PARTITION BY item_id ORDER BY time_point ) AS lag_time_price
+            FROM    t_price_history
+        )
+```
+
+`first_value`：返回分组内的第一个值。
+```sql
+SELECT first_value('a') OVER (PARTITION BY 1 ORDER BY 1) AS result;
+-- 输出：a
+```
+
+`last_value`：返回分组内的最后一个值。
+<Callout type="danger">
+在 SQL 标准中，如果你没有显式指定窗口范围（ROWS/RANGE ...），`LAST_VALUE` 的默认窗口范围通常是：`RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`（从分区的起始行到当前行）这意味着：默认情况下，`LAST_VALUE` 取的是 **“当前行”** 的值，而不是整个分区的最后一个值。 这往往不是用户想要的结果。所以，一般来说 **不推荐使用`last_value`** 可以使用`first_value`将数据倒序排序后来实现
+</Callout>
+
+| dept      | uid |salary|
+| ----------- | ----------- |----------- |
+| A      | 1       |100|
+| A   | 2        |200|
+| A   | 3        |300|
+
+对于这样的数据，例如我们想要获得A 部门的最后一个 uid 的数据，我们一般会使用如下的方法
+```sql
+LAST_VALUE(salary) OVER (PARTITION BY dept ORDER BY uid)
+```
+但是由于`last_value` 默认窗口是分区的起始到当前行，所以其计算过程如下：
+
+**计算过程：**
+- 当处理 `id=1` 时，窗口范围是 `id=1` 到 `id=1`。最后一个值是 100。
+- 当处理 `id=2` 时，窗口范围是 `id=1` 到 `id=2`。最后一个值是 200。
+- 当处理 `id=3` 时，窗口范围是 `id=1` 到 `id=3`。最后一个值是 300。
+- 结果：你得到的结果和 `salary` 列本身一模一样，而不是你期望的每一行都是 300。
+
+**所以我们可以通过三个方法来解决：**
+1. 显式指定窗口范围：
+```sql
+LAST_VALUE(salary) OVER (PARTITION BY dept ORDER BY uid ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+```
+2. 使用`first_value` 将数据倒序排序后取第一个值：
+```sql
+FIRST_VALUE(salary) OVER (PARTITION BY dept ORDER BY uid DESC)
+```
+3. 使用 `max` 函数：
+```sql
+MAX(salary) OVER (PARTITION BY dept)
+```
+
+
+
+
+
 # 任务优化
 ## 数据倾斜
-数据倾斜是指在Spark计算过程中，由于数据分布不均匀，导致某些节点处理的数据量远超其他节点，形成计算负载的"长尾效应"。这种现象会显著降低集群整体吞吐量，甚至引发OOM导致任务失败。
+数据倾斜是指在Spark计算过程中，由于数据分布不均匀，导致某些节点处理的数据量远超其他节点，形成计算负载的 **"长尾效应"** 。这种现象会显著降低集群整体吞吐量，甚至引发OOM导致任务失败。
 
-**数据倾斜发生的现象：** 绝大多数task执行得都非常快，但个别task执行极慢。比如，总共有1000个task，997个task都在1分钟之内执行完了，但是剩余两三个task却要一两个小时。这种情况很常见。
+**数据倾斜发生的现象：** 绝大多数task执行得都非常快，但个别task执行极慢。比如，总共有1000个task，997个task都在1分钟之内执行完了，但是剩余两三个task却要一两个小时。这种情况很常见。具体的体现我们可以从Spark 的 web UI 或者metris 中查看。
+- 查看 metris 中的 CPU 和内存的使用情况，看看是否有 `长尾效应` 。
+- 查看 Spark 的 web UI 中的 Stage Tab，看看是否有Max 处理的数据量和时间明显偏大，如果有的话那就说着在这个 Stage 中发生了`数据倾斜`。
 
 **数据倾斜发生的原理：** 在进行shuffle的时候，必须将各个节点上相同的key拉取到某个节点上的一个task来进行处理，比如按照key进行聚合或join等操作。此时如果某个key对应的数据量特别大的话，就会发生数据倾斜。比如大部分key对应10条数据，但是个别key却对应了100万条数据，那么大部分task可能就只会分配到10条数据，然后1秒钟就运行完了；但是个别task可能分配到了100万数据，要运行一两个小时。因此，整个Spark作业的运行进度是由运行时间最长的那个task决定的。
 ![](https://awps-assets.meituan.net/mit-x/blog-images-bundle-2016/b6cbcfd9.png)
 
-
-
 ## 背压
+详见--> <Link href="/blog/bid-data/flink/flink-backpressure">Flink 背压</Link>
+
+# 注意事项
+## 常见的数据注意事项
+1. 区分NULL、'' （空字符串）。NULL 是用 **is null、is not null** 来查询；''是用 ='' 、!=''来查询。
+2. 注意 **where !=会将NULL值过滤掉**
+3. **and 优先级比 or 高** 。用or的时候要注意用括号，来保障正确语义
+4. **字符串比较不同于整型比较，是从左到右顺序进行比较。** 在同一位置出现某一个字符不同，即可区分两个字符串的大小，如果各位置相同，字符数多的大。
+## 避免使用 distinct
+Hive count(distinct xxx)只产生一个reduce，这就造成了所有map端传来的数据都在一个tasks中执行，成为了性能瓶颈。（简单来说就是无法发挥分布式计算的优势，本应多台机器完成的事情，只能一台机器去工作）。所以我们要先了解数据，判断是否必须使用 distinct，如果要使用distinct，也可以使用 `group by` 来进行代替。例如下面的案例：
+
+使用 `distinct`
+```sql
+SELECT DISTINCT colA, colB, colC
+FROM my_table;
+```
+
+使用 `group by` 代替 `distinct`：
+
+```sql
+SELECT colA, colB, colC
+FROM my_table
+GROUP BY colA, colB, colC;
+```
+
+# 数开思想
+## Flink 数据流的思想
+Flink 数据流（Dataflow）模型最本质的特征就在于一个 **“流”** 字。不仅业务数据在流动，控制信号也在流动。Flink 将控制逻辑内化为特殊的数据包，注入到业务数据流中，使其随数据一同流转。这种设计使得分布式系统中的时间推进、状态一致性等复杂问题变得优雅而高效。以下是这一思想在 Flink 核心机制中的具体体现：
+
+**时间推进机制：Watermark（水位线）**：Watermark 是“流”思想在处理乱序事件时间（Event Time）时的经典应用，Watermark 本质上是一种携带时间戳的特殊数据记录，被源源不断地注入到数据流中，当一个算子接收到时间戳为 TTT 的 Watermark 时，它传达了一个明确的信号：`时间戳小于等于 T 的所有数据都已经到达，未来不会再有比 T 更早的数据了。` 它随着数据流向下游流动，触发窗口计算的执行。这种机制让系统无需依赖不确定的物理时间，而是通过流动的逻辑时钟来精准控制计算进度。
+
+**容错一致性：Checkpoint（检查点）**：在 Flink 的分布式快照（Checkpoint）机制中，“流”的思想同样得到了淋漓尽致的体现。Barrier（分界线）是一种轻量级的控制记录，由 JobManager 周期性地注入到 Source 端的并行数据流中。Barrier 将数据流切分为“前”和“后”两个部分。Barrier 之前的数据属于当前的 Checkpoint N，而 Barrier 之后的数据属于下一个 Checkpoint N+1。当算子从输入流中接收到 Barrier 时，它明白这是一个信号：**现在需要为当前状态制作快照了** 算子暂停处理新数据（在 Exactly-Once 语义下需进行 Barrier 对齐），将当前状态异步保存到持久化存储中。保存完毕后，算子向 JobManager 发送 ACK 确认，并将 Barrier 继续广播发送给下游的所有算子。
+
+## 语法转换思想
+在现代软件开发中，无论是大数据计算（如 Spark、Flink），还是前端的内容呈现（如 Markdown、Vue/React 模板），都广泛存在着**“语言转换”**的机制。其核心逻辑在于：开发者使用高抽象级、易于表达的语言（DSL）描述“做什么（What）”，而系统负责将其转换为底层运行时能够理解的“怎么做（How）”。这种从高层抽象到底层执行的转换过程，通常遵循经典的编译管道设计，主要包含以下四个关键阶段：
+
+`词法与语法解析 (Lexical Analysis & Parsing)`：代码-->Token-->AST语法树
+
+将代码字符串拆解为一个个最小的语义单元（Token），例如将 `SELECT *` 拆解为 `SELECT` 关键字和 `*` 符号。根据语法规则，将 Token 组装成抽象语法树（AST, Abstract Syntax Tree）。AST 是代码逻辑的树状结构表示，是后续所有步骤的基础。
+
+`语义分析与逻辑计划 (Semantic Analysis & Logical Planning)`：数据绑定，验证合法性
+
+检查引用的表、字段、变量是否存在，类型是否匹配。将 AST 转换为更通用的逻辑操作树。此时只关心业务逻辑（如“过滤”、“连接”），不关心具体物理实现（如“是用 HashJoin 还是 SortMergeJoin”）。Catalog 介入，验证表名和字段，生成 `Analyzed Logical Plan`。
+
+`优化执行 (Optimization)`：优化逻辑计划
+
+- 规则优化 (RBO)：例如“谓词下推”（Predicate Pushdown），即尽早过滤数据，减少后续计算量。
+- 代价优化 (CBO)：基于数据量估算，选择代价最小的算法（例如大表 Join 小表时自动选择 Broadcast Join）。
+- Catalyst 优化器通过一系列规则将逻辑计划转化为优化后的逻辑计划。
+
+`物理计划生成与执行 (Physical Planning & Execution)`：将计划翻译为目标平台的原生代码并执行。
+
 
 # 参考
 - [Spark性能优化指南——高级篇](https://tech.meituan.com/2016/05/12/spark-tuning-pro.html)

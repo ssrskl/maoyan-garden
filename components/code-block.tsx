@@ -32,10 +32,7 @@ export default function CodeBlock({ children, className, ...props }: PreProps) {
         {children}
       </pre>
       <div className="absolute top-2 right-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 pointer-events-none">
-        {language ? (
-          <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground border opacity-80 group-hover:opacity-100">{language}</span>
-        ) : null}
-        <Button
+         <Button
           type="button"
           size="icon"
           variant="ghost"
@@ -43,7 +40,7 @@ export default function CodeBlock({ children, className, ...props }: PreProps) {
           onClick={handleCopy}
           className="h-7 w-7 rounded-full pointer-events-auto"
         >
-          {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />}
+          {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4 group-hover:text-foreground" />}
         </Button>
       </div>
     </div>
