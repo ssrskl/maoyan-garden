@@ -2,7 +2,7 @@
 title: 数据开发常用
 description: 在进行数据开发的过程中，我们会经常使用到一些函数，针对 Spark 作业进行参数配置以及对作业的运维。
 date: 2025-11-26 10:32
-tags: ["大数据", "Hive", "Spark"]
+tags: ["大数据", "Hive", "Spark", "Flink"]
 published: true
 status: growing
 ---
@@ -238,6 +238,113 @@ FROM my_table
 GROUP BY colA, colB, colC;
 ```
 
+# Flink 流式计算
+## 两阶段提交
+**两阶段提交（Two-Phase Commit，简称 2PC）** ，就是为了去完成我们常说的 **" Exactly Once"** 语义。即`如何保证 Flink 内部的处理结果和外部系统（比如 Kafka、MySQL）的数据状态是完全一致的？`。2PC 主要分为了两个阶段，分别如下：
+1. **预提交阶段（Pre-Commit Phase）：** JobManager 向所有 Source（数据源）发送一个令牌（Barrier）。这个令牌会随着数据流向下游传递，当数据流到 Sink 输出端的时候，Sink 会开启一个事务，将数据写入进去，但是此时属于不可见的状态，每一个算子都将状态保存到状态后端，并回复给 JobManager ACK 确认。
+2. **确认阶段（Commit Phase）：** 当 JobManager 收到所有算子的 ACK 确认后，会向所有算子发送一个提交事务的指令。算子收到指令后，会将数据写入到外部系统中，并且确认事务完成。如果在提交事务的过程中发生了异常，比如网络分区、超时等，JobManager 会向所有算子发送一个回滚事务的指令。算子收到指令后，会撤销之前写入的数据，并且回复 JobManager 确认回滚完成。
+
+<Callout type="info">
+结合下文的 Checkpoint 的原理，就会发现 2PC 与 CheckPoint 是息息相关的，实际上 2PC 的预提交阶段就是 Checkpoint 的触发阶段，确认阶段就是 Checkpoint 的提交阶段。
+</Callout>
+
+## 状态管理
+### 状态后端
+### Checkpoint
+**Checkpoint（检查点）** 是 Flink 中用于实现 Exactly-Once 语义的重要机制。它的基本原理是：当一个算子需要进行状态 checkpoint 时，它会 **将当前的状态（包括算子的本地状态和外部系统的状态）保存到一个持久化存储（如 HDFS、S3 等）中。** 同时，它会向 JobManager 发送一个确认消息，确认 checkpoint 已经完成。如果在 checkpoint 过程中发生了故障，JobManager 会触发一个回滚操作，将所有算子的状态恢复到 checkpoint 之前的状态。
+
+**Checkpoint实现原理：** JobManager 向所有 Source（数据源）发送一个令牌（Barrier）。这个令牌会随着数据流向下游传递，当 Source 算子收到令牌后，会将当前的状态保存到状态后端。同时，它会向 JobManager 发送一个确认消息，确认 checkpoint 已经完成。当 JobManager 收到所有算子的确认消息后，即认为 checkpoint 完成。
+<SplitLayout layout="1/2">
+<div>
+![](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/flink/2pc-1.png)
+</div>
+<div>
+  ![](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/flink/2pc-2.png)
+</div>
+</SplitLayout>
+
+
+## 双流Join
+双流 join 也是在 Flink 作业的开发中常见的一种操作。毕竟我们平时写离线作业的时候就经常需要将作业进行 join 操作，将两个不同的数据集根据某个共同的字段进行关联。而在 Flink 中，双流 join 操作的实现原理与离线作业中的 join 操作类似，都是通过将两个数据集根据共同的字段进行关联，然后将关联结果输出到下游算子进行处理。这里将双流 Join 划分为了 3 中方式：**基于时间的 join，基于窗口的 join，三流 join**
+
+`基于时间的 join`：两个流中相同的键值以及时间戳不超过某一范围的数据做 join，也是 Flink 作业中默认的 join 方式，例如下面的案例：
+```sql
+SELECT 
+    o.order_id, 
+    o.order_time, 
+    s.ship_time, 
+    o.price
+FROM Orders o
+JOIN Shipments s ON o.order_id = s.order_id
+WHERE s.ship_time BETWEEN o.order_time AND o.order_time + INTERVAL '4' HOUR;
+```
+
+`基于窗口的 join`：将两个流的数据输入到公共窗口中进行 join
+<Callout type="warning">
+必须保证两条流的 window_start 和 window_end 完全一致，才能在窗口结束时触发 Join。
+</Callout>
+```sql
+SELECT 
+    L.ad_id, 
+    L.window_start, 
+    L.window_end, 
+    L.click_count, 
+    R.view_count
+FROM (
+    -- 这里的 ClickTable 和 ViewTable 已经通过 Window TVF 进行了开窗
+    SELECT * FROM TABLE(TUMBLE(TABLE ClickTable, DESCRIPTOR(rowtime), INTERVAL '1' MINUTES))
+) L
+JOIN (
+    SELECT * FROM TABLE(TUMBLE(TABLE ViewTable, DESCRIPTOR(rowtime), INTERVAL '1' MINUTES))
+) R 
+ON L.ad_id = R.ad_id AND L.window_start = R.window_start AND L.window_end = R.window_end;
+```
+`三流 join`：将双流 join 的结果保存到 Redis，再和第三个流进行 join
+
+## 水位线
+水位线（Watermark）是 Flink 中用于处理乱序事件时间（Event Time）的重要机制。它的基本原理是：当一个算子需要处理事件时间为 T 的数据时，它会先检查是否存在一个水位线为 T 的记录。如果存在，说明所有时间戳小于等于 T 的数据都已经到达，未来不会再有比 T 更早的数据了。因此，算子可以安全地处理时间戳为 T 的数据。
+<Callout type="warning">
+但是这里需要注意的是Flink 的一个DataStream 或者 Table 只能有一个活跃的水位线生成逻辑，
+</Callout>
+所以当需要使用同一个源计算不同的需求的时候， **需要将数据源转换为两个逻辑流** ，每个流里拥有自己独立的时间线。见下面的例子：
+```sql showLineNumbers {11,16}
+-- 原始 Kafka 表，不直接定义水印
+CREATE TABLE raw_orders (
+    order_id STRING,
+    order_time TIMESTAMP(3),
+    pay_time TIMESTAMP(3),
+    ...
+) WITH (...);
+
+-- 视图 1：以下单时间为基准
+CREATE VIEW view_order_time AS
+SELECT *, WATERMARK FOR order_time AS order_time - INTERVAL '5' SECOND
+FROM raw_orders;
+
+-- 视图 2：以支付时间为基准
+CREATE VIEW view_pay_time AS
+SELECT *, WATERMARK FOR pay_time AS pay_time - INTERVAL '5' SECOND
+FROM raw_orders
+WHERE pay_time IS NOT NULL; -- 排除未支付的数据，防止水印停滞
+
+-- 统计下单量
+INSERT INTO sink_table_a
+SELECT window_start, window_end, COUNT(order_id)
+FROM TABLE(TUMBLE(TABLE view_order_time, DESCRIPTOR(order_time), INTERVAL '1' HOURS))
+GROUP BY window_start, window_end;
+
+-- 统计支付量
+INSERT INTO sink_table_b
+SELECT window_start, window_end, COUNT(order_id)
+FROM TABLE(TUMBLE(TABLE view_pay_time, DESCRIPTOR(pay_time), INTERVAL '1' HOURS))
+GROUP BY window_start, window_end;
+```
+
+## 反压
+反压（Backpressure）是 Flink 中用于处理资源不足的情况的重要机制。它的基本原理是：当一个算子的处理能力超过了它的输入数据的生产速度时，就会发生反压。反压的发生会导致上游算子的处理速度变慢，从而影响整个 Flink 作业的性能。为了解决反压问题，Flink 提供了多种反压处理机制，比如基于队列的反压、基于令牌桶的反压等。
+
+## Flink 作业检查与调整
+
 # 数开思想
 ## Flink 数据流的思想
 Flink 数据流（Dataflow）模型最本质的特征就在于一个 **“流”** 字。不仅业务数据在流动，控制信号也在流动。Flink 将控制逻辑内化为特殊的数据包，注入到业务数据流中，使其随数据一同流转。这种设计使得分布式系统中的时间推进、状态一致性等复杂问题变得优雅而高效。以下是这一思想在 Flink 核心机制中的具体体现：
@@ -247,7 +354,7 @@ Flink 数据流（Dataflow）模型最本质的特征就在于一个 **“流”
 **容错一致性：Checkpoint（检查点）**：在 Flink 的分布式快照（Checkpoint）机制中，“流”的思想同样得到了淋漓尽致的体现。Barrier（分界线）是一种轻量级的控制记录，由 JobManager 周期性地注入到 Source 端的并行数据流中。Barrier 将数据流切分为“前”和“后”两个部分。Barrier 之前的数据属于当前的 Checkpoint N，而 Barrier 之后的数据属于下一个 Checkpoint N+1。当算子从输入流中接收到 Barrier 时，它明白这是一个信号：**现在需要为当前状态制作快照了** 算子暂停处理新数据（在 Exactly-Once 语义下需进行 Barrier 对齐），将当前状态异步保存到持久化存储中。保存完毕后，算子向 JobManager 发送 ACK 确认，并将 Barrier 继续广播发送给下游的所有算子。
 
 ## 语法转换思想
-在现代软件开发中，无论是大数据计算（如 Spark、Flink），还是前端的内容呈现（如 Markdown、Vue/React 模板），都广泛存在着**“语言转换”**的机制。其核心逻辑在于：开发者使用高抽象级、易于表达的语言（DSL）描述“做什么（What）”，而系统负责将其转换为底层运行时能够理解的“怎么做（How）”。这种从高层抽象到底层执行的转换过程，通常遵循经典的编译管道设计，主要包含以下四个关键阶段：
+在现代软件开发中，无论是大数据计算（如 Spark、Flink），还是前端的内容呈现（如 Markdown、Vue/React 模板），都广泛存在着 **“语言转换”** 的机制。其核心逻辑在于：开发者使用高抽象级、易于表达的语言（DSL）描述“做什么（What）”，而系统负责将其转换为底层运行时能够理解的“怎么做（How）”。这种从高层抽象到底层执行的转换过程，通常遵循经典的编译管道设计，主要包含以下四个关键阶段：
 
 `词法与语法解析 (Lexical Analysis & Parsing)`：代码-->Token-->AST语法树
 
@@ -270,3 +377,5 @@ Flink 数据流（Dataflow）模型最本质的特征就在于一个 **“流”
 - [Spark性能优化指南——高级篇](https://tech.meituan.com/2016/05/12/spark-tuning-pro.html)
 
 - [Spark性能优化指南——基础篇](https://tech.meituan.com/2016/04/29/spark-tuning-basic.html)
+
+- [Flink 端到端 Exactly Once 语义实现原理](https://www.modb.pro/db/131795)

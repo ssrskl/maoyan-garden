@@ -4,7 +4,7 @@ import { Callout } from "./callout";
 import { LinkCard } from "./linkcard";
 import { QuizBar } from "./quiz-bar";
 import React from "react";
-import SplitLayout from "./split-layout";
+import SplitLayout, { SplitImage } from "./split-layout";
 // import Zoom from 'react-medium-image-zoom'
 
 import "react-medium-image-zoom/dist/styles.css";
@@ -39,6 +39,7 @@ const components = {
   Dialogue,
   SpeechBubble,
   SplitLayout,
+  SplitImage,
   DictTooltip,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
