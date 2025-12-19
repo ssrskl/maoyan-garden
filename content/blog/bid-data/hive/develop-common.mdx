@@ -115,7 +115,7 @@ SELECT floor(1.2345) AS result;
 
 ## 窗口函数
 窗口函数是在 SQL 中用于对结果集进行分组计算的函数。它可以在不改变结果行数的情况下，为每一行添加额外的计算结果。窗口函数通常与 `OVER` 子句一起使用，用于指定窗口的范围和分区。
-
+### 相对位置函数
 `lead`: 返回分组内当前行后面的第n行的值。如果当前行后面没有足够的行，则返回 NULL。
 ```sql
 SELECT lead(salary,1) OVER (PARTITION BY dept ORDER BY uid) AS next_salary;
@@ -153,7 +153,7 @@ FROM    (
             FROM    t_price_history
         )
 ```
-
+### 排名函数
 `first_value`：返回分组内的第一个值。
 ```sql
 SELECT first_value('a') OVER (PARTITION BY 1 ORDER BY 1) AS result;
@@ -197,8 +197,55 @@ FIRST_VALUE(salary) OVER (PARTITION BY dept ORDER BY uid DESC)
 MAX(salary) OVER (PARTITION BY dept)
 ```
 
-
-
+### 聚合函数
+`sum`: 对分组内的数值进行求和。
+```sql
+with t(dept,uid,salary) as (
+    select 'A', 1, 100 union all
+    select 'A', 2, 200 union all
+    select 'A', 3, 300 union all
+    select 'B', 1, 400 union all
+    select 'B', 2, 500
+)
+```
+<Callout type="warning">
+`sum` 的Order By 子句是可选的。如果不指定Order By 子句，那么`sum` 函数会对分组内的所有行进行求和。如果指定了Order By 子句，那么`sum` 函数会对分组内的行按照Order By 子句进行排序后再求和。所以排序后的求和是分组内的累计到当前行的和。
+</Callout>
+```sql {3}
+select 
+    dept,
+    sum(salary) over (partition by dept order by uid) as cum_salary
+from t
+```
+```text
++-------+-------------+
+| dept  | cum_salary  |
++-------+-------------+
+| A     | 100         |
+| A     | 300         |
+| A     | 600         |
+| B     | 400         |
+| B     | 900         |
++-------+-------------+
+```
+```sql {3}#remove {4}#add
+select 
+    dept,
+    sum(salary) over (partition by dept order by uid) as cum_salary
+    sum(salary) over (partition by dept) as cum_salary
+from t
+```
+```text
++-------+-------------+
+| dept  | cum_salary  |
++-------+-------------+
+| A     | 600         |
+| A     | 600         |
+| A     | 600         |
+| B     | 900         |
+| B     | 900         |
++-------+-------------+
+```
 
 
 # 任务优化
@@ -341,7 +388,7 @@ GROUP BY window_start, window_end;
 ```
 
 ## 反压
-反压（Backpressure）是 Flink 中用于处理资源不足的情况的重要机制。它的基本原理是：当一个算子的处理能力超过了它的输入数据的生产速度时，就会发生反压。反压的发生会导致上游算子的处理速度变慢，从而影响整个 Flink 作业的性能。为了解决反压问题，Flink 提供了多种反压处理机制，比如基于队列的反压、基于令牌桶的反压等。
+详见--> <Link href="/blog/bid-data/flink/flink-backpressure">Flink 背压</Link>
 
 ## Flink 作业检查与调整
 
