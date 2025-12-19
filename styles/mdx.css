@@ -1,9 +1,9 @@
 [data-rehype-pretty-code-figure] pre {
-  @apply px-0;
+  @apply px-0 py-2;
 }
 
 [data-rehype-pretty-code-figure] code {
-  @apply text-sm !leading-loose md:text-base border-0 p-0;
+  @apply text-xs !leading-tight md:text-sm border-0 p-0;
 }
 
 [data-rehype-pretty-code-figure] code[data-line-numbers] {
@@ -13,11 +13,11 @@
 [data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::before {
   counter-increment: line;
   content: counter(line);
-  @apply mr-4 inline-block w-4 text-right text-gray-500;
+  @apply mr-3 inline-block w-4 text-right text-gray-500;
 }
 
 [data-rehype-pretty-code-figure] [data-line] {
-  @apply border-l-2 border-l-transparent px-3;
+  @apply border-l-2 border-l-transparent px-3 py-0;
 }
 
 [data-rehype-pretty-code-figure] [data-highlighted-line] {
@@ -71,4 +71,38 @@
 
 .subheading-anchor {
   @apply no-underline hover:underline;
+}
+
+/* 自定义文章正文样式，使其更紧密 */
+.prose {
+  @apply space-y-4;
+}
+
+.prose p {
+  @apply my-3 leading-relaxed;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply mt-6 mb-3;
+}
+
+.prose li {
+  @apply my-1;
+}
+
+.prose blockquote {
+  @apply my-4;
+}
+
+.prose code {
+  @apply px-1 py-0.5;
+}
+
+.prose pre {
+  @apply my-4;
 }
