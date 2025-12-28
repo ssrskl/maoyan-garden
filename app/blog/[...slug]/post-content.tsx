@@ -136,7 +136,7 @@ export default function PostContent({ post }: PostContentProps) {
                   </motion.div>
 
                   <motion.div
-                    className="mt-6 prose prose-slate max-w-none dark:prose-invert"
+                    className="mt-6 prose prose-slate max-w-none dark:prose-invert prose-p:text-black prose-headings:text-black prose-li:text-black prose-strong:text-black"
                     variants={slideUp}
                   >
                     <MDXContent code={post.body} />
