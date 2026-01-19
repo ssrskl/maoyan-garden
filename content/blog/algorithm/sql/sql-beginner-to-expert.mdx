@@ -7,213 +7,189 @@ published: true
 status: growing
 ---
 
-## 用户累计访问次数
-|user_id|visit_date|visit_count|
-|-------|----------|-----------|
-|1      |2025-01-01|5          |
-|1      |2025-01-02|6          |
-|1      |2025-01-03|4          |
-|2      |2025-01-01|3          |
-|2      |2025-01-02|1          |
-|3      |2025-01-01|9          |
-计算每个用户每月的访问累计次数：
-```sql showLineNumbers {12,23}
-WITH visit_data(user_id,visit_date,visit_count) as (
-    SELECT 1,'2025-01-01',5 UNION ALL
-    SELECT 1,'2025-01-02',6 UNION ALL
-    SELECT 1,'2025-01-03',4 UNION ALL
-    SELECT 2,'2025-01-01',3 UNION ALL
-    SELECT 2,'2025-01-02',1 UNION ALL
-    SELECT 3,'2025-01-01',9
-)
--- 不使用 ORDER BY 子句
-SELECT user_id, date_format(visit_date, 'yyyy-MM'), cum_visit_count
-FROM (
-        SELECT *, SUM(visit_count) over (partition by user_id, date_format(visit_date, 'yyyy-MM')) as cum_visit_count
-        FROM visit_data
-    ) t1
-group by
-    user_id,
-    date_format(visit_date, 'yyyy-MM'),
-    cum_visit_count
+export const SAMPLE_DATA = {
+    columns: [
+        { id: "primary_key", title: "主键", type: "url", width: 150 },        
+        {
+            id: "tags",
+            title: "标签",
+            type: "multi-select",
+            width: 200,
+            options: [
+                { id: "self_join", label: "自连接", color: "#fdecc8" },
+                { id: "group_by", label: "分组统计", color: "#ffe2dd" },
+            ],
+        },
+        {
+            id: "title",
+            title: "SQL算法题所属",
+            type: "multi-select",
+            width: 350,
+            options: [
+                { id: "friend_recommendation", label: "好友推荐", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#好友推荐"},
+                { id: "two_pair", label: "两两结对组", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#两两结对组"},
+                { id: "firm_friendship", label: "坚定的友谊", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#坚定的友谊"},
+                { id: "continuous_login", label: "连续登录", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#连续登录"},
+                { id: "continuous_login", label: "数据连续", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#数据连续"},
+                { id: "continuous_login", label: "连胜数", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#连胜数"},
+            ],
+        },
+    ],
+    rows: [
+        {
+            id: "1",
+            cells: {
+                primary_key: { text: "自连接+分组统计", url: "/blog/algorithm/sql/sql-beginner-to-expert#%E8%87%AA%E8%BF%9E%E6%8E%A5%E5%88%86%E7%BB%84%E7%BB%9F%E8%AE%A1" },
+                tags: ["self_join", "group_by"],
+                title: ["friend_recommendation","two_pair","firm_friendship"],
+            },
+        },
+        {
+            id: "2",
+            cells: {
+                primary_key: {text: "分组连续问题", url: "/blog/algorithm/sql/sql-beginner-to-expert#分组连续问题"},
+                title: ["continuous_login"],
+            },
+        },
+        {
+            id: "3",
+            cells: {
+                title: "Update Documentation",
+                status: "done",
+                tags: ["documentation"],
+                effort: 1,
+                link: { text: "Next.js 文档", url: "https://nextjs.org" },
+            },
+        },
+    ],
+};
 
--- 使用 ORDER BY 子句
-SELECT user_id, date_format(visit_date, 'yyyy-MM'), MAX(cum_visit_count) as cum_visit_count
-FROM (
-        SELECT *, SUM(visit_count) over (partition by user_id, date_format(visit_date, 'yyyy-MM') ORDER BY visit_date ) as cum_visit_count
-        FROM visit_data
-    ) t1
-GROUP BY
-    user_id,
-    date_format(visit_date, 'yyyy-MM')
-```
-<Callout type="warning">
-要注意SUM 开窗函数中的 order by 子句，加上 ORDER BY，则会按日期顺序进行累加。否则的话，会按分区进行累加，即将分区中的所有数据都累加起来。
-</Callout>
-```txt
-+----------+----------+------------------+
-| user_id  |   _c1    | cum_visit_count  |
-+----------+----------+------------------+
-| 1        | 2025-01  | 15               |
-| 2        | 2025-01  | 4                |
-| 3        | 2025-01  | 9                |
-+----------+----------+------------------+
-```
-## 同时在线人数
-核心要点是
-1. 计算出需要计算哪些小时：通过每个用户的登录时间和退出时间，计算出用户所在的小时数
-2. 展开每个用户的小时数：将每个用户的小时数展开为多行，每个小时占一行
-3. 统计每个小时的在线人数：对展开后的数据集进行分组统计，每个小时的人数就是同时在线的人数
+<DatabaseTable initialData={SAMPLE_DATA} />
+
+# 自连接+分组统计
+本质是求得至少拥有 n 个相同属性的用户有哪些，所以可以以下的方式来实现
+
+1. 根据共同属性进行关联，找到拥有共同属性的用户
+2. 进行过滤，只保留单边
+3. 对拥有共同属性的两个用户进行分组，计算拥有共同属性的数量
+
+## 好友推荐
+到所有的好友推荐，好友推荐为：用户A和用户B都听了至少3首不同的歌曲，且用户A和用户B不是好友关系
 ```sql
-with login_log (user_id,login_time,logout_time) as (
-    SELECT 1,'2025-10-10 12:00:00','2025-10-10 13:35:00' UNION ALL
-    SELECT 1,'2025-10-10 12:30:00','2025-10-10 12:40:00' UNION ALL
-    SELECT 2,'2025-10-10 12:30:00','2025-10-10 14:35:00' UNION ALL
-    SELECT 3,'2025-10-10 12:35:00','2025-10-10 15:40:00' UNION ALL
-    SELECT 4,'2025-10-10 12:38:00','2025-10-10 12:40:00'
-),
-t_tmp as (
-SELECT
-    user_id,
-    hour(login_time) as login_hour,
-    hour(logout_time) as logout_hour,
-    split (
-        space(
-            hour(logout_time) - hour(login_time)
-        ),
-        ' '
-    ) as hour_list
-FROM login_log
-)
-SELECT hour, COUNT(DISTINCT user_id) as user_count
-FROM (
-        SELECT user_id, login_hour + hour_pos as hour
-        FROM
-            t_tmp lateral view posexplode (hour_list) t_ex as hour_pos, hour
-    ) t1
-GROUP BY
-    hour
-```
-
-## 查询恶意买家
-**📝 题目要求**
-
-**问题描述：** 下面是某电商网站的订单数据，包括 order_id (订单ID), user_id (用户ID), order_status (订单状态) 和 operate_time (操作时间) 四个字段。我们需要找出所有恶意购买的用户。
-
-**恶意购买的定义：** 同一个用户，在任意半小时内（含），取消订单次数 >= 3次 的，就被视为恶意买家。例如：在样例数据中，用户 c 就是恶意买家。
-
-```sql
-WITH order_data AS (
-    SELECT 1101 AS order_id, 'a' AS user_id, '已支付' AS order_status, CAST('2023-01-01 10:00:00' AS TIMESTAMP) AS operate_time UNION ALL
-    SELECT 1102, 'a', '已取消', '2023-01-01 10:10:00' UNION ALL
-    SELECT 1103, 'a', '待支付', '2023-01-01 10:20:00' UNION ALL
-    SELECT 1104, 'b', '已取消', '2023-01-01 10:30:00' UNION ALL
-    SELECT 1105, 'a', '待确认', '2023-01-01 10:50:00' UNION ALL
-    SELECT 1106, 'a', '已取消', '2023-01-01 11:00:00' UNION ALL
-    SELECT 1107, 'b', '已取消', '2023-01-01 11:40:00' UNION ALL
-    SELECT 1108, 'b', '已取消', '2023-01-01 11:50:00' UNION ALL
-    SELECT 1109, 'b', '已支付', '2023-01-01 12:00:00' UNION ALL
-    SELECT 1110, 'b', '已取消', '2023-01-01 12:11:00' UNION ALL
-    SELECT 1111, 'c', '已取消', '2023-01-01 12:20:00' UNION ALL
-    SELECT 1112, 'c', '已取消', '2023-01-01 12:30:00' UNION ALL
-    SELECT 1113, 'c', '已取消', '2023-01-01 12:55:00' UNION ALL
-    SELECT 1114, 'c', '已取消', '2023-01-01 13:00:00'
+with listens(user_id, song_id,day) as (
+    select 1, '10', '2021-03-15' union all
+    select 1, '11', '2021-03-15' union all
+    select 1, '12', '2021-03-15' union all
+    select 2, '10', '2021-03-15' union all
+    select 2, '11', '2021-03-15' union all
+    select 2, '12', '2021-03-15' union all
+    select 3, '10', '2021-03-15' union all
+    select 3, '11', '2021-03-15' union all
+    select 3, '12', '2021-03-15' union all
+    select 4, '10', '2021-03-15' union all
+    select 4, '11', '2021-03-15' union all
+    select 4, '13', '2021-03-15' union all
+    select 5, '10', '2021-03-16' union all
+    select 5, '11', '2021-03-16' union all
+    select 5, '12', '2021-03-16'
 )
 ```
-为了精准锁定在 30 分钟内触发至少 3 次取消行为的用户，我们采取“滑动观察窗口”的策略：
-1. 特征清洗：首先筛选出所有 order_status = '已取消' 的记录，排除无关操作的干扰。
-2. 建立观察窗口：利用窗口函数 LAG(operate_time, 2)，让每一条取消记录去“回看”该用户此前第 2 次取消的时间点。
-    - 原理：如果当前记录与前第 2 条记录（共计 3 条）的时间差 $\le 30$ 分钟，则意味着在该时间段内发生了 3 次取消。
-3. 计算时间跨度：将当前操作时间与获取到的“前第 2 次时间”求差。若该差值存在（非 Null）且小于等于 1800 秒（30 分钟），则触发恶意行为预警。
-4. 结果去重：最后按 user_id 分组提取，得到最终的恶意用户名单。
+```sql
+friendship (user1_id, user2_id) as (
+    select 1, 2
+)
+```
+这里的共同属性是（歌曲+时间），所以同时满足这两个属性相同的数据
 
 ```sql
-SELECT user_id
-FROM (
-        SELECT
-            *, lag(operate_time, 2) OVER (
-                PARTITION BY
-                    user_id
-                ORDER BY operate_time
-            ) as pre_2_cnacel, unix_timestamp(operate_time) - unix_timestamp(
-                lag(operate_time, 2) OVER (
-                    PARTITION BY
-                        user_id
-                    ORDER BY operate_time
-                )
-            ) as time_diff
-        FROM order_data
-        WHERE
-            order_status = '已取消'
-    ) t1
+t1 as (
+    SELECT l1.user_id as user1_id, l2.user_id as user2_id, count(*)
+    FROM listens l1
+        LEFT JOIN listens l2 ON l1.song_id = l2.song_id
+        AND l1.day = l2.day
+    WHERE
+        l1.user_id < l2.user_id
+    GROUP BY
+        l1.user_id,
+        l2.user_id
+    HAVING
+        count(*) >= 3
+)
+
+SELECT *
+FROM t1
 WHERE
-    pre_2_cnacel is not null
-    AND time_diff <= 1800
-GROUP BY
-    user_id
+    concat(user1_id, user2_id) NOT IN (
+        SELECT concat(user1_id, user2_id)
+        FROM friendship
+    )
 ```
-## 打折日期交叉问题
-📝 题目要求
 
-问题描述： 给定各平台的商品促销数据，包含 brand（品牌）、stt（打折开始日期）和 edt（打折结束日期）三个字段。
+## 两两结对组
+## 坚定的友谊
 
-核心任务： 计算每个品牌总的打折销售天数。
-- 难点：需要处理日期交叉问题。
-- 示例：vivo 品牌，第一次活动是 06-05 到 06-15，第二次是 06-09 到 06-21。其中 9号 到 15号 为重复天数，只统计一次。因此 vivo 总打折天数为 06-05 到 06-21，共计 17 天。
+# 分组连续问题
+
+针对分组连续问题，主要的核心，就是找到各组的 group id，可以分为有分割点和无分割点两种类型：
+
+1. **数据顺序连续，一般为数据+1，或者日期+1**
+
+   1. 求出总连续，例如 `row_number`函数
+   2. 求出局部分连续，**例如连续的日期**，或者其他的
+   3. 局部分连续减去总连续，或者局部分连续减去总连续，得到分组
+2. **相同的数据连续，例如连续 Win5 场**
+
+   1. 通过 `lag` ，与上一个数据进行对比，创建出 `is_change` 字段，用 0 和 1 表示
+   2. 再使用 `sum` 相加 `is_change`，即可得到各个分组
+## 数据顺序连续问题
+### 连续登录
+
+## 相同数据连续问题
+
+### 数据连续
+### 连胜数
+找到每个选手的最大连胜数量，没有胜利的为 0
 ```sql
-WITH promotion_data(brand, stt, edt) AS (
-    SELECT 'oppo', '2021-06-05', '2021-06-09' UNION ALL
-    SELECT 'oppo', '2021-06-11', '2021-06-21' UNION ALL
-    SELECT 'vivo', '2021-06-05', '2021-06-15' UNION ALL
-    SELECT 'vivo', '2021-06-09', '2021-06-21' UNION ALL
-    SELECT 'redmi', '2021-06-05', '2021-06-21' UNION ALL
-    SELECT 'redmi', '2021-06-09', '2021-06-15' UNION ALL
-    SELECT 'redmi', '2021-06-17', '2021-06-26' UNION ALL
-    SELECT 'huawei', '2021-06-05', '2021-06-26' UNION ALL
-    SELECT 'huawei', '2021-06-09', '2021-06-15' UNION ALL
-    SELECT 'huawei', '2021-06-17', '2021-06-21'
+WITH Matches (player_id, match_day, result) AS (
+    -- 选手1的比赛数据：3连胜（Win）+ 中断（Draw）+ 2连胜（Win）
+    SELECT 1, '2025-01-01', 'Win' UNION ALL
+    SELECT 1, '2025-01-02', 'Win' UNION ALL
+    SELECT 1, '2025-01-03', 'Win' UNION ALL
+    SELECT 1, '2025-01-04', 'Draw' UNION ALL
+    SELECT 1, '2025-01-05', 'Win' UNION ALL
+    SELECT 1, '2025-01-06', 'Win' UNION ALL
+    -- 选手2的比赛数据：2连胜（Win）+ 中断（Lose）+ 4连胜（Win）
+    SELECT 2, '2025-01-01', 'Win' UNION ALL
+    SELECT 2, '2025-01-02', 'Win' UNION ALL
+    SELECT 2, '2025-01-03', 'Lose' UNION ALL
+    SELECT 2, '2025-01-04', 'Win' UNION ALL
+    SELECT 2, '2025-01-05', 'Win' UNION ALL
+    SELECT 2, '2025-01-06', 'Win' UNION ALL
+    SELECT 2, '2025-01-07', 'Win' UNION ALL
+    -- 选手3的比赛数据：无连胜（全是Draw/Lose）
+    SELECT 3, '2025-01-01', 'Draw' UNION ALL
+    SELECT 3, '2025-01-02', 'Lose'
 )
 ```
-本题的解法需要用到 **“最大结束日期法”**，核心的内容是弄明白窗口函数的窗口范围是如何定义的。
-
-<Sidenote>
-当前行的最大结束时间（不包括本行）可以使用`ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING`来定义范围。
-</Sidenote>
-1. 按照开始时间进行排序，找到每组中到当前行最大的结束日期
-2. 如果为 NULL 的话，说明当前行就是最小的开始时间，即第一行，所以使用结束时间减去开始时间
-3. 如果当前的最大结束时间小于本数据的开始时间，说明中间有间隔，那么这条数据也可以当做一个新开始的数据，所以也是使用结束时间减去开始时间
-4. 如果当前的最大结束时间小于本数据的结束时间，则将本数据的结束时间减去之前的最大开始时间即可
 ```sql
-SELECT brand, sum(day_diff)
-FROM (
-        SELECT
-            *, CASE
-                WHEN (cur_max_edt is null)
-                or (cur_max_edt < stt) THEN datediff(edt, stt)
-                when cur_max_edt < edt then datediff(edt, cur_max_edt)
-                ELSE 0
-            END as day_diff
-        FROM (
-                SELECT *, MAX(edt) OVER (
-                        PARTITION BY
-                            brand
-                        ORDER BY
-                            stt ROWS BETWEEN UNBOUNDED PRECEDING
-                            AND 1 PRECEDING
-                    ) as cur_max_edt
-                FROM promotion_data
-            ) t1
-    ) t2
-GROUP BY
-    brand
-```
-```txt
-+---------+------+
-|  brand  | _c1  |
-+---------+------+
-| huawei  | 21   |
-| oppo    | 14   |
-| redmi   | 21   |
-| vivo    | 16   |
-+---------+------+
+WITH Matches (player_id, match_day, result) AS (
+    -- 选手1的比赛数据：3连胜（Win）+ 中断（Draw）+ 2连胜（Win）
+    SELECT 1, '2025-01-01', 'Win' UNION ALL
+    SELECT 1, '2025-01-02', 'Win' UNION ALL
+    SELECT 1, '2025-01-03', 'Win' UNION ALL
+    SELECT 1, '2025-01-04', 'Draw' UNION ALL
+    SELECT 1, '2025-01-05', 'Win' UNION ALL
+    SELECT 1, '2025-01-06', 'Win' UNION ALL
+    -- 选手2的比赛数据：2连胜（Win）+ 中断（Lose）+ 4连胜（Win）
+    SELECT 2, '2025-01-01', 'Win' UNION ALL
+    SELECT 2, '2025-01-02', 'Win' UNION ALL
+    SELECT 2, '2025-01-03', 'Lose' UNION ALL
+    SELECT 2, '2025-01-04', 'Win' UNION ALL
+    SELECT 2, '2025-01-05', 'Win' UNION ALL
+    SELECT 2, '2025-01-06', 'Win' UNION ALL
+    SELECT 2, '2025-01-07', 'Win' UNION ALL
+    -- 选手3的比赛数据：无连胜（全是Draw/Lose）
+    SELECT 3, '2025-01-01', 'Draw' UNION ALL
+    SELECT 3, '2025-01-02', 'Lose'
+)
 ```

@@ -10,7 +10,7 @@
   counter-reset: line;
 }
 
-[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::before {
+[data-rehype-pretty-code-figure] code[data-line-numbers]>[data-line]::before {
   counter-increment: line;
   content: counter(line);
   @apply mr-3 inline-block w-4 text-right text-gray-500;
@@ -89,6 +89,7 @@
 .prose h5,
 .prose h6 {
   @apply mt-6 mb-3;
+  scroll-margin-top: 1.5rem;
 }
 
 .prose li {

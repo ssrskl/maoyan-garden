@@ -23,6 +23,8 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { DatabaseTable } from "./database/database-table";
+import { DatabaseData } from "./database/database-schema";
 
 
 const useMDXComponent = (code: string) => {
@@ -41,10 +43,11 @@ const components = {
   SplitLayout,
   SplitImage,
   DictTooltip,
+  DatabaseTable,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
     return (
       <PhotoView src={props.src}>
-        <img {...props} />  
+        <img {...props} />
       </PhotoView>
     );
   },
@@ -70,9 +73,9 @@ interface MdxProps {
 export const MDXContent = React.memo(function MDXContent({ code }: MdxProps) {
   const Component = useMDXComponent(code);
   return (
-      <Component components={{
-        ...components,
-        pre: CodeBlock,
-      }} />
+    <Component components={{
+      ...components,
+      pre: CodeBlock,
+    }} />
   );
 });
