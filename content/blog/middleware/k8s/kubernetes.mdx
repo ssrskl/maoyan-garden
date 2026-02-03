@@ -6,13 +6,17 @@ tags: ["Kubernetes", "容器化", "分布式"]
 published: true
 ---
 
-# Kubernetes
+# Kubernetes 核心指南
 
-# Kubernetes 部署
-## 构建 Pod
-尽管Kubernetes可以编排和运行容器，但这些容器不得不被包装在一个叫Pod的Kubernetes结构中。就把Pod想象成一个围绕容器的轻量级包装器。事实上，我们有时会互换使用容器和Pod这两个术语。现在，你只需要知道Kubernetes在Pod中运行容器。
+---
 
-要部署的Pod是在一个叫pod.yml的YAML文件中定义的
+## 📦 Kubernetes 部署
+
+### 构建 Pod
+
+尽管 Kubernetes 可以编排和运行容器，但这些容器不得不被包装在一个叫 **Pod** 的 Kubernetes 结构中。就把 Pod 想象成一个围绕容器的轻量级包装器。事实上，我们有时会互换使用容器和 Pod 这两个术语。现在，你只需要知道 **Kubernetes 在 Pod 中运行容器**。
+
+要部署的 Pod 是在一个叫 `pod.yml` 的 YAML 文件中定义的：
 
 ```yaml
 apiVersion: v1
@@ -26,18 +30,18 @@ spec:
   - name: web 
     image: nigelpoulton/qsk-book:1.0 
     ports:
-- containerPort: 8080
+    - containerPort: 8080
 ```
 
 ![](./imgs/image.png)
 
-查询运行的Pod
+**查询运行的 Pod：**
 
 ```bash
 kubectl get pods
 ```
 
-部署Pod
+**部署 Pod：**
 
 ```bash
 $ kubectl apply -f pod.yml
@@ -48,22 +52,25 @@ NAME          READY       STATUS    RESTARTS      AGE
 first-pod     1/1         Running       0         10s
 ```
 
-kubectl提供了get和describe两个命令来查询对象的配置和状态
+`kubectl` 提供了 `get` 和 `describe` 两个命令来查询对象的配置和状态：
 
 ```bash
 kubectl describe pod first-pod
 kubectl get pod first-pod
 ```
+
 <Callout type="info">
     **提示：** 
-    尽管Pod已经启动，应用正在运行，但你还需要另一个Kubernetes对象才能在网络上连接到该应用
+    尽管 Pod 已经启动，应用正在运行，但你还需要另一个 Kubernetes 对象才能在网络上连接到该应用
 </Callout>
 
-## 连接到Pod
+---
 
-连接到Pod中的应用需要一个独立的对象，称为Service（服务）。Service对象的唯一用途是提供到与Pod中运行的应用的稳定网络连通性。
+### 连接到 Pod
 
-svc-cloud.yml文件定义了一个Service对象，以便在你的集群在云中时提供连接
+连接到 Pod 中的应用需要一个独立的对象，称为 **Service（服务）**。Service 对象的唯一用途是提供到与 Pod 中运行的应用的稳定网络连通性。
+
+`svc-cloud.yml` 文件定义了一个 Service 对象，以便在你的集群在云中时提供连接：
 
 ```yaml
 apiVersion: v1
@@ -76,21 +83,23 @@ spec:
   - port: 80
     targetPort: 8080
   selector:
-project: qsk-book
+    project: qsk-book
 ```
 
-spec.type:LoadBalancer字段告诉Kubernetes在底层云平台上配置一个面向互联网的负载均衡器。该负载均衡器将在80端口接收流量，并转发到任何带有project: qsk-book标记的Pod的8080端口。
+`spec.type: LoadBalancer` 字段告诉 Kubernetes 在底层云平台上配置一个面向互联网的负载均衡器。该负载均衡器将在 **80 端口**接收流量，并转发到任何带有 `project: qsk-book` 标记的 Pod 的 **8080 端口**。
 
-## 部署Service
+---
 
-同样的也是通过`apply`来部署Service
+### 部署 Service
+
+同样的也是通过 `apply` 来部署 Service：
 
 ```bash
 $ kubectl apply -f svc-local.yml
 service/svc-local created
 ```
 
-使用下面的命令来验证该Service已经启动和运行
+使用下面的命令来验证该 Service 已经启动和运行：
 
 ```bash
 $ kubectl get svc
@@ -98,90 +107,108 @@ NAME      TYPE     CLUSTER-IP    EXTERNAL-IP PORT(S)       AGE
 svc-local NodePort 10.108.72.184 <none>      80:31111/TCP  11s
 ```
 
-- CLUSTER-IP值是内部Kubernetes Pod网络上的一个IP地址，被集群上运行的其他Pod和应用使用。
+- **CLUSTER-IP** 值是内部 Kubernetes Pod 网络上的一个 IP 地址，被集群上运行的其他 Pod 和应用使用。
 
-## 清理kubernetes
+---
 
-清理Service
+### 清理 Kubernetes
+
+**清理 Service：**
 
 ```shell
 $ kubectl delete svc cloud-lb
 service "cloud-lb" deleted
 ```
 
-清理Pod
+**清理 Pod：**
 
 ```shell
 $ kubectl delete pod first-pod 
 pod "first-pod" deleted
 ```
 
-# 自我修复
+---
 
-[https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/deployment/](https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/deployment/)
+## 🔄 自我修复
 
-有另一个称为Deployment的专用对象，用于提供自我修复(self-healing)。事实上，Deployment也可以实现扩缩容和滚动更新。Deployment 用于管理运行一个应用负载的一组 Pod，通常适用于不保持状态的负载。
+📚 [官方文档：Deployment](https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/deployment/)
+
+有另一个称为 **Deployment** 的专用对象，用于提供**自我修复（self-healing）**。事实上，Deployment 也可以实现扩缩容和滚动更新。Deployment 用于管理运行一个应用负载的一组 Pod，通常适用于不保持状态的负载。
 
 ![image](./imgs/self-repair.png)
 
-1. 容器提供操作系统和其他应用依赖。
-2. Pod提供元数据和其他结构，以便容器在Kubernetes上运行。
-3. Deployment提供云原生功能，包括自我修复。
+### 核心组成
 
-有两个元素对Deployment的工作很重要：
+1. **容器**提供操作系统和其他应用依赖。
+2. **Pod** 提供元数据和其他结构，以便容器在 Kubernetes 上运行。
+3. **Deployment** 提供云原生功能，包括自我修复。
 
-1. Deployment对象：是定义Pod和容器的YAML配置。它还定义了要部署多少个Pod副本等事项。
-2. Deployment控制器：是一个运行在控制面板上的进程，它始终在监控集群，确保所有的Deployment对象都按规定运行。
+---
 
-假设你在Kubernetes的Deployment清单中定义了一个应用。它定义了名为zephyr-one的Pod的5个副本。你使用kubectl将其发送给Kubernetes，Kubernetes将5个Pod调度到集群上。在这一点上，观察到的状态(observed state)与期望状态(desired state)一致。这是专业的说法，说的是集群正在运行你要求它运行的内容。但是，假设一个节点发生故障了，名为zephyr-one的Pod数量下降到4个。观察到的状态不再与期望状态相匹配，此时就出现了问题。但不要紧张，Deployment控制器监视着集群，并将看到这一变化。它知道你想要5个Pod，但它只能观察到4个。因此，它将启动第5个Pod，使观察到的状态重新与期望状态保持一致，这个过程对应的技术术语是和解(reconciliation)，但我们经常称其为自我修复。
+### Deployment 工作机制
+
+有两个元素对 Deployment 的工作很重要：
+
+1. **Deployment 对象**：是定义 Pod 和容器的 YAML 配置。它还定义了要部署多少个 Pod 副本等事项。
+2. **Deployment 控制器**：是一个运行在控制面板上的进程，它始终在监控集群，确保所有的 Deployment 对象都按规定运行。
+
+假设你在 Kubernetes 的 Deployment 清单中定义了一个应用。它定义了名为 `zephyr-one` 的 Pod 的 **5 个副本**。你使用 `kubectl` 将其发送给 Kubernetes，Kubernetes 将 5 个 Pod 调度到集群上。在这一点上，**观察到的状态（observed state）** 与**期望状态（desired state）** 一致。这是专业的说法，说的是集群正在运行你要求它运行的内容。
+
+但是，假设一个节点发生故障了，名为 `zephyr-one` 的 Pod 数量下降到 4 个。观察到的状态不再与期望状态相匹配，此时就出现了问题。但不要紧张，Deployment 控制器监视着集群，并将看到这一变化。它知道你想要 5 个 Pod，但它只能观察到 4 个。因此，它将启动第 5 个 Pod，使观察到的状态重新与期望状态保持一致，这个过程对应的技术术语是**和解（reconciliation）**，但我们经常称其为**自我修复**。
+
+---
+
+### Deployment 配置示例
 
 ```yaml
-kind: Deployment         <<== 被定义的对象的类型
-apiVersion: apps/v1      <<== 要部署的对象的版本
+kind: Deployment         # <<== 被定义的对象的类型
+apiVersion: apps/v1      # <<== 要部署的对象的版本
 metadata:
   name: qsk-deploy            
 spec:
-  replicas: 5            <<== 要部署多少个Pod副本
+  replicas: 5            # <<== 要部署多少个 Pod 副本
   selector:
-    matchLabels:         <<== 告诉Deployment控制器
-      project: qsk-book  <<== 管理哪些Pod
+    matchLabels:         # <<== 告诉 Deployment 控制器
+      project: qsk-book  # <<== 管理哪些 Pod
   template:
     metadata:
       labels:
-        project: qsk-book <<== Pod标签
+        project: qsk-book # <<== Pod 标签
     spec:   
       containers:
       - name: qsk-pod
-        imagePullPolicy: Always  <<== 永远不使用本地镜像
+        imagePullPolicy: Always  # <<== 永远不使用本地镜像
         ports:
-        - containerPort: 8080             <<== 网络端口
-image: nigelpoulton/qsk-book:1.0  <<== 要使用的镜像
+        - containerPort: 8080             # <<== 网络端口
+        image: nigelpoulton/qsk-book:1.0  # <<== 要使用的镜像
 ```
 
-查询Deployments
+**查询 Deployments：**
 
 ```shell
 kubectl get deployments
 ```
 
-部署Deployments
+**部署 Deployments：**
 
 ```shell
 $ kubectl apply -f deploy.yml
 deployment.apps/qsk-deploy created
 ```
 
-Pod和它们运行的应用有可能崩溃或发生故障。Kubernetes可以通过启动一个新的Pod来替代失败的Pod，从而尝试自我修复这样的情况。
+Pod 和它们运行的应用有可能崩溃或发生故障。Kubernetes 可以通过启动一个新的 Pod 来替代失败的 Pod，从而尝试自我修复这样的情况。
 
-# 应用扩缩容
+---
 
-## 应用扩容
+## 📊 应用扩缩容
 
-扩缩容的单位是Pod，因此扩容将增加Pod副本，而缩容将删除Pod副本。
+### 应用扩容
 
-手动编辑Deployment YAML文件，将副本的数量增加到10个，并重新将其发送给Kubernetes
+扩缩容的单位是 **Pod**，因此扩容将增加 Pod 副本，而缩容将删除 Pod 副本。
 
-检查当前的副本数量
+手动编辑 Deployment YAML 文件，将副本的数量增加到 **10 个**，并重新将其发送给 Kubernetes。
+
+**检查当前的副本数量：**
 
 ```shell
 $ kubectl get deployment qsk-deploy
@@ -189,7 +216,7 @@ NAME          READY   UP-TO-DATE   AVAILABLE   AGE
 qsk-deploy    5/5     5            5           16h
 ```
 
-编辑deploy.yml文件，将spec.replicas字段设置为10，并保存修改：
+编辑 `deploy.yml` 文件，将 `spec.replicas` 字段设置为 **10**，并保存修改：
 
 ```yaml
 apiVersion: apps/v1
@@ -197,31 +224,37 @@ kind: Deployment
 metadata:
   name: qsk-deploy 
 spec:
-  replicas: 5           <<== 将这里改成10
+  replicas: 5           # <<== 将这里改成 10
   selector: 
     matchLabels: 
       project: qsk-book 
 <Snip>
 ```
 
-使用kubectl将更新的文件重新发送给Kubernetes。当Kubernetes收到该文件时，它将把期望状态从5个副本改为10个。Deployment控制器将观察集群上的5个副本，并注意到它不符合新的期望状态。它将调度5个新副本，使观察到的状态与期望状态一致。
+使用 `kubectl` 将更新的文件重新发送给 Kubernetes。当 Kubernetes 收到该文件时，它将把期望状态从 **5 个副本**改为 **10 个**。Deployment 控制器将观察集群上的 5 个副本，并注意到它不符合新的期望状态。它将调度 5 个新副本，使观察到的状态与期望状态一致。
 
-## 应用缩容
+---
 
-应用缩容在本节中，你将使用kubectl scale命令将Pod的数量缩减回5个。这种方法被称为命令式方法，不像声明式方法那样常见
+### 应用缩容
+
+应用缩容在本节中，你将使用 `kubectl scale` 命令将 Pod 的数量缩减回 **5 个**。这种方法被称为**命令式方法**，不像声明式方法那样常见。
 
 ```shell
 $ kubectl scale --replicas 5 deployment/qsk-deploy
 deployment.apps/qsk-deploy scaled
 ```
 
-> **注意：用kubectl scale命令式地完成扩缩容操作会很危险。**
+> **注意：用 kubectl scale 命令式地完成扩缩容操作会很危险。**
 
-# 滚动更新
+---
 
-即使Kubernetes以有条不紊的方式每次更新1个副本，直到5个副本都运行新版本。
+## 🔁 滚动更新
 
-更新deploy.yml文件
+即使 Kubernetes 以有条不紊的方式每次更新 **1 个副本**，直到 5 个副本都运行新版本。
+
+### 更新配置文件
+
+更新 `deploy.yml` 文件：
 
 ```yaml
 1 apiVersion: apps/v1
@@ -233,12 +266,12 @@ deployment.apps/qsk-deploy scaled
 7   selector:
 8     matchLabels:
 9       project: qsk-book 
-10  minReadySeconds: 20            <<== 添加这一行
-11  strategy:                      <<== 添加这一行
-12    type: RollingUpdate          <<== 添加这一行
-13    rollingUpdate:               <<== 添加这一行
-14      maxSurge: 1                <<== 添加这一行
-15      maxUnavailable: 0          <<== 添加这一行
+10  minReadySeconds: 20            # <<== 添加这一行
+11  strategy:                      # <<== 添加这一行
+12    type: RollingUpdate          # <<== 添加这一行
+13    rollingUpdate:               # <<== 添加这一行
+14      maxSurge: 1                # <<== 添加这一行
+15      maxUnavailable: 0          # <<== 添加这一行
 16  template:
 17    metadata:
 18      labels:
@@ -249,20 +282,31 @@ deployment.apps/qsk-deploy scaled
 23        imagePullPolicy: Always 
 24        ports:
 25        - containerPort: 8080 
-26        image: nigelpoulton/qsk-book:1.1 <<== 设置为1.1
+26        image: nigelpoulton/qsk-book:1.1 # <<== 设置为 1.1
 ```
 
-- minReadySeconds: 20：告诉Kubernetes在更新每个副本后要等待20秒。
+---
+
+### 配置参数说明
+
+- **`minReadySeconds: 20`**：告诉 Kubernetes 在更新每个副本后要等待 **20 秒**。
 
 <Callout type="info">
     **提示：** 
-    Kubernetes实际上没有更新副本，它所做的是删除现有的副本，并用一个运行新版本的全新副本来代替它们
+    Kubernetes 实际上没有更新副本，它所做的是删除现有的副本，并用一个运行新版本的全新副本来代替它们
 </Callout>
 
-- 更新类型为RollingUpdate：以滚动更新的方式执行对此Deployment的所有更新
-- 第14行和第15行强制Kubernetes一次更新一个Pod，运行机制是：第14行中maxSurge=1允许Kubernetes在更新操作中增加一个额外的Pod，期望状态需要5个Pod，所以Kubernetes可以在更新期间将其增加到6个；第15行中maxUnavailable=0防止Kubernetes在更新期间减少Pod的数量，期望状态还是需要5个Pod，所以Kubernetes不允许比这更少。结合起来，第14行和第15行迫使Kubernetes删除运行旧版本的副本的同时增加运行新版本的第六个副本。这个过程一直重复，直到5个副本全都在运行需要的版本。
+- **更新类型为 RollingUpdate**：以滚动更新的方式执行对此 Deployment 的所有更新
+- 第 **14** 行和第 **15** 行强制 Kubernetes 一次更新一个 Pod，运行机制是：
+  - 第 14 行中 `maxSurge=1` 允许 Kubernetes 在更新操作中增加一个额外的 Pod，期望状态需要 5 个 Pod，所以 Kubernetes 可以在更新期间将其增加到 6 个
+  - 第 15 行中 `maxUnavailable=0` 防止 Kubernetes 在更新期间减少 Pod 的数量，期望状态还是需要 5 个 Pod，所以 Kubernetes 不允许比这更少
+  - 结合起来，第 14 行和第 15 行迫使 Kubernetes 删除运行旧版本的副本的同时增加运行新版本的第六个副本。这个过程一直重复，直到 5 个副本全都在运行需要的版本。
 
-当更新完毕deploy.yml后可以使用apply命令进行部署，然后使用如下命令进行监听
+---
+
+### 监听滚动更新过程
+
+当更新完毕 `deploy.yml` 后可以使用 `apply` 命令进行部署，然后使用如下命令进行监听：
 
 ```shell
 $ kubectl rollout status deployment qsk-deploy

@@ -12,7 +12,7 @@ import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 //   description: "This is a description",
 // };
 
-const POSTS_PER_PAGE = 8;
+const POSTS_PER_PAGE = 10;
 
 interface BlogPageProps {
   searchParams: {
@@ -35,88 +35,88 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
 
+    <motion.div
+      className="flex justify-center pt-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <motion.div
-        className="flex justify-center pt-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        className="flex md:w-2/3 sm:w-full"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
-        <motion.div
-          className="flex md:w-2/3 sm:w-full"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <div className="gap-5 flex flex-col justify-center px-6 w-full">
-            <motion.div
-              className="gap-5 flex flex-col justify-center"
-              variants={fadeInUp}
+        <div className="gap-5 flex flex-col justify-center px-6 w-full">
+          <motion.div
+            className="gap-5 flex flex-col justify-center"
+            variants={fadeInUp}
+          >
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">首页</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/" className='font-blod text-black'>文章</BreadcrumbLink>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <motion.h1
+              className="text-4xl font-bold my-4"
+              variants={itemVariants}
             >
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/">首页</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/" className='font-blod text-black'>文章</BreadcrumbLink>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-              <motion.h1
-                className="text-4xl font-bold my-4"
-                variants={itemVariants}
-              >
-                文章
-              </motion.h1>
-              <motion.p variants={itemVariants}>
-                文以载道，言以明志。
-              </motion.p>
-            </motion.div>
+              文章
+            </motion.h1>
+            <motion.p variants={itemVariants}>
+              文以载道，言以明志。
+            </motion.p>
+          </motion.div>
 
-            {/* 博客文章列表 */}
+          {/* 博客文章列表 */}
 
-            <motion.ul
-              className="columns-1 md:columns-2 gap-4 w-full mt-6 list-none space-y-4"
-              variants={containerVariants}
-            >
-              {displayPosts.length > 0 ? (
-                displayPosts.map((post) => {
-                  const { slug, date, title, description, tags } = post;
-                  return (
-                    <motion.li
-                      key={slug}
-                      className="rounded-lg break-inside-avoid mb-4"
-                      variants={itemVariants}
-                      whileHover={{
-                        scale: 1.02,
-                        transition: { duration: 0.2 }
-                      }}
-                    >
-                      <PostItem
-                        slug={slug}
-                        date={date}
-                        title={title}
-                        description={description}
-                        tags={tags} status={post.status} />
-                    </motion.li>
-                  )
-                })
-              ) : (
-                <div>暂无数据</div>
-              )}
-
-            </motion.ul>
-
-            {/* 分页器 */}
-            {totalPages > 1 && (
-              <QueryPagination
-                totalPages={totalPages}
-                className="justify-end mt-4"
-              />
+          <motion.ul
+            className="columns-1 md:columns-2 gap-4 w-full mt-6 list-none space-y-4"
+            variants={containerVariants}
+          >
+            {displayPosts.length > 0 ? (
+              displayPosts.map((post) => {
+                const { slug, date, title, description, tags } = post;
+                return (
+                  <motion.li
+                    key={slug}
+                    className="rounded-lg break-inside-avoid mb-4"
+                    variants={itemVariants}
+                    whileHover={{
+                      scale: 1.02,
+                      transition: { duration: 0.2 }
+                    }}
+                  >
+                    <PostItem
+                      slug={slug}
+                      date={date}
+                      title={title}
+                      description={description}
+                      tags={tags} status={post.status} />
+                  </motion.li>
+                )
+              })
+            ) : (
+              <div>暂无数据</div>
             )}
-          </div>
-        </motion.div>
+
+          </motion.ul>
+
+          {/* 分页器 */}
+          {totalPages > 1 && (
+            <QueryPagination
+              totalPages={totalPages}
+              className="justify-end mt-4"
+            />
+          )}
+        </div>
       </motion.div>
+    </motion.div>
   );
 }
