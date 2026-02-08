@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+  <defs>
+    <linearGradient id="objGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#90caf9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#42a5f5;stop-opacity:1" />
+    </linearGradient>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+  
+  <rect width="700" height="400" fill="#fafafa"/>
+  <text x="350" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">引用计数法原理</text>
+  
+  <!-- 场景1：正常引用 -->
+  <g transform="translate(50, 70)">
+    <text x="150" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">场景1：正常引用</text>
+    
+    <!-- 栈帧 -->
+    <rect x="0" y="20" width="120" height="100" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="60" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">栈</text>
+    <rect x="20" y="60" width="80" height="30" rx="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+    <text x="60" y="80" text-anchor="middle" font-size="12" fill="#ef6c00">变量 a</text>
+    
+    <!-- 箭头 -->
+    <line x1="100" y1="75" x2="160" y2="75" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="130" y="65" text-anchor="middle" font-size="12" fill="#666">引用</text>
+    
+    <!-- 对象A -->
+    <rect x="170" y="30" width="130" height="100" rx="8" fill="url(#objGrad)" stroke="#1976d2" stroke-width="2"/>
+    <text x="235" y="60" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">对象 A</text>
+    <rect x="185" y="75" width="100" height="40" rx="5" fill="#fff" stroke="#1976d2" stroke-width="1"/>
+    <text x="235" y="92" text-anchor="middle" font-size="13" fill="#1565c0">引用计数</text>
+    <text x="235" y="108" text-anchor="middle" font-size="20" font-weight="bold" fill="#d32f2f">1</text>
+  </g>
+  
+  <!-- 场景2：多个引用 -->
+  <g transform="translate(380, 70)">
+    <text x="150" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">场景2：多个引用</text>
+    
+    <!-- 栈帧 -->
+    <rect x="0" y="20" width="120" height="120" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="60" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">栈</text>
+    <rect x="20" y="60" width="80" height="25" rx="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+    <text x="60" y="77" text-anchor="middle" font-size="11" fill="#ef6c00">变量 a</text>
+    <rect x="20" y="95" width="80" height="25" rx="3" fill="#ffe0b2" stroke="#ff9800" stroke-width="1"/>
+    <text x="60" y="112" text-anchor="middle" font-size="11" fill="#ef6c00">变量 b</text>
+    
+    <!-- 箭头 -->
+    <line x1="100" y1="72" x2="160" y2="60" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="100" y1="107" x2="160" y2="100" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- 对象A -->
+    <rect x="170" y="20" width="130" height="110" rx="8" fill="url(#objGrad)" stroke="#1976d2" stroke-width="2"/>
+    <text x="235" y="50" text-anchor="middle" font-size="15" font-weight="bold" fill="#fff">对象 A</text>
+    <rect x="185" y="65" width="100" height="50" rx="5" fill="#fff" stroke="#1976d2" stroke-width="1"/>
+    <text x="235" y="85" text-anchor="middle" font-size="13" fill="#1565c0">引用计数</text>
+    <text x="235" y="105" text-anchor="middle" font-size="22" font-weight="bold" fill="#d32f2f">2</text>
+  </g>
+  
+  <!-- 场景3：循环引用问题 -->
+  <g transform="translate(50, 240)">
+    <text x="300" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#c62828">❌ 场景3：循环引用问题（内存泄漏）</text>
+    
+    <!-- 栈帧 -->
+    <rect x="0" y="30" width="100" height="80" rx="5" fill="#ffebee" stroke="#ef5350" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="50" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">栈（已清空）</text>
+    <text x="50" y="75" text-anchor="middle" font-size="11" fill="#666">a = null</text>
+    <text x="50" y="90" text-anchor="middle" font-size="11" fill="#666">b = null</text>
+    
+    <!-- 对象A -->
+    <rect x="200" y="20" width="110" height="100" rx="8" fill="url(#objGrad)" stroke="#1976d2" stroke-width="2"/>
+    <text x="255" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">对象 A</text>
+    <rect x="210" y="55" width="90" height="30" rx="3" fill="#fff" stroke="#1976d2" stroke-width="1"/>
+    <text x="255" y="75" text-anchor="middle" font-size="12" fill="#d32f2f">count = 1</text>
+    
+    <!-- 对象B -->
+    <rect x="400" y="20" width="110" height="100" rx="8" fill="url(#objGrad)" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="455" y="45" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">对象 B</text>
+    <rect x="410" y="55" width="90" height="30" rx="3" fill="#fff" stroke="#7b1fa2" stroke-width="1"/>
+    <text x="455" y="75" text-anchor="middle" font-size="12" fill="#d32f2f">count = 1</text>
+    
+    <!-- 循环引用箭头 -->
+    <path d="M 310 50 Q 355 10, 400 50" stroke="#c62828" stroke-width="2.5" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="355" y="25" text-anchor="middle" font-size="11" fill="#c62828">A.next = B</text>
+    
+    <path d="M 400 90 Q 355 130, 310 90" stroke="#c62828" stroke-width="2.5" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="355" y="125" text-anchor="middle" font-size="11" fill="#c62828">B.next = A</text>
+    
+    <!-- 问题说明 -->
+    <text x="550" y="60" text-anchor="start" font-size="13" fill="#c62828">⚠️ 外部引用已断开</text>
+    <text x="550" y="80" text-anchor="start" font-size="13" fill="#c62828">但互相引用使</text>
+    <text x="550" y="100" text-anchor="start" font-size="13" fill="#c62828">count ≠ 0</text>
+    <text x="550" y="125" text-anchor="start" font-size="14" font-weight="bold" fill="#d32f2f">❌ 内存泄漏！</text>
+  </g>
+</svg>

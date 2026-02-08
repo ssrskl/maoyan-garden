@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 500">
+  <defs>
+    <linearGradient id="heapGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e3f2fd;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#bbdefb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="liveObj2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#81c784;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#66bb6a;stop-opacity:1" />
+    </linearGradient>
+    <marker id="arrowM" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f57c00"/>
+    </marker>
+  </defs>
+  
+  <rect width="850" height="500" fill="#fafafa"/>
+  <text x="425" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">标记-整理算法（Mark-Compact）</text>
+  
+  <!-- 标记阶段 -->
+  <g transform="translate(50, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565c0">1. 标记阶段</text>
+    
+    <rect x="0" y="15" width="200" height="220" rx="5" fill="url(#heapGrad2)" stroke="#2196f3" stroke-width="2"/>
+    
+    <!-- 存活对象 -->
+    <rect x="20" y="40" width="60" height="45" rx="3" fill="url(#liveObj2)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="50" y="67" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    
+    <!-- 垃圾 -->
+    <rect x="100" y="40" width="80" height="45" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1"/>
+    <text x="140" y="67" text-anchor="middle" font-size="11" fill="#fff">垃圾</text>
+    
+    <!-- 垃圾 -->
+    <rect x="20" y="105" width="70" height="45" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1"/>
+    <text x="55" y="132" text-anchor="middle" font-size="11" fill="#fff">垃圾</text>
+    
+    <!-- 存活对象 -->
+    <rect x="110" y="105" width="70" height="45" rx="3" fill="url(#liveObj2)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="145" y="132" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    
+    <!-- 存活对象 -->
+    <rect x="20" y="170" width="75" height="45" rx="3" fill="url(#liveObj2)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="57" y="197" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    
+    <!-- 垃圾 -->
+    <rect x="110" y="170" width="70" height="45" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1"/>
+    <text x="145" y="197" text-anchor="middle" font-size="11" fill="#fff">垃圾</text>
+  </g>
+  
+  <!-- 整理阶段 -->
+  <g transform="translate(300, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">2. 整理阶段</text>
+    
+    <rect x="0" y="15" width="200" height="220" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    
+    <!-- 移动箭头示意 -->
+    <text x="100" y="200" text-anchor="middle" font-size="12" fill="#e65100">移动对象 →</text>
+    
+    <!-- 存活对象（移动后） -->
+    <rect x="20" y="40" width="60" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="50" y="67" text-anchor="middle" font-size="11" fill="#fff">存活</text>
+    
+    <rect x="90" y="40" width="70" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="125" y="67" text-anchor="middle" font-size="11" fill="#fff">存活</text>
+    
+    <rect x="20" y="100" width="75" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="57" y="127" text-anchor="middle" font-size="11" fill="#fff">存活</text>
+    
+    <!-- 空闲 -->
+    <rect x="100" y="100" width="80" height="45" rx="3" fill="#ffe0b2" stroke="#ffb74d" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="140" y="127" text-anchor="middle" font-size="11" fill="#e65100">待回收</text>
+    
+    <!-- 空闲 -->
+    <rect x="20" y="160" width="160" height="55" rx="3" fill="#ffe0b2" stroke="#ffb74d" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="100" y="192" text-anchor="middle" font-size="11" fill="#e65100">待回收</text>
+  </g>
+  
+  <!-- 最终状态 -->
+  <g transform="translate(550, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">3. 整理完成</text>
+    
+    <rect x="0" y="15" width="200" height="220" rx="5" fill="#e8f5e9" stroke="#4caf50" stroke-width="2"/>
+    
+    <!-- 存活对象（紧凑排列） -->
+    <rect x="20" y="40" width="60" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="50" y="67" text-anchor="middle" font-size="11" fill="#fff">存活A</text>
+    
+    <rect x="90" y="40" width="70" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="125" y="67" text-anchor="middle" font-size="11" fill="#fff">存活B</text>
+    
+    <rect x="20" y="100" width="75" height="45" rx="3" fill="url(#liveObj2)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="57" y="127" text-anchor="middle" font-size="11" fill="#fff">存活C</text>
+    
+    <!-- 连续空闲空间 -->
+    <rect x="20" y="160" width="160" height="60" rx="3" fill="#c8e6c9" stroke="#81c784" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="100" y="195" text-anchor="middle" font-size="13" fill="#2e7d32">连续空闲空间</text>
+    
+    <!-- 分配指针 -->
+    <polygon points="105,175 120,185 105,195" fill="#e65100"/>
+    <text x="140" y="190" font-size="12" fill="#e65100">分配指针</text>
+  </g>
+  
+  <!-- 箭头连接 -->
+  <g transform="translate(250, 160)">
+    <line x1="0" y1="0" x2="40" y2="0" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowM)"/>
+  </g>
+  <g transform="translate(500, 160)">
+    <line x1="0" y1="0" x2="40" y2="0" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowM)"/>
+  </g>
+  
+  <!-- 说明 -->
+  <g transform="translate(50, 320)">
+    <rect x="0" y="0" width="700" height="160" rx="8" fill="#e8f5e9" stroke="#4caf50" stroke-width="1"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#2e7d32">标记-整理算法特点</text>
+    
+    <g transform="translate(20, 50)">
+      <rect x="0" y="0" width="320" height="95" rx="5" fill="#fff" stroke="#c8e6c9" stroke-width="1"/>
+      <text x="10" y="25" font-size="14" font-weight="bold" fill="#43a047">✓ 优点</text>
+      <text x="20" y="50" font-size="13" fill="#666">• 无内存碎片，内存布局紧凑</text>
+      <text x="20" y="75" font-size="13" fill="#666">• 内存利用率高（不像复制算法需要 2 倍空间）</text>
+    </g>
+    
+    <g transform="translate(360, 50)">
+      <rect x="0" y="0" width="320" height="95" rx="5" fill="#fff" stroke="#ffcdd2" stroke-width="1"/>
+      <text x="10" y="25" font-size="14" font-weight="bold" fill="#e53935">✗ 缺点</text>
+      <text x="20" y="50" font-size="13" fill="#666">• 需要移动对象，更新引用地址</text>
+      <text x="20" y="75" font-size="13" fill="#666">• 整理过程需要 STW，停顿时间较长</text>
+    </g>
+  </g>
+</svg>

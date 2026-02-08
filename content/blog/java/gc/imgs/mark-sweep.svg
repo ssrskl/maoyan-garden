@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 550">
+  <defs>
+    <linearGradient id="liveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#81c784;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#66bb6a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="deadGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef5350;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e53935;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="800" height="550" fill="#fafafa"/>
+  <text x="400" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">标记-清除算法（Mark-Sweep）</text>
+  
+  <!-- 初始状态 -->
+  <g transform="translate(50, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565c0">1. 初始状态</text>
+    
+    <rect x="0" y="20" width="200" height="280" rx="5" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+    <text x="100" y="45" text-anchor="middle" font-size="13" fill="#1976d2">堆内存</text>
+    
+    <!-- 对象分布 -->
+    <rect x="20" y="60" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="50" y="90" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="100" y="60" width="80" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1.5"/>
+    <text x="140" y="90" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+    
+    <rect x="20" y="130" width="80" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1.5"/>
+    <text x="60" y="160" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+    
+    <rect x="120" y="130" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="150" y="160" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="20" y="200" width="70" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="55" y="230" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="110" y="200" width="70" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1.5"/>
+    <text x="145" y="230" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+  </g>
+  
+  <!-- 标记阶段 -->
+  <g transform="translate(300, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#f57c00">2. 标记阶段</text>
+    
+    <rect x="0" y="20" width="200" height="280" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="100" y="45" text-anchor="middle" font-size="13" fill="#e65100">遍历 GC Roots 标记</text>
+    
+    <!-- 对象分布 -->
+    <rect x="20" y="60" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="50" y="82" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    <text x="50" y="96" text-anchor="middle" font-size="10" fill="#c8e6c9">存活</text>
+    
+    <rect x="100" y="60" width="80" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1"/>
+    <text x="140" y="90" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+    
+    <rect x="20" y="130" width="80" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1"/>
+    <text x="60" y="160" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+    
+    <rect x="120" y="130" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="150" y="152" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    <text x="150" y="166" text-anchor="middle" font-size="10" fill="#c8e6c9">存活</text>
+    
+    <rect x="20" y="200" width="70" height="50" rx="3" fill="url(#liveGrad)" stroke="#2e7d32" stroke-width="3"/>
+    <text x="55" y="222" text-anchor="middle" font-size="11" fill="#fff">✓标记</text>
+    <text x="55" y="236" text-anchor="middle" font-size="10" fill="#c8e6c9">存活</text>
+    
+    <rect x="110" y="200" width="70" height="50" rx="3" fill="url(#deadGrad)" stroke="#c62828" stroke-width="1"/>
+    <text x="145" y="230" text-anchor="middle" font-size="12" fill="#fff">垃圾</text>
+  </g>
+  
+  <!-- 清除阶段 -->
+  <g transform="translate(550, 70)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#c62828">3. 清除阶段</text>
+    
+    <rect x="0" y="20" width="200" height="280" rx="5" fill="#ffebee" stroke="#ef5350" stroke-width="2"/>
+    <text x="100" y="45" text-anchor="middle" font-size="13" fill="#c62828">清理未标记对象</text>
+    
+    <!-- 对象分布 -->
+    <rect x="20" y="60" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="50" y="90" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="100" y="60" width="80" height="50" rx="3" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="140" y="90" text-anchor="middle" font-size="12" fill="#9e9e9e">空闲</text>
+    
+    <rect x="20" y="130" width="80" height="50" rx="3" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="60" y="160" text-anchor="middle" font-size="12" fill="#9e9e9e">空闲</text>
+    
+    <rect x="120" y="130" width="60" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="150" y="160" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="20" y="200" width="70" height="50" rx="3" fill="url(#liveGrad)" stroke="#388e3c" stroke-width="1.5"/>
+    <text x="55" y="230" text-anchor="middle" font-size="12" fill="#fff">存活</text>
+    
+    <rect x="110" y="200" width="70" height="50" rx="3" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="145" y="230" text-anchor="middle" font-size="12" fill="#9e9e9e">空闲</text>
+  </g>
+  
+  <!-- 问题说明 -->
+  <g transform="translate(50, 380)">
+    <rect x="0" y="0" width="700" height="150" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#e65100">⚠️ 标记-清除算法的问题</text>
+    <text x="40" y="60" font-size="14" fill="#666">• <tspan font-weight="bold" fill="#333">内存碎片：</tspan>清除后产生大量不连续的小内存块，导致大对象无法分配</text>
+    <text x="40" y="85" font-size="14" fill="#666">• <tspan font-weight="bold" fill="#333">效率问题：</tspan>标记和清除都需要遍历整个堆，堆越大效率越低</text>
+    <text x="40" y="110" font-size="14" fill="#666">• <tspan font-weight="bold" fill="#333">分配复杂：</tspan>需要维护空闲列表来记录可用内存块</text>
+    
+    <!-- 碎片示意图 -->
+    <g transform="translate(480, 50)">
+      <text x="100" y="0" text-anchor="middle" font-size="12" fill="#666">内存碎片示意</text>
+      <rect x="0" y="10" width="30" height="25" fill="#81c784"/>
+      <rect x="35" y="10" width="20" height="25" fill="#e0e0e0"/>
+      <rect x="60" y="10" width="30" height="25" fill="#81c784"/>
+      <rect x="95" y="10" width="25" height="25" fill="#e0e0e0"/>
+      <rect x="125" y="10" width="30" height="25" fill="#81c784"/>
+      <rect x="160" y="10" width="35" height="25" fill="#e0e0e0"/>
+      <text x="100" y="55" text-anchor="middle" font-size="11" fill="#c62828">总空闲足够，但无法分配大对象！</text>
+    </g>
+  </g>
+</svg>

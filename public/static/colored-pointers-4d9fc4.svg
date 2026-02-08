@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="ptrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7e57c2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5e35b1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="objGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#66bb6a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#43a047;stop-opacity:1" />
+    </linearGradient>
+    <marker id="arrowPtr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+  
+  <rect width="800" height="500" fill="#fafafa"/>
+  <text x="400" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">染色指针与多视图映射</text>
+  
+  <!-- 染色指针结构 -->
+  <g transform="translate(50, 60)">
+    <text x="0" y="0" font-size="14" font-weight="bold" fill="#6a1b9a">染色指针直接编码元信息：</text>
+    
+    <g transform="translate(0, 20)">
+      <!-- 指针 -->
+      <rect x="0" y="0" width="350" height="50" rx="5" fill="url(#ptrGrad)" stroke="#512da8" stroke-width="2"/>
+      
+      <!-- 颜色位 -->
+      <rect x="10" y="5" width="40" height="40" rx="3" fill="#e1bee7" stroke="#8e24aa" stroke-width="1"/>
+      <text x="30" y="23" text-anchor="middle" font-size="9" fill="#4a148c">标记</text>
+      <text x="30" y="37" text-anchor="middle" font-size="9" fill="#6a1b9a">M0/M1</text>
+      
+      <rect x="55" y="5" width="50" height="40" rx="3" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1"/>
+      <text x="80" y="23" text-anchor="middle" font-size="9" fill="#4a148c">重映射</text>
+      <text x="80" y="37" text-anchor="middle" font-size="9" fill="#6a1b9a">Remap</text>
+      
+      <!-- 地址 -->
+      <rect x="110" y="5" width="230" height="40" rx="3" fill="#4a148c" stroke="#38006b" stroke-width="1"/>
+      <text x="225" y="32" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">对象地址</text>
+    </g>
+    
+    <!-- 优势 -->
+    <g transform="translate(0, 85)">
+      <rect x="0" y="0" width="350" height="120" rx="5" fill="#f3e5f5" stroke="#ce93d8" stroke-width="1"/>
+      <text x="175" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#7b1fa2">染色指针优势</text>
+      <text x="10" y="55" font-size="12" fill="#6a1b9a">✓ 标记信息在指针中，无需访问对象头</text>
+      <text x="10" y="80" font-size="12" fill="#6a1b9a">✓ 支持并发标记和重定位</text>
+      <text x="10" y="105" font-size="12" fill="#6a1b9a">✓ 读屏障快速判断对象状态</text>
+    </g>
+  </g>
+  
+  <!-- 多视图映射 -->
+  <g transform="translate(430, 60)">
+    <text x="0" y="0" font-size="14" font-weight="bold" fill="#1565c0">多视图映射（对象移动透明化）：</text>
+    
+    <g transform="translate(0, 25)">
+      <!-- 旧视图 -->
+      <rect x="0" y="0" width="150" height="80" rx="5" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+      <text x="75" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#1565c0">旧视图</text>
+      <text x="75" y="50" text-anchor="middle" font-size="11" fill="#666">地址：0x1000</text>
+      <text x="75" y="68" text-anchor="middle" font-size="10" fill="#9e9e9e">（正在迁移）</text>
+      
+      <!-- 新视图 -->
+      <rect x="200" y="0" width="150" height="80" rx="5" fill="#e8f5e9" stroke="#4caf50" stroke-width="2"/>
+      <text x="275" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">新视图</text>
+      <text x="275" y="50" text-anchor="middle" font-size="11" fill="#666">地址：0x2000</text>
+      <text x="275" y="68" text-anchor="middle" font-size="10" fill="#43a047">（已重定位）</text>
+      
+      <!-- 箭头 -->
+      <line x1="160" y1="40" x2="190" y2="40" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowPtr)"/>
+      <text x="175" y="30" text-anchor="middle" font-size="10" fill="#e65100">迁移</text>
+    </g>
+    
+    <!-- 应用视角 -->
+    <g transform="translate(0, 120)">
+      <text x="0" y="0" font-size="12" font-weight="bold" fill="#e65100">应用线程视角（通过读屏障）：</text>
+      
+      <rect x="0" y="15" width="320" height="130" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+      
+      <!-- 应用代码 -->
+      <rect x="20" y="35" width="120" height="90" rx="5" fill="#fff" stroke="#ffb74d" stroke-width="1"/>
+      <text x="80" y="60" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">应用代码</text>
+      <text x="80" y="85" text-anchor="middle" font-size="10" fill="#666">obj.field</text>
+      <text x="80" y="105" text-anchor="middle" font-size="10" fill="#666">访问对象</text>
+      
+      <!-- 读屏障 -->
+      <rect x="170" y="55" width="130" height="70" rx="5" fill="#ffccbc" stroke="#ff7043" stroke-width="2"/>
+      <text x="235" y="80" text-anchor="middle" font-size="11" font-weight="bold" fill="#d84315">读屏障</text>
+      <text x="235" y="100" text-anchor="middle" font-size="9" fill="#e64a19">检查指针染色位</text>
+      <text x="235" y="115" text-anchor="middle" font-size="9" fill="#e64a19">自动转发到新地址</text>
+    </g>
+    
+    <!-- 总结 -->
+    <g transform="translate(0, 270)">
+      <rect x="0" y="0" width="350" height="110" rx="5" fill="#e8f5e9" stroke="#81c784" stroke-width="1"/>
+      <text x="175" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">核心思想</text>
+      <text x="10" y="55" font-size="12" fill="#388e3c">• 利用虚拟内存映射同一物理内存到不同地址</text>
+      <text x="10" y="80" font-size="12" fill="#388e3c">• 应用通过旧指针访问时，读屏障自动转发</text>
+      <text x="10" y="105" font-size="12" fill="#388e3c">• 对象移动对应用完全透明，无需暂停</text>
+    </g>
+  </g>
+  
+  <!-- 读屏障伪代码 -->
+  <g transform="translate(50, 320)">
+    <rect x="0" y="0" width="350" height="160" rx="5" fill="#263238" stroke="#37474f" stroke-width="1"/>
+    <text x="175" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#4fc3f7">读屏障伪代码</text>
+    
+    <text x="15" y="55" font-family="monospace" font-size="12" fill="#aed581">Object readField(ObjectField f) {</text>
+    <text x="30" y="80" font-family="monospace" font-size="12" fill="#fff">Object ref = f.value;</text>
+    <text x="30" y="105" font-family="monospace" font-size="12" fill="#ffcc80">if (isForwardingRef(ref)) {</text>
+    <text x="45" y="130" font-family="monospace" font-size="12" fill="#ef9a9a">    return getForwardedObj(ref);</text>
+    <text x="30" y="155" font-family="monospace" font-size="12" fill="#ffcc80">}</text>
+    <text x="30" y="175" font-family="monospace" font-size="12" fill="#fff">return ref;</text>
+    <text x="15" y="195" font-family="monospace" font-size="12" fill="#aed581">}</text>
+  </g>
+</svg>

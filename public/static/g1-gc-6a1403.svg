@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 550">
+  <defs>
+    <linearGradient id="edenR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a5d6a7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#81c784;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="survivorR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c8e6c9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a5d6a7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="oldR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffcc80;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffb74d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="hugeR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ce93d8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ba68c8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="freeR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#eeeeee;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="900" height="550" fill="#fafafa"/>
+  <text x="450" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">G1 垃圾收集器：Region 化内存管理</text>
+  
+  <!-- Region 示意图 -->
+  <g transform="translate(50, 60)">
+    <text x="400" y="0" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565c0">G1 将堆划分为多个大小相等的 Region（默认 1MB ~ 32MB）</text>
+    
+    <rect x="0" y="15" width="800" height="220" rx="5" fill="#e3f2fd" stroke="#2196f3" stroke-width="2"/>
+    
+    <!-- Region 网格 -->
+    <!-- 第一行 -->
+    <rect x="20" y="35" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="52" y="60" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    <text x="52" y="75" text-anchor="middle" font-size="9" fill="#2e7d32">Region</text>
+    
+    <rect x="95" y="35" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="127" y="60" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    <text x="127" y="75" text-anchor="middle" font-size="9" fill="#2e7d32">Region</text>
+    
+    <rect x="170" y="35" width="65" height="55" rx="3" fill="url(#survivorR)" stroke="#66bb6a" stroke-width="1.5"/>
+    <text x="202" y="60" text-anchor="middle" font-size="10" fill="#1b5e20">Survivor</text>
+    <text x="202" y="75" text-anchor="middle" font-size="9" fill="#2e7d32">Region</text>
+    
+    <rect x="245" y="35" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="277" y="60" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    <text x="277" y="75" text-anchor="middle" font-size="9" fill="#ef6c00">Region</text>
+    
+    <rect x="320" y="35" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="352" y="60" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    <text x="352" y="75" text-anchor="middle" font-size="9" fill="#ef6c00">Region</text>
+    
+    <rect x="395" y="35" width="65" height="55" rx="3" fill="url(#hugeR)" stroke="#ab47bc" stroke-width="1.5"/>
+    <text x="427" y="60" text-anchor="middle" font-size="10" fill="#6a1b9a">Humongous</text>
+    <text x="427" y="75" text-anchor="middle" font-size="8" fill="#7b1fa2">大对象</text>
+    
+    <rect x="470" y="35" width="65" height="55" rx="3" fill="url(#freeR)" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="502" y="65" text-anchor="middle" font-size="10" fill="#757575">空闲</text>
+    
+    <rect x="545" y="35" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="577" y="60" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    <text x="577" y="75" text-anchor="middle" font-size="9" fill="#2e7d32">Region</text>
+    
+    <rect x="620" y="35" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="652" y="60" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    <text x="652" y="75" text-anchor="middle" font-size="9" fill="#ef6c00">Region</text>
+    
+    <rect x="695" y="35" width="85" height="55" rx="3" fill="url(#hugeR)" stroke="#ab47bc" stroke-width="1.5"/>
+    <text x="737" y="60" text-anchor="middle" font-size="10" fill="#6a1b9a">Humongous</text>
+    <text x="737" y="75" text-anchor="middle" font-size="8" fill="#7b1fa2">跨多个 Region</text>
+    
+    <!-- 第二行 -->
+    <rect x="20" y="100" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="52" y="130" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="95" y="100" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="127" y="130" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    
+    <rect x="170" y="100" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="202" y="130" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="245" y="100" width="65" height="55" rx="3" fill="url(#freeR)" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="277" y="130" text-anchor="middle" font-size="10" fill="#757575">空闲</text>
+    
+    <rect x="320" y="100" width="65" height="55" rx="3" fill="url(#survivorR)" stroke="#66bb6a" stroke-width="1.5"/>
+    <text x="352" y="125" text-anchor="middle" font-size="9" fill="#1b5e20">Survivor</text>
+    <text x="352" y="140" text-anchor="middle" font-size="8" fill="#2e7d32">Region</text>
+    
+    <rect x="395" y="100" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="427" y="130" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="470" y="100" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="502" y="130" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="545" y="100" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="577" y="130" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    
+    <rect x="620" y="100" width="65" height="55" rx="3" fill="url(#freeR)" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="652" y="130" text-anchor="middle" font-size="10" fill="#757575">空闲</text>
+    
+    <rect x="695" y="100" width="85" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="737" y="130" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <!-- 第三行 -->
+    <rect x="20" y="165" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="52" y="195" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    
+    <rect x="95" y="165" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="127" y="195" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="170" y="165" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="202" y="195" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    
+    <rect x="245" y="165" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="277" y="195" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="320" y="165" width="65" height="55" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1.5"/>
+    <text x="352" y="195" text-anchor="middle" font-size="10" fill="#1b5e20">Eden</text>
+    
+    <rect x="395" y="165" width="65" height="55" rx="3" fill="url(#freeR)" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="427" y="195" text-anchor="middle" font-size="10" fill="#757575">空闲</text>
+    
+    <rect x="470" y="165" width="65" height="55" rx="3" fill="url(#survivorR)" stroke="#66bb6a" stroke-width="1.5"/>
+    <text x="502" y="190" text-anchor="middle" font-size="9" fill="#1b5e20">Survivor</text>
+    <text x="502" y="205" text-anchor="middle" font-size="8" fill="#2e7d32">Region</text>
+    
+    <rect x="545" y="165" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="577" y="195" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="620" y="165" width="65" height="55" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1.5"/>
+    <text x="652" y="195" text-anchor="middle" font-size="10" fill="#e65100">Old</text>
+    
+    <rect x="695" y="165" width="85" height="55" rx="3" fill="url(#freeR)" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="737" y="195" text-anchor="middle" font-size="10" fill="#757575">空闲</text>
+  </g>
+  
+  <!-- 图例 -->
+  <g transform="translate(50, 300)">
+    <text x="0" y="0" font-size="14" font-weight="bold" fill="#333">Region 类型：</text>
+    
+    <rect x="0" y="15" width="25" height="20" rx="3" fill="url(#edenR)" stroke="#43a047" stroke-width="1"/>
+    <text x="35" y="30" font-size="12" fill="#666">Eden Region（新生代）</text>
+    
+    <rect x="200" y="15" width="25" height="20" rx="3" fill="url(#survivorR)" stroke="#66bb6a" stroke-width="1"/>
+    <text x="235" y="30" font-size="12" fill="#666">Survivor Region（新生代）</text>
+    
+    <rect x="420" y="15" width="25" height="20" rx="3" fill="url(#oldR)" stroke="#fb8c00" stroke-width="1"/>
+    <text x="455" y="30" font-size="12" fill="#666">Old Region（老年代）</text>
+    
+    <rect x="620" y="15" width="25" height="20" rx="3" fill="url(#hugeR)" stroke="#ab47bc" stroke-width="1"/>
+    <text x="655" y="30" font-size="12" fill="#666">Humongous Region（大对象，≥Region/2）</text>
+  </g>
+  
+  <!-- G1 特点 -->
+  <g transform="translate(50, 360)">
+    <text x="400" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565c0">G1 回收策略：Garbage First</text>
+    
+    <rect x="0" y="15" width="800" height="165" rx="8" fill="#e3f2fd" stroke="#2196f3" stroke-width="1"/>
+    
+    <!-- Young GC -->
+    <g transform="translate(20, 35)">
+      <rect x="0" y="0" width="240" height="130" rx="5" fill="#fff" stroke="#81c784" stroke-width="1"/>
+      <text x="120" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">🌱 Young GC</text>
+      <text x="120" y="50" text-anchor="middle" font-size="11" fill="#666">回收所有 Eden + Survivor Region</text>
+      <text x="120" y="72" text-anchor="middle" font-size="11" fill="#666">并行复制算法</text>
+      <text x="120" y="94" text-anchor="middle" font-size="11" fill="#666">STW 时间与 Region 数量相关</text>
+      <text x="120" y="116" text-anchor="middle" font-size="11" fill="#666">非整个堆大小</text>
+    </g>
+    
+    <!-- Mixed GC -->
+    <g transform="translate(280, 35)">
+      <rect x="0" y="0" width="240" height="130" rx="5" fill="#fff" stroke="#ffb74d" stroke-width="1"/>
+      <text x="120" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">🎯 Mixed GC</text>
+      <text x="120" y="50" text-anchor="middle" font-size="11" fill="#666">回收新生代 + 部分老年代 Region</text>
+      <text x="120" y="72" text-anchor="middle" font-size="11" fill="#666">根据停顿目标（默认200ms）</text>
+      <text x="120" y="94" text-anchor="middle" font-size="11" fill="#666">优先回收垃圾最多的 Region</text>
+      <text x="120" y="116" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">Garbage First 得名于此</text>
+    </g>
+    
+    <!-- 目标 -->
+    <g transform="translate(540, 35)">
+      <rect x="0" y="0" width="240" height="130" rx="5" fill="#fff" stroke="#64b5f6" stroke-width="1"/>
+      <text x="120" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565c0">⚡ 设计目标</text>
+      <text x="120" y="50" text-anchor="middle" font-size="11" fill="#666">可预测的停顿时间</text>
+      <text x="120" y="72" text-anchor="middle" font-size="11" fill="#666">-XX:MaxGCPauseMillis=200</text>
+      <text x="120" y="94" text-anchor="middle" font-size="11" fill="#666">无内存碎片（标记-整理+复制）</text>
+      <text x="120" y="116" text-anchor="middle" font-size="11" fill="#666">适用于大堆（几十GB）</text>
+    </g>
+  </g>
+</svg>

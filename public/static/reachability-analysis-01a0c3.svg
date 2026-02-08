@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="gcRootGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff7043;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f4511e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="liveObjGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#66bb6a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#43a047;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="deadObjGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#bdbdbd;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9e9e9e;stop-opacity:1" />
+    </linearGradient>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#43a047"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+  
+  <rect width="800" height="500" fill="#fafafa"/>
+  <text x="400" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">可达性分析算法</text>
+  <text x="400" y="60" text-anchor="middle" font-size="14" fill="#666">从 GC Roots 出发，搜索所有可达对象</text>
+  
+  <!-- GC Roots 区域 -->
+  <g transform="translate(30, 90)">
+    <text x="100" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">GC Roots</text>
+    
+    <!-- 虚拟机栈 -->
+    <rect x="0" y="15" width="200" height="130" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+    <text x="100" y="40" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">虚拟机栈</text>
+    
+    <rect x="15" y="55" width="80" height="35" rx="5" fill="url(#gcRootGrad)" stroke="#e64a19" stroke-width="2"/>
+    <text x="55" y="77" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">局部变量 a</text>
+    
+    <rect x="105" y="55" width="80" height="35" rx="5" fill="url(#gcRootGrad)" stroke="#e64a19" stroke-width="2"/>
+    <text x="145" y="77" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">局部变量 b</text>
+    
+    <!-- 静态变量 -->
+    <rect x="0" y="160" width="200" height="60" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="2"/>
+    <text x="100" y="185" text-anchor="middle" font-size="13" font-weight="bold" fill="#7b1fa2">方法区静态变量</text>
+    <rect x="60" y="195" width="80" height="18" rx="3" fill="#ce93d8"/>
+    <text x="100" y="208" text-anchor="middle" font-size="11" fill="#4a148c">staticObj</text>
+  </g>
+  
+  <!-- 对象图 -->
+  <g transform="translate(280, 90)">
+    <text x="250" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">堆中对象引用链</text>
+    
+    <!-- 可达对象 -->
+    <rect x="50" y="30" width="100" height="50" rx="8" fill="url(#liveObjGrad)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="100" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 A</text>
+    <text x="100" y="68" text-anchor="middle" font-size="10" fill="#c8e6c9">✓ 可达</text>
+    
+    <rect x="200" y="30" width="100" height="50" rx="8" fill="url(#liveObjGrad)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="250" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 B</text>
+    <text x="250" y="68" text-anchor="middle" font-size="10" fill="#c8e6c9">✓ 可达</text>
+    
+    <rect x="350" y="30" width="100" height="50" rx="8" fill="url(#liveObjGrad)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="400" y="50" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 C</text>
+    <text x="400" y="68" text-anchor="middle" font-size="10" fill="#c8e6c9">✓ 可达</text>
+    
+    <rect x="125" y="120" width="100" height="50" rx="8" fill="url(#liveObjGrad)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="175" y="140" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 D</text>
+    <text x="175" y="158" text-anchor="middle" font-size="10" fill="#c8e6c9">✓ 可达</text>
+    
+    <rect x="275" y="120" width="100" height="50" rx="8" fill="url(#liveObjGrad)" stroke="#2e7d32" stroke-width="2"/>
+    <text x="325" y="140" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 E</text>
+    <text x="325" y="158" text-anchor="middle" font-size="10" fill="#c8e6c9">✓ 可达</text>
+    
+    <!-- 不可达对象 -->
+    <rect x="200" y="210" width="100" height="50" rx="8" fill="url(#deadObjGrad)" stroke="#757575" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="250" y="230" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 X</text>
+    <text x="250" y="248" text-anchor="middle" font-size="10" fill="#eeeeee">✗ 不可达</text>
+    
+    <rect x="350" y="210" width="100" height="50" rx="8" fill="url(#deadObjGrad)" stroke="#757575" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="400" y="230" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">对象 Y</text>
+    <text x="400" y="248" text-anchor="middle" font-size="10" fill="#eeeeee">✗ 不可达</text>
+    
+    <!-- 引用链箭头 -->
+    <line x1="150" y1="55" x2="200" y2="55" stroke="#43a047" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    <line x1="300" y1="55" x2="350" y2="55" stroke="#43a047" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    <line x1="100" y1="80" x2="150" y2="120" stroke="#43a047" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    <line x1="250" y1="80" x2="200" y2="120" stroke="#43a047" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    <line x1="400" y1="80" x2="350" y2="120" stroke="#43a047" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+    
+    <!-- 循环引用（不可达） -->
+    <line x1="300" y1="235" x2="350" y2="235" stroke="#9e9e9e" stroke-width="2" marker-end="url(#arrowRed)"/>
+    <path d="M 350 210 Q 375 180, 350 260 Q 325 180, 300 210" stroke="#9e9e9e" stroke-width="2" fill="none" marker-end="url(#arrowRed)"/>
+  </g>
+  
+  <!-- 说明 -->
+  <g transform="translate(30, 380)">
+    <rect x="0" y="0" width="740" height="100" rx="8" fill="#e8f5e9" stroke="#4caf50" stroke-width="1"/>
+    <text x="20" y="30" font-size="14" font-weight="bold" fill="#2e7d32">可达性分析优势：</text>
+    <text x="40" y="55" font-size="13" fill="#388e3c">✓ 能解决循环引用问题（对象 X 和 Y 虽有循环引用，但不可达，会被回收）</text>
+    <text x="40" y="78" font-size="13" fill="#388e3c">✓ 从 GC Roots 出发，所有可达对象都保留，不可达对象都是垃圾</text>
+  </g>
+</svg>

@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 600">
+  <defs>
+    <linearGradient id="zgcGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4fc3f7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#29b6f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="smallR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#81c784;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#66bb6a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mediumR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffb74d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffa726;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="largeR" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e57373;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ef5350;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="850" height="600" fill="#fafafa"/>
+  <text x="425" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">ZGC 垃圾收集器</text>
+  <text x="425" y="60" text-anchor="middle" font-size="14" fill="#666">目标：无论堆多大，停顿时间不超过 10ms</text>
+  
+  <!-- ZGC 特点 -->
+  <g transform="translate(50, 85)">
+    <rect x="0" y="0" width="750" height="100" rx="8" fill="#e1f5fe" stroke="#29b6f6" stroke-width="1"/>
+    <text x="375" y="28" text-anchor="middle" font-size="15" font-weight="bold" fill="#01579b">⚡ ZGC 核心特性</text>
+    
+    <g transform="translate(20, 45)">
+      <rect x="0" y="0" width="170" height="40" rx="5" fill="#fff" stroke="#81d4fa" stroke-width="1"/>
+      <text x="85" y="25" text-anchor="middle" font-size="12" fill="#0277bd">并发处理能力</text>
+    </g>
+    
+    <g transform="translate(200, 45)">
+      <rect x="0" y="0" width="170" height="40" rx="5" fill="#fff" stroke="#81d4fa" stroke-width="1"/>
+      <text x="85" y="25" text-anchor="middle" font-size="12" fill="#0277bd">基于 Region</text>
+    </g>
+    
+    <g transform="translate(380, 45)">
+      <rect x="0" y="0" width="170" height="40" rx="5" fill="#fff" stroke="#81d4fa" stroke-width="1"/>
+      <text x="85" y="25" text-anchor="middle" font-size="12" fill="#0277bd">染色指针技术</text>
+    </g>
+    
+    <g transform="translate(560, 45)">
+      <rect x="0" y="0" width="170" height="40" rx="5" fill="#fff" stroke="#81d4fa" stroke-width="1"/>
+      <text x="85" y="25" text-anchor="middle" font-size="12" fill="#0277bd">读屏障 Load Barrier</text>
+    </g>
+  </g>
+  
+  <!-- Region 类型 -->
+  <g transform="translate(50, 205)">
+    <text x="375" y="0" text-anchor="middle" font-size="15" font-weight="bold" fill="#1565c0">ZGC Region 类型（大小不固定）</text>
+    
+    <rect x="0" y="15" width="750" height="130" rx="5" fill="#e3f2fd" stroke="#2196f3" stroke-width="1"/>
+    
+    <!-- Small Region -->
+    <g transform="translate(30, 35)">
+      <rect x="0" y="0" width="200" height="90" rx="5" fill="url(#smallR)" stroke="#43a047" stroke-width="2"/>
+      <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">Small Region</text>
+      <text x="100" y="55" text-anchor="middle" font-size="12" fill="#c8e6c9">2MB</text>
+      <text x="100" y="75" text-anchor="middle" font-size="11" fill="#e8f5e9">存放 < 256KB 的对象</text>
+    </g>
+    
+    <!-- Medium Region -->
+    <g transform="translate="260, 35"">
+      <rect x="260" y="35" width="200" height="90" rx="5" fill="url(#mediumR)" stroke="#fb8c00" stroke-width="2"/>
+      <text x="360" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">Medium Region</text>
+      <text x="360" y="90" text-anchor="middle" font-size="12" fill="#ffe0b2">32MB</text>
+      <text x="360" y="110" text-anchor="middle" font-size="11" fill="#fff3e0">存放 256KB ~ 4MB 的对象</text>
+    </g>
+    
+    <!-- Large Region -->
+    <g transform="translate="520, 35"">
+      <rect x="520" y="35" width="200" height="90" rx="5" fill="url(#largeR)" stroke="#e53935" stroke-width="2"/>
+      <text x="620" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">Large Region</text>
+      <text x="620" y="90" text-anchor="middle" font-size="12" fill="#ffcdd2">N × 2MB</text>
+      <text x="620" y="110" text-anchor="middle" font-size="11" fill="#ffebee">存放 > 4MB 的对象</text>
+    </g>
+  </g>
+  
+  <!-- 染色指针 -->
+  <g transform="translate(50, 360)">
+    <text x="375" y="0" text-anchor="middle" font-size="15" font-weight="bold" fill="#6a1b9a">染色指针（Colored Pointers）核心技术</text>
+    
+    <rect x="0" y="15" width="750" height="210" rx="5" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1"/>
+    
+    <!-- 64位指针布局 -->
+    <text x="20" y="45" font-size="13" font-weight="bold" fill="#7b1fa2">64位指针布局（ZGC只使用低44位作为地址）：</text>
+    
+    <g transform="translate(20, 60)">
+      <!-- 指针图示 -->
+      <rect x="0" y="0" width="700" height="50" rx="3" fill="#fff" stroke="#ce93d8" stroke-width="1"/>
+      
+      <!-- 18位预留 -->
+      <rect x="0" y="0" width="158" height="50" rx="3" fill="#e1bee7" stroke="#ba68c8" stroke-width="1"/>
+      <text x="79" y="30" text-anchor="middle" font-size="11" fill="#6a1b9a">18位预留</text>
+      
+      <!-- Finalizable -->
+      <rect x="158" y="0" width="26" height="50" fill="#ce93d8" stroke="#ab47bc" stroke-width="1"/>
+      <text x="171" y="23" text-anchor="middle" font-size="9" fill="#4a148c">Fin</text>
+      <text x="171" y="38" text-anchor="middle" font-size="8" fill="#6a1b9a">1bit</text>
+      
+      <!-- Remapped -->
+      <rect x="184" y="0" width="26" height="50" fill="#ba68c8" stroke="#9c27b0" stroke-width="1"/>
+      <text x="197" y="23" text-anchor="middle" font-size="8" fill="#fff">Remap</text>
+      <text x="197" y="38" text-anchor="middle" font-size="8" fill="#f3e5f5">1bit</text>
+      
+      <!-- Marked1 -->
+      <rect x="210" y="0" width="26" height="50" fill="#9c27b0" stroke="#7b1fa2" stroke-width="1"/>
+      <text x="223" y="23" text-anchor="middle" font-size="9" fill="#fff">M1</text>
+      <text x="223" y="38" text-anchor="middle" font-size="8" fill="#e1bee7">1bit</text>
+      
+      <!-- Marked0 -->
+      <rect x="236" y="0" width="26" height="50" fill="#7b1fa2" stroke="#6a1b9a" stroke-width="1"/>
+      <text x="249" y="23" text-anchor="middle" font-size="9" fill="#fff">M0</text>
+      <text x="249" y="38" text-anchor="middle" font-size="8" fill="#e1bee7">1bit</text>
+      
+      <!-- 对象地址 44位 -->
+      <rect x="262" y="0" width="438" height="50" fill="#4a148c" stroke="#38006b" stroke-width="1"/>
+      <text x="481" y="30" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">对象地址（44位）</text>
+    </g>
+    
+    <!-- 染色位说明 -->
+    <g transform="translate(20, 125)">
+      <text x="0" y="0" font-size="12" font-weight="bold" fill="#6a1b9a">染色位功能：</text>
+      
+      <text x="20" y="25" font-size="11" fill="#7b1fa2">• <tspan font-weight="bold">Marked0 / Marked1：</tspan>标记位，用于并发标记，交替使用实现增量回收</text>
+      <text x="20" y="50" font-size="11" fill="#7b1fa2">• <tspan font-weight="bold">Remapped：</tspan>重映射位，表示指针是否已重定位到对象的新地址</text>
+      <text x="20" y="75" font-size="11" fill="#7b1fa2">• <tspan font-weight="bold">Finalizable：</tspan>终结位，表示对象是否仅通过 finalize() 访问</text>
+    </g>
+    
+    <!-- 优势 -->
+    <g transform="translate(420, 125)">
+      <rect x="0" y="0" width="300" height="85" rx="5" fill="#fff" stroke="#ce93d8" stroke-width="1"/>
+      <text x="150" y="25" text-anchor="middle" font-size="12" font-weight="bold" fill="#7b1fa2">✓ 染色指针优势</text>
+      <text x="150" y="48" text-anchor="middle" font-size="11" fill="#666">无需访问对象头，直接通过指针判断状态</text>
+      <text x="150" y="70" text-anchor="middle" font-size="11" fill="#666">利用虚拟内存映射，实现对象移动透明化</text>
+    </g>
+  </g>
+</svg>

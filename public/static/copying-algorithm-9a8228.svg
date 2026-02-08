@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 450">
+  <defs>
+    <linearGradient id="fromGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#90caf9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#64b5f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="toGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c8e6c9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a5d6a7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="liveObj" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#81c784;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#66bb6a;stop-opacity:1" />
+    </linearGradient>
+    <marker id="arrowB" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2"/>
+    </marker>
+  </defs>
+  
+  <rect width="850" height="450" fill="#fafafa"/>
+  <text x="425" y="35" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">复制算法（Copying）</text>
+  
+  <!-- From 空间 -->
+  <g transform="translate(50, 70)">
+    <text x="150" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565c0">From 空间（使用中）</text>
+    
+    <rect x="0" y="15" width="300" height="200" rx="5" fill="url(#fromGrad)" stroke="#1976d2" stroke-width="2"/>
+    
+    <!-- 存活对象 -->
+    <rect x="30" y="40" width="80" height="50" rx="3" fill="url(#liveObj)" stroke="#388e3c" stroke-width="2"/>
+    <text x="70" y="70" text-anchor="middle" font-size="13" fill="#fff">存活对象A</text>
+    
+    <!-- 垃圾对象 -->
+    <rect x="130" y="40" width="80" height="50" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1"/>
+    <text x="170" y="70" text-anchor="middle" font-size="13" fill="#fff">垃圾B</text>
+    
+    <rect x="30" y="110" width="100" height="50" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1"/>
+    <text x="80" y="140" text-anchor="middle" font-size="13" fill="#fff">垃圾C</text>
+    
+    <!-- 存活对象 -->
+    <rect x="150" y="110" width="90" height="50" rx="3" fill="url(#liveObj)" stroke="#388e3c" stroke-width="2"/>
+    <text x="195" y="140" text-anchor="middle" font-size="13" fill="#fff">存活对象D</text>
+  </g>
+  
+  <!-- 复制过程箭头 -->
+  <g transform="translate(370, 150)">
+    <text x="55" y="-20" text-anchor="middle" font-size="14" font-weight="bold" fill="#e65100">复制存活对象</text>
+    <line x1="0" y1="20" x2="90" y2="20" stroke="#ff9800" stroke-width="3" marker-end="url(#arrowB)"/>
+    <text x="45" y="50" text-anchor="middle" font-size="12" fill="#666">按顺序紧凑排列</text>
+  </g>
+  
+  <!-- To 空间 -->
+  <g transform="translate(480, 70)">
+    <text x="150" y="0" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">To 空间（空闲）</text>
+    
+    <rect x="0" y="15" width="300" height="200" rx="5" fill="url(#toGrad)" stroke="#43a047" stroke-width="2"/>
+    
+    <!-- 复制后的存活对象 -->
+    <rect x="30" y="40" width="80" height="50" rx="3" fill="url(#liveObj)" stroke="#388e3c" stroke-width="2"/>
+    <text x="70" y="70" text-anchor="middle" font-size="13" fill="#fff">存活对象A</text>
+    
+    <rect x="120" y="40" width="90" height="50" rx="3" fill="url(#liveObj)" stroke="#388e3c" stroke-width="2"/>
+    <text x="165" y="70" text-anchor="middle" font-size="13" fill="#fff">存活对象D</text>
+    
+    <!-- 剩余空闲空间 -->
+    <rect x="30" y="110" width="240" height="80" rx="3" fill="#e8f5e9" stroke="#81c784" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="150" y="155" text-anchor="middle" font-size="14" fill="#43a047">连续空闲空间</text>
+    
+    <!-- 分配指针 -->
+    <polygon points="225,55 240,65 225,75" fill="#e65100"/>
+    <text x="255" y="70" font-size="12" fill="#e65100">分配指针</text>
+  </g>
+  
+  <!-- 说明 -->
+  <g transform="translate(50, 300)">
+    <rect x="0" y="0" width="730" height="130" rx="8" fill="#e8f5e9" stroke="#4caf50" stroke-width="1"/>
+    <text x="20" y="30" font-size="15" font-weight="bold" fill="#2e7d32">✓ 复制算法的优势</text>
+    <text x="40" y="60" font-size="14" fill="#388e3c">• <tspan font-weight="bold">无内存碎片：</tspan>存活对象被紧凑排列，内存连续可用</text>
+    <text x="40" y="85" font-size="14" fill="#388e3c">• <tspan font-weight="bold">分配速度快：</tspan>只需移动指针即可分配（bump-the-pointer）</text>
+    <text x="40" y="110" font-size="14" fill="#388e3c">• <tspan font-weight="bold">回收效率高：</tspan>只需复制存活对象，直接清空整个 From 空间</text>
+    
+    <g transform="translate(520, 30)">
+      <rect x="0" y="0" width="190" height="85" rx="5" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+      <text x="95" y="25" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">⚠️ 缺点</text>
+      <text x="95" y="50" text-anchor="middle" font-size="12" fill="#666">内存利用率仅 50%</text>
+      <text x="95" y="72" text-anchor="middle" font-size="12" fill="#666">存活对象多时复制开销大</text>
+    </g>
+  </g>
+</svg>
