@@ -29,7 +29,7 @@ export function DictTooltip({ children }: { children: React.ReactNode }) {
             track("dict_open", { term: base.term, source: "click" });
           }}
           onKeyDown={onKeyDown}
-          className="underline decoration-dotted cursor-pointer hover:text-black focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="underline decoration-dotted cursor-pointer hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           {children}
         </span>
@@ -39,7 +39,7 @@ export function DictTooltip({ children }: { children: React.ReactNode }) {
           <div className="font-bold">{base.term}</div>
           <div className="flex items-center space-x-2">
             <img className="flex h-6 w-6 shrink-0 overflow-hidden rounded-full my-2" src='/avatar.png' alt='avatar' />
-            <div className="text-xs text-zinc-500 ml-2">{base.contributors} 贡献</div>
+            <div className="text-xs text-muted-foreground ml-2">{base.contributors} 贡献</div>
           </div>
           <div className="rounded-md text-sm bg-secondary max-w-fit px-2 my-2">{base.type}</div>
           <div className="text-xs my-2">{base.definition}</div>

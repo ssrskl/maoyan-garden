@@ -97,7 +97,7 @@ export function MultiSelectCell({
                                         variant="secondary"
                                         className="group/badge rounded-sm px-1.5 font-normal hover:bg-secondary/80 cursor-pointer"
                                         style={
-                                            option.color ? { backgroundColor: option.color } : undefined
+                                            option.bg_color ? { backgroundColor: option.bg_color, color: option.text_color } : undefined
                                         }
                                     >
                                         <span>{option.label}</span>
@@ -108,9 +108,9 @@ export function MultiSelectCell({
                                 <Badge
                                     key={option.id}
                                     variant="secondary"
-                                    className="rounded-sm px-1.5 font-normal hover:bg-secondary/80"
+                                    className="rounded-sm px-1.5 font-normal hover:bg-secondary/80 text-primary"
                                     style={
-                                        option.color ? { backgroundColor: option.color } : undefined
+                                        option.bg_color ? { backgroundColor: option.bg_color, color: option.text_color } : undefined
                                     }
                                 >
                                     {option.label}
@@ -147,7 +147,7 @@ export function MultiSelectCell({
                                         variant="secondary"
                                         className="mr-1 rounded-sm px-1.5 font-normal"
                                         style={
-                                            option.color ? { backgroundColor: option.color } : undefined
+                                            option.bg_color ? { backgroundColor: option.bg_color, color: option.text_color } : undefined
                                         }
                                     >
                                         {option.label}

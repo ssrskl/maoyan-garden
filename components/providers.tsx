@@ -12,11 +12,11 @@ export function Providers({ children }: { children: ReactNode }) {
         attribute="class"
         defaultTheme="system"
         enableSystem
-        // disableTransitionOnChange
+      // disableTransitionOnChange
       >
         {children}
       </ThemeProvider>
-      <Toaster position="top-center"/>
+      <Toaster position="top-center" />
     </PhotoProvider>
   );
 }

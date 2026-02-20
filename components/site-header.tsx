@@ -72,12 +72,12 @@ export function SiteHeader() {
 
             <div className="flex items-center space-x-2">
               <FaGithub
-                className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle"
+                className="text-base w-8 h-8 p-2 rounded-lg hover:bg-accent cursor-pointer hover:animate-wiggle"
                 onClick={() => window.open("https://github.com/ssrskl")}
               />
               <ModeToggle />
               <button onClick={() => setCmdOpen(true)} aria-label="命令面板" className="flex items-center">
-                <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-gray-200 cursor-pointer hover:animate-wiggle" />
+                <SiSearxng className="text-base w-8 h-8 p-2 rounded-lg hover:bg-accent cursor-pointer hover:animate-wiggle" />
               </button>
               <span className="hidden md:inline-flex items-center text-xs text-muted-foreground border rounded px-2 py-1">
                 {isMac ? "⌘" : "Ctrl"} K

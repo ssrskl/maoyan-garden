@@ -71,8 +71,15 @@ export default function MapContent({ posts }: { posts: P[] }) {
     el.innerHTML = "";
     const svg = d3.select(el).append("svg").attr("width", size.w).attr("height", size.h);
     const g = svg.append("g");
-    const color = (n: N) => (n.type === "tag" ? "#3b82f6" : n.status === "evergreen" ? "#10b981" : n.status === "growing" ? "#f59e0b" : "#6366f1");
-    const link = g.append("g").attr("stroke", "#9ca3af").attr("stroke-opacity", 0.6).selectAll("line").data(data.links).join("line").attr("stroke-width", 1.2);
+    const color = (n: N) =>
+      n.type === "tag"
+        ? "hsl(var(--graph-tag))"
+        : n.status === "evergreen"
+        ? "hsl(var(--graph-evergreen))"
+        : n.status === "growing"
+        ? "hsl(var(--graph-growing))"
+        : "hsl(var(--graph-default))";
+    const link = g.append("g").attr("stroke", "hsl(var(--graph-link))").attr("stroke-opacity", 0.6).selectAll("line").data(data.links).join("line").attr("stroke-width", 1.2);
     const node = g.append("g").selectAll("g").data(data.nodes).join("g").call(
       d3.drag<SVGGElement, N>()
         .on("start", (event) => {
@@ -96,7 +103,7 @@ export default function MapContent({ posts }: { posts: P[] }) {
         window.location.href = `/${slug}`;
       }
     });
-    node.append("text").text((d: any) => d.label).attr("x", 14).attr("y", 4).attr("font-size", 12).attr("fill", "#111827");
+    node.append("text").text((d: any) => d.label).attr("x", 14).attr("y", 4).attr("font-size", 12).attr("fill", "hsl(var(--graph-label))");
     const sim = d3
       .forceSimulation(data.nodes as any)
       .force("link", d3.forceLink(data.links as any).id((d: any) => d.id).distance(90).strength(0.4))

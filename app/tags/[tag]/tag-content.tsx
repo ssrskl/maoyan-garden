@@ -45,7 +45,7 @@ export default function TagContent({ tag, posts, allTags }: TagContentProps) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href={`/tags/${tag}`} className="font-bold text-black capitalize">
+                  <BreadcrumbLink href={`/tags/${tag}`} className="font-bold text-foreground capitalize">
                     {title}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -57,7 +57,7 @@ export default function TagContent({ tag, posts, allTags }: TagContentProps) {
                 className='w-full lg:w-2/3'
                 variants={slideUp}
               >
-                <div className='lg:border-r-2 lg:border-gray-200 pt-8 lg:pr-6'>
+                <div className='lg:border-r-2 lg:border-border pt-8 lg:pr-6'>
                   <motion.div
                     className="text-4xl font-black capitalize mb-6"
                     variants={slideUp}
@@ -88,7 +88,7 @@ export default function TagContent({ tag, posts, allTags }: TagContentProps) {
                         })}
                       </ul>
                     ) : (
-                      <p className="text-gray-500">此标签下暂无文章</p>
+                      <p className="text-muted-foreground">此标签下暂无文章</p>
                     )}
                   </motion.div>
                 </div>

@@ -59,7 +59,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className='font-blod text-black'>文章</BreadcrumbLink>
+                  <BreadcrumbLink href="/" className='font-blod text-foreground'>文章</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

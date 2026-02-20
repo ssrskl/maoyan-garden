@@ -105,7 +105,7 @@ export default function AboutContent() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/" className='font-blod text-black'>关于我</BreadcrumbLink>
+                                    <BreadcrumbLink href="/" className='font-blod text-foreground'>关于我</BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>

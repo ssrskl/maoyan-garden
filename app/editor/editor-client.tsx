@@ -72,8 +72,8 @@ export default function EditorClient() {
   return (
     <div className="mx-auto w-full max-w-screen-2xl px-4 py-10">
       <div className="mb-6 flex flex-col gap-2">
-        <div className="text-2xl font-bold text-black">在线 MDX 编辑器</div>
-        <div className="text-sm text-zinc-500">
+        <div className="text-2xl font-bold text-foreground">在线 MDX 编辑器</div>
+        <div className="text-sm text-muted-foreground">
           左侧编写 Markdown/MDX，右侧实时预览编译效果。支持项目内自定义组件。
         </div>
       </div>
@@ -81,41 +81,41 @@ export default function EditorClient() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-zinc-700">编辑区</div>
-            <div className="text-xs text-zinc-500">
+            <div className="text-sm font-semibold text-foreground">编辑区</div>
+            <div className="text-xs text-muted-foreground">
               {isCompiling ? "编译中..." : "已就绪"}
             </div>
           </div>
           <textarea
             value={source}
             onChange={(event) => setSource(event.target.value)}
-            className="h-[70vh] w-full resize-none rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm leading-relaxed text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400"
+            className="h-[70vh] w-full resize-none rounded-lg border border-border bg-card px-4 py-3 text-sm leading-relaxed text-foreground shadow-sm outline-none transition focus:border-ring"
             spellCheck={false}
           />
         </div>
 
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold text-zinc-700">预览区</div>
+            <div className="text-sm font-semibold text-foreground">预览区</div>
             {error ? (
               <div className="text-xs text-red-600">编译错误</div>
             ) : (
-              <div className="text-xs text-zinc-500">实时预览</div>
+              <div className="text-xs text-muted-foreground">实时预览</div>
             )}
           </div>
 
-          <div className="relative h-[70vh] overflow-auto rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="relative h-[70vh] overflow-auto rounded-lg border border-border bg-card p-6 shadow-sm">
             {error ? (
               <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 <div className="font-semibold">编译失败</div>
                 <div className="mt-2 whitespace-pre-wrap break-words">{error}</div>
               </div>
             ) : code ? (
-              <div className="prose prose-slate max-w-none dark:prose-invert prose-p:text-black prose-headings:text-black prose-li:text-black prose-strong:text-black">
+              <div className="prose prose-slate max-w-none dark:prose-invert prose-p:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-strong:text-foreground">
                 <MDXContent code={code} />
               </div>
             ) : (
-              <div className="text-sm text-zinc-400">等待输入...</div>
+              <div className="text-sm text-muted-foreground">等待输入...</div>
             )}
           </div>
         </div>

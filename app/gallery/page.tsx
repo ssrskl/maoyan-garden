@@ -59,7 +59,7 @@ export default function GalleryPage() {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/gallery" className='font-bold text-black'>影函</BreadcrumbLink>
+                                    <BreadcrumbLink href="/gallery" className='font-bold text-foreground'>影函</BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -78,7 +78,7 @@ export default function GalleryPage() {
                     {/* 瀑布流展示 */}
                     <motion.div className="columns-1 sm:columns-2 lg:columns-3 gap-4 mt-6" variants={containerVariants}>
                         {filteredImages.map((image) => (
-                            <motion.div key={image.id} variants={itemVariants} className="break-inside-avoid mb-4 group overflow-hidden rounded-lg bg-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+                            <motion.div key={image.id} variants={itemVariants} className="break-inside-avoid mb-4 group overflow-hidden rounded-lg bg-muted shadow-sm hover:shadow-lg transition-all duration-300">
                                 <div className="relative">
                                     <PhotoView src={image.src}>
                                         <img
@@ -96,10 +96,10 @@ export default function GalleryPage() {
                                     </div>
                                 </div>
                                 <div className="p-3 flex justify-between items-center">
-                                    <span className="text-xs text-gray-500">{new Date(image.date).toLocaleDateString()}</span>
+                                    <span className="text-xs text-muted-foreground">{new Date(image.date).toLocaleDateString()}</span>
                                     <div className="flex gap-1">
                                         {image.tags.map((tag) => (
-                                            <span key={tag} className="text-xs bg-gray-200 px-2 py-0.5 rounded-full">{tag}</span>
+                                            <span key={tag} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{tag}</span>
                                         ))}
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@ export default function GalleryPage() {
                             className="flex flex-col items-center justify-center py-20 text-center"
                             variants={fadeInUp}
                         >
-                            <p className="text-gray-500 text-lg">没有找到符合条件的图片</p>
+                            <p className="text-muted-foreground text-lg">没有找到符合条件的图片</p>
                             <button
                                 onClick={() => setActiveTag(null)}
                                 className="mt-4 text-primary hover:underline"

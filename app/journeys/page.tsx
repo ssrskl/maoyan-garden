@@ -31,7 +31,7 @@ export default function JourneysPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/journeys" className="font-bold text-black dark:text-white">成长历程</BreadcrumbLink>
+                  <BreadcrumbLink href="/journeys" className="font-bold text-foreground">成长历程</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

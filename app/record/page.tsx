@@ -107,11 +107,11 @@ const habits = [
 
 // 模拟时间分配数据
 const timeDistribution = [
-  { name: "阅读", value: 35, color: "#3b82f6" },
-  { name: "写作", value: 25, color: "#10b981" },
-  { name: "学习", value: 20, color: "#f59e0b" },
-  { name: "休息", value: 15, color: "#8b5cf6" },
-  { name: "其他", value: 5, color: "#6b7280" }
+  { name: "阅读", value: 35, color: "hsl(var(--chart-1))" },
+  { name: "写作", value: 25, color: "hsl(var(--chart-2))" },
+  { name: "学习", value: 20, color: "hsl(var(--chart-3))" },
+  { name: "休息", value: 15, color: "hsl(var(--chart-4))" },
+  { name: "其他", value: 5, color: "hsl(var(--chart-5))" }
 ];
 
 // 格式化大数字显示
@@ -147,7 +147,7 @@ export default function DashboardPage() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+      className="min-h-screen bg-background text-foreground"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -318,11 +318,11 @@ export default function DashboardPage() {
                           <BarChart data={readingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis dataKey="month" />
-                            <YAxis yAxisId="left" orientation="left" stroke="#3b82f6" />
-                            <YAxis yAxisId="right" orientation="right" stroke="#10b981" />
+                            <YAxis yAxisId="left" orientation="left" stroke="hsl(var(--chart-1))" />
+                            <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--chart-2))" />
                             <Tooltip />
-                            <Bar yAxisId="left" dataKey="books" name="书籍数量" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                            <Bar yAxisId="right" dataKey="pages" name="阅读页数" fill="#10b981" radius={[4, 4, 0, 0]} />
+                            <Bar yAxisId="left" dataKey="books" name="书籍数量" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+                            <Bar yAxisId="right" dataKey="pages" name="阅读页数" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
                           </BarChart>
                         </ResponsiveContainer>
                       </div>
@@ -344,11 +344,11 @@ export default function DashboardPage() {
                           <PieChart>
                             <Pie
                               data={[
-                                { name: "技术", value: 45, color: "#3b82f6" },
-                                { name: "文学", value: 25, color: "#10b981" },
-                                { name: "历史", value: 15, color: "#f59e0b" },
-                                { name: "哲学", value: 10, color: "#8b5cf6" },
-                                { name: "其他", value: 5, color: "#6b7280" }
+                                { name: "技术", value: 45, color: "hsl(var(--chart-1))" },
+                                { name: "文学", value: 25, color: "hsl(var(--chart-2))" },
+                                { name: "历史", value: 15, color: "hsl(var(--chart-3))" },
+                                { name: "哲学", value: 10, color: "hsl(var(--chart-4))" },
+                                { name: "其他", value: 5, color: "hsl(var(--chart-5))" }
                               ]}
                               cx="50%"
                               cy="50%"
@@ -369,11 +369,11 @@ export default function DashboardPage() {
                   </CardContent>
                   <CardFooter className="flex flex-wrap gap-2 justify-center">
                     {[
-                      { name: "技术", color: "#3b82f6" },
-                      { name: "文学", color: "#10b981" },
-                      { name: "历史", color: "#f59e0b" },
-                      { name: "哲学", color: "#8b5cf6" },
-                      { name: "其他", color: "#6b7280" }
+                      { name: "技术", color: "hsl(var(--chart-1))" },
+                      { name: "文学", color: "hsl(var(--chart-2))" },
+                      { name: "历史", color: "hsl(var(--chart-3))" },
+                      { name: "哲学", color: "hsl(var(--chart-4))" },
+                      { name: "其他", color: "hsl(var(--chart-5))" }
                     ].map((item, index) => (
                       <Badge key={index} variant="outline" className="flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></span>
@@ -405,15 +405,15 @@ export default function DashboardPage() {
                           <LineChart data={writingData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis dataKey="month" />
-                            <YAxis yAxisId="left" orientation="left" stroke="#8b5cf6" />
-                            <YAxis yAxisId="right" orientation="right" stroke="#ec4899" />
+                            <YAxis yAxisId="left" orientation="left" stroke="hsl(var(--chart-4))" />
+                            <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--chart-6))" />
                             <Tooltip />
                             <Line
                               yAxisId="left"
                               type="monotone"
                               dataKey="articles"
                               name="文章数量"
-                              stroke="#8b5cf6"
+                              stroke="hsl(var(--chart-4))"
                               strokeWidth={2}
                               dot={{ r: 4 }}
                               activeDot={{ r: 6 }}
@@ -423,7 +423,7 @@ export default function DashboardPage() {
                               type="monotone"
                               dataKey="words"
                               name="总字数"
-                              stroke="#ec4899"
+                              stroke="hsl(var(--chart-6))"
                               strokeWidth={2}
                               dot={{ r: 4 }}
                               activeDot={{ r: 6 }}
@@ -454,9 +454,9 @@ export default function DashboardPage() {
                     ) : (
                       <>
                         {[
-                          { name: "技术文章", avg: 2400, color: "#3b82f6" },
-                          { name: "随笔感悟", avg: 1200, color: "#10b981" },
-                          { name: "读书笔记", avg: 1800, color: "#f59e0b" }
+                          { name: "技术文章", avg: 2400, color: "hsl(var(--chart-1))" },
+                          { name: "随笔感悟", avg: 1200, color: "hsl(var(--chart-2))" },
+                          { name: "读书笔记", avg: 1800, color: "hsl(var(--chart-3))" }
                         ].map((item, index) => (
                           <div key={index} className="space-y-2">
                             <div className="flex justify-between">
@@ -528,7 +528,7 @@ export default function DashboardPage() {
                                   backgroundColor: completed 
                                     ? "rgba(16, 185, 129, 0.1)" 
                                     : "rgba(229, 231, 235, 1)",
-                                  color: completed ? "#10b981" : "#9ca3af"
+                                  color: completed ? "hsl(var(--chart-2))" : "hsl(var(--graph-link))"
                                 }}
                               >
                                 {["一", "二", "三", "四", "五", "六", "日"][index]}
@@ -621,7 +621,7 @@ export default function DashboardPage() {
                             <Bar
                               dataKey="hours"
                               name="专注小时数"
-                              fill="#8b5cf6"
+                              fill="hsl(var(--chart-4))"
                               radius={[4, 4, 0, 0]}
                               barSize={40}
                             />

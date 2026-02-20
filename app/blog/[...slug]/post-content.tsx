@@ -81,7 +81,7 @@ export default function PostContent({ post }: PostContentProps) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink className='font-bold text-black'>{post.title}</BreadcrumbLink>
+                  <BreadcrumbLink className='font-bold text-foreground'>{post.title}</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -91,7 +91,7 @@ export default function PostContent({ post }: PostContentProps) {
                 className='w-full lg:w-3/4'
                 variants={slideUp}
               >
-                <div className='lg:border-r-2 lg:border-gray-200 pt-16 lg:pr-6'>
+                <div className='lg:border-r-2 lg:border-border pt-16 lg:pr-6'>
                   <motion.div
                     className="text-3xl font-bold mt-4"
                     variants={slideUp}
@@ -104,7 +104,7 @@ export default function PostContent({ post }: PostContentProps) {
                     variants={slideUp}
                   >
                     <StatusBadge status={post.status} />
-                    <div className="flex items-center text-gray-500 text-sm">
+                    <div className="flex items-center text-muted-foreground text-sm">
                       <MdOutlineDateRange className="mr-1" />
                       {toFromNow(Date.parse(post.date))}
                     </div>
@@ -119,7 +119,7 @@ export default function PostContent({ post }: PostContentProps) {
                     ))}
                   </motion.div>
                   <motion.div
-                    className="flex items-center text-gray-500 text-sm my-2"
+                    className="flex items-center text-muted-foreground text-sm my-2"
                     variants={slideUp}
                   >
                     <MdOutlineDateRange className="mr-1" />
@@ -136,7 +136,7 @@ export default function PostContent({ post }: PostContentProps) {
                   </motion.div>
 
                   <motion.div
-                    className="mt-6 prose prose-slate max-w-none dark:prose-invert prose-p:text-black prose-headings:text-black prose-li:text-black prose-strong:text-black"
+                    className="mt-6 prose prose-slate max-w-none dark:prose-invert prose-p:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-strong:text-foreground"
                     variants={slideUp}
                   >
                     <MDXContent code={post.body} />
@@ -154,7 +154,7 @@ export default function PostContent({ post }: PostContentProps) {
                         reactionsEnabled="1"
                         emitMetadata="0"
                         inputPosition="bottom"
-                        theme="light"
+                        theme="preferred_color_scheme"
                         lang="zh-CN"
                         loading="eager"
                       />
@@ -180,7 +180,7 @@ export default function PostContent({ post }: PostContentProps) {
                   </Avatar>
                   <div className="flex flex-col space-y-3 ">
                     <div className="font-bold text-sm">猫颜</div>
-                    <div className="text-sm text-zinc-500">
+                    <div className="text-sm text-muted-foreground">
                       一花一世界，一叶一追寻
                     </div>
                   </div>
@@ -242,7 +242,7 @@ export default function PostContent({ post }: PostContentProps) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <ArrowUp size={24} />
+            <ArrowUp size={24} className="text-primary-foreground" />
           </motion.button>
         )}
       </AnimatePresence>

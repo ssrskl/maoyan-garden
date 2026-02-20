@@ -40,7 +40,7 @@ export default function TagsPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/" className='font-blod text-black'>标笺</BreadcrumbLink>
+                  <BreadcrumbLink href="/" className='font-blod text-foreground'>标笺</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

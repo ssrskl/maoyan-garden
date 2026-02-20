@@ -62,7 +62,7 @@ export default function ArchivePage() {
                 <BreadcrumbItem>
                   <BreadcrumbLink
                     href="/archive"
-                    className="font-bold text-black"
+                    className="font-bold text-foreground"
                   >
                     藏籍
                   </BreadcrumbLink>

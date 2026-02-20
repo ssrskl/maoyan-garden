@@ -33,36 +33,119 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* custom component semantic colors */
+    --callout-info: 245 100% 60%;
+    --callout-info-bg: 210 80% 95%;
+    --callout-warning: 36 100% 50%;
+    --callout-warning-bg: 35 100% 93%;
+    --callout-danger: 0 100% 50%;
+    --callout-danger-bg: 8 100% 95%;
+
+    --graph-tag: 217 91% 60%;
+    --graph-evergreen: 160 84% 39%;
+    --graph-growing: 38 92% 50%;
+    --graph-default: 243 75% 59%;
+    --graph-link: 220 9% 64%;
+    --graph-label: 222 47% 11%;
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 160 84% 39%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 215 14% 46%;
+    --chart-6: 330 81% 60%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    /* 核心背景与前景色 - 以纯黑为基底，提升层次感 */
+    --background: 0 0% 6%;
+    /* 极深的黑色 */
     --foreground: 210 40% 98%;
+    /* 更亮的浅灰色，提升文字可读性 */
 
-    --card: 222.2 84% 4.9%;
+    /* 卡片与弹出层 - 微差分层，避免纯黑的压抑感 */
+    --card: 0 0% 9%;
+    /* 比背景稍亮的黑色 */
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 8%;
+    /* 介于背景和卡片之间的黑色 */
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* 主色调 - 改为白色系，适配纯黑基底，保证视觉舒适度 */
+    --primary: 0 0% 100%;
+    /* 纯白色，替代原青蓝色 */
+    --primary-foreground: 0 0% 6%;
+    /* 匹配背景的纯黑，保证文字对比 */
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* 次要色 - 深灰系，增强层级 */
+    --secondary: 0 0% 16%;
+    /* 深灰色 */
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* 弱化色 - 极致低对比，用于次要信息 */
+    --muted: 0 0% 12%;
+    /* 极深的灰色 */
+    --muted-foreground: 215 16% 60%;
+    /* 稍暗的浅灰，避免过亮 */
 
-    --accent: 217.2 32.6% 17.5%;
+    /* 强调色 - 微亮的深灰，突出交互元素 */
+    --accent: 0 0% 18%;
+    /* 比secondary稍亮的深灰 */
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    /* 危险色 - 低饱和红，适配黑底 */
+    --destructive: 0 70% 50%;
+    /* 稍暗的红色，减少刺眼感 */
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* 边框与输入框 - 极细的灰色边框，保证区分度 */
+    --border: 0 0% 15%;
+    /* 深灰色边框 */
+    --input: 0 0% 12%;
+    /* 与muted一致，输入框背景更统一 */
+    --ring: 0 0% 90%;
+    /* 浅白色聚焦环，替代原青蓝色，避免纯白过于刺眼 */
+
+    /* 自定义组件语义色 - 适配纯黑基底，降低饱和度 */
+    --callout-info: 204 80% 60%;
+    --callout-info-bg: 204 80% 12%;
+    /* 主色的极暗版本，适配黑底 */
+    /* 极浅的黑色背景，突出白色文字 */
+    --callout-warning: 38 80% 55%;
+    /* 低饱和黄色 */
+    --callout-warning-bg: 38 80% 12%;
+    --callout-danger: 0 70% 45%;
+    /* 低饱和红色 */
+    --callout-danger-bg: 0 70% 12%;
+
+    /* 图表/图形色 - 保留差异化，主标签色改为白色系 */
+    --graph-tag: 0 0% 100%;
+    /* 白色作为标签色 */
+    --graph-evergreen: 157 60% 45%;
+    /* 低饱和绿色 */
+    --graph-growing: 38 80% 55%;
+    /* 低饱和橙色 */
+    --graph-default: 252 70% 60%;
+    /* 低饱和紫色 */
+    --graph-link: 216 15% 50%;
+    /* 更暗的灰色链接 */
+    --graph-label: 210 40% 90%;
+
+    /* 图表系列色 - 统一饱和度，视觉更协调 */
+    --chart-1: 0 0% 100%;
+    /* 白色作为第一个图表色 */
+    --chart-2: 157 60% 45%;
+    /* 低饱和绿色 */
+    --chart-3: 38 80% 55%;
+    /* 低饱和橙色 */
+    --chart-4: 252 70% 60%;
+    /* 低饱和紫色 */
+    --chart-5: 216 15% 55%;
+    /* 浅灰色 */
+    --chart-6: 333 70% 60%;
+    /* 低饱和粉色 */
   }
 }
 
@@ -83,19 +166,23 @@
     width: 10px;
     height: 10px;
   }
+
   *::-webkit-scrollbar-track {
     background: hsl(var(--muted));
     border-radius: 999px;
   }
+
   *::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: content-box;
   }
+
   *::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary));
   }
+
   /* Firefox */
   * {
     scrollbar-width: thin;

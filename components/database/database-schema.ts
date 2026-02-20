@@ -3,7 +3,8 @@ export type ColumnType = 'text' | 'number' | 'select' | 'multi-select' | 'url';
 export interface Option {
     id: string;
     label: string;
-    color?: string; // hex or tailwind class
+    bg_color?: string; // hex or tailwind class
+    text_color?: string; // hex or tailwind class
     url?: string; // Optional URL for clickable badges
 }
 

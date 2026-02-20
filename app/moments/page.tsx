@@ -58,7 +58,7 @@ export default function MomentsPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/moments" className='font-bold text-black'>瞬华</BreadcrumbLink>
+                <BreadcrumbLink href="/moments" className='font-bold text-foreground'>瞬华</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -89,9 +89,9 @@ export default function MomentsPage() {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900 truncate">{moment.user.name}</h3>
+                      <h3 className="font-medium text-foreground truncate">{moment.user.name}</h3>
                     </div>
-                    <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
+                    <div className="flex items-center gap-1 mt-0.5 text-xs text-muted-foreground">
                       <span>{formatTime(moment.timestamp)}</span>
                       {moment.location && (
                         <>
@@ -105,7 +105,7 @@ export default function MomentsPage() {
 
                 {/* 内容 */}
                 {moment.content && (
-                  <div className="mt-2 text-gray-900 whitespace-pre-line">
+                  <div className="mt-2 text-foreground whitespace-pre-line">
                     {moment.content}
                   </div>
                 )}
@@ -116,7 +116,7 @@ export default function MomentsPage() {
                     {moment.images.map((src, index) => (
                       <div
                         key={index}
-                        className="aspect-square overflow-hidden rounded-md bg-gray-100 relative group cursor-zoom-in"
+                        className="aspect-square overflow-hidden rounded-md bg-muted relative group cursor-zoom-in"
                       >
                         <PhotoView src={src}>
                           <img
@@ -131,18 +131,18 @@ export default function MomentsPage() {
                 )}
 
                 {/* 互动按钮 */}
-                <div className="flex justify-start space-x-60 items-center mt-4 pt-2 border-t border-gray-100">
+                <div className="flex justify-start space-x-60 items-center mt-4 pt-2 border-t border-border">
                   <button
                     onClick={() => handleLike(moment.id)}
                     className={`flex items-center gap-1 text-sm px-4 py-1 rounded-full transition-colors ${moment.liked
                       ? 'text-red-500 hover:bg-red-50'
-                      : 'text-gray-500 hover:bg-gray-50'
+                      : 'text-muted-foreground hover:bg-accent'
                       }`}
                   >
                     <Heart className={`h-4 w-4 ${moment.liked ? 'fill-red-500' : ''}`} />
                     <span>点赞</span>
                   </button>
-                  <button className="flex items-center gap-1 text-sm px-4 py-1 rounded-full text-gray-500 hover:bg-gray-50 transition-colors">
+                  <button className="flex items-center gap-1 text-sm px-4 py-1 rounded-full text-muted-foreground hover:bg-accent transition-colors">
                     <Share2 className="h-4 w-4" />
                     <span>分享</span>
                   </button>
@@ -150,8 +150,8 @@ export default function MomentsPage() {
 
                 {/* 点赞数 */}
                 {moment.likes > 0 && (
-                  <div className="mt-3 text-sm text-gray-500">
-                    <span className="font-medium text-gray-700">{moment.likes}</span> 人觉得很赞
+                  <div className="mt-3 text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">{moment.likes}</span> 人觉得很赞
                   </div>
                 )}
               </motion.article>

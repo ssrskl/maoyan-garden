@@ -20,10 +20,10 @@ export function SiteFooter() {
           </div>
           <div className="flex justify-center items-center space-x-4">
             <div className="grid grid-cols-4 gap-2">
-              <SiTencentqq className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-stone-200 cursor-pointer" />
-              <SiWechat className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-stone-200 cursor-pointer" />
-              <SiSinaweibo className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-stone-200 cursor-pointer" />
-              <SiZhihu className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-stone-200 cursor-pointer" />
+              <SiTencentqq className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-accent cursor-pointer" />
+              <SiWechat className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-accent cursor-pointer" />
+              <SiSinaweibo className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-accent cursor-pointer" />
+              <SiZhihu className="border border-stone-300 w-9 h-9 p-2 rounded-full hover:bg-accent cursor-pointer" />
             </div>
             <div className="flex items-center space-x-2 rounded-lg hover:bg-zinc-200 hover:shadow-md px-2 py-1">
               <div className="relative flex w-4 h-4">

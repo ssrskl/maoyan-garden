@@ -36,11 +36,16 @@ function renderGraph(el: HTMLDivElement, data: { nodes: Node[]; links: Link[] },
   const svg = d3.select(el).append("svg").attr("width", size.w).attr("height", size.h);
   const g = svg.append("g");
 
-  const color = (n: Node) => (n.type === "tag" ? "#3b82f6" : n.id.startsWith("post:") && n.status === "evergreen" ? "#10b981" : "#6366f1");
+  const color = (n: Node) =>
+    n.type === "tag"
+      ? "hsl(var(--graph-tag))"
+      : n.id.startsWith("post:") && n.status === "evergreen"
+      ? "hsl(var(--graph-evergreen))"
+      : "hsl(var(--graph-default))";
 
   const link = g
     .append("g")
-    .attr("stroke", "#9ca3af")
+    .attr("stroke", "hsl(var(--graph-link))")
     .attr("stroke-opacity", 0.6)
     .selectAll("line")
     .data(data.links)
@@ -88,7 +93,7 @@ function renderGraph(el: HTMLDivElement, data: { nodes: Node[]; links: Link[] },
     .attr("x", 14)
     .attr("y", 4)
     .attr("font-size", 12)
-    .attr("fill", "#111827");
+    .attr("fill", "hsl(var(--graph-label))");
 
   const simulation = d3
     .forceSimulation(data.nodes as any)
