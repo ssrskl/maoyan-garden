@@ -55,8 +55,8 @@ export function SelectCell({
                             variant="secondary"
                             className="mr-1 rounded-sm px-1.5 font-normal"
                             style={
-                                selectedOption.color
-                                    ? { backgroundColor: selectedOption.color }
+                                selectedOption.bg_color
+                                    ? { backgroundColor: selectedOption.bg_color, color: selectedOption.text_color }
                                     : undefined
                             }
                         >
@@ -90,7 +90,7 @@ export function SelectCell({
                                         variant="secondary"
                                         className="mr-1 rounded-sm px-1.5 font-normal"
                                         style={
-                                            option.color ? { backgroundColor: option.color } : undefined
+                                            option.bg_color ? { backgroundColor: option.bg_color, color: option.text_color } : undefined
                                         }
                                     >
                                         {option.label}
