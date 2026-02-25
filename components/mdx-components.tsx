@@ -3,6 +3,7 @@ import * as runtime from "react/jsx-runtime";
 import { Callout } from "./callout";
 import { LinkCard } from "./linkcard";
 import { QuizBar } from "./quiz-bar";
+import { Quiz } from "./quiz";
 import React from "react";
 import SplitLayout, { SplitImage } from "./split-layout";
 // import Zoom from 'react-medium-image-zoom'
@@ -37,6 +38,7 @@ const components = {
   Callout,
   LinkCard,
   QuizBar,
+  Quiz,
   Sidenote,
   Dialogue,
   SpeechBubble,

@@ -45,6 +45,12 @@ export const SAMPLE_DATA = {
                 { id: "data_unpivot", label: "数据展开", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#数据展开"},
                 // 同时在线人数
                 { id: "simultaneous_online", label: "同时在线人数", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#同时在线人数"},
+                // 数据合并1--京东
+                { id: "data_merge_1", label: "数据合并1--京东", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#数据合并1--京东"},
+                // 数据合并2--京东
+                { id: "data_merge_2", label: "数据合并2--京东", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#数据合并2--京东"},
+                // 每种实验的完成次数
+                { id: "experiment_completion", label: "每种实验的完成次数", color: "#00000" ,url: "/blog/algorithm/sql/sql-beginner-to-expert#每种实验的完成次数"},
             ],
         },
     ],
@@ -58,11 +64,27 @@ export const SAMPLE_DATA = {
             },
         },
         {
+            id: "2",
+            cells: {
+                primary_key: { text: "多维度枚举补全和聚合统计", url: "/blog/algorithm/sql/sql-beginner-to-expert#多维度枚举补全和聚合统计" },
+                tags: ["enum_completion", "aggregate"],
+                title: ["experiment_completion"],
+            },
+        },
+        {
             id: "3",
             cells: {
                 primary_key: { text: "数据展开", url: "/blog/algorithm/sql/sql-beginner-to-expert#数据展开" },
                 tags: ["explode", "unpivot"],
                 title: ["data_unpivot","simultaneous_online"],
+            },
+        },
+                {
+            id: "4",
+            cells: {
+                primary_key: { text: "数据合并", url: "/blog/algorithm/sql/sql-beginner-to-expert#数据合并" },
+                tags: [],
+                title: ["data_merge_1","data_merge_2"],
             },
         },
         {
@@ -148,6 +170,53 @@ WHERE
 
 ## 两两结对组
 ## 坚定的友谊
+# 多维度枚举补全和聚合统计
+多维度枚举和统计因为对于没有的数据需要记录为0，所以核心就是，分别将每一个维度都单独列出，再进行合并与统计即可。
+## 每种实验的完成次数
+统计每一种实验完成的次数，没有的记为0
+```sql
+WITH experiments(experiment_id,platform,experiment_name) as (
+    select 4,'IOS','Programming' union all
+    select 13,'IOS','Sports' union all
+    select 14,'Android','Reading' union all
+    select 8,'Web','Reading' union all
+    select 12,'Web','Reading' union all
+    select 18,'Web','Programming'
+)
+```
+这里有平台和实验两个维度，所以将每一个维度都单独列出
+<SplitLayout layout="1/2">
+  ```sql
+  t_platform as (
+    SELECT 'IOS' as platform
+    UNION ALL
+    SELECT 'Android' as platform
+    UNION ALL
+    SELECT 'Web' as platform
+)
+  ```
+ ```sql
+t_experiment_name as (
+    SELECT 'Reading' as experiment_name
+    UNION ALL
+    SELECT 'Programming' as experiment_name
+    UNION ALL
+    SELECT 'Sports' as experiment_name
+)
+ ```
+</SplitLayout>
+先将两个维度进行全合并，再与需要统计的数据进行合并，再进行统计计算即可
+```sql
+SELECT tp.platform, te.experiment_name, count(DISTINCT experiment_id) as num_experiments
+FROM
+    t_platform tp
+    JOIN t_experiment_name te
+    LEFT JOIN experiments e ON tp.platform = e.platform
+    AND te.experiment_name = e.experiment_name
+GROUP BY
+    tp.platform,
+    te.experiment_name
+```
 
 # 数据展开
 数据展开的解决方式

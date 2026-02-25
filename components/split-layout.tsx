@@ -23,7 +23,7 @@ export const SplitLayout = ({ children, image, layout = "1/2", reverse = false, 
     // 如果有image属性，说明是图片+内容的布局
     if (image) {
         return (
-            <div className={`flex flex-col md:flex-row items-center justify-center gap-4 p-2 ${className}`}>
+            <div className={`flex flex-col md:flex-row items-center justify-center gap-4 ${className}`}>
                 {!reverse ? (
                     <>
                         <div className={`${layoutClass[layout]} overflow-hidden`}>
