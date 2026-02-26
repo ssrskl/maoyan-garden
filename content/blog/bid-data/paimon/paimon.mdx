@@ -6,277 +6,447 @@ tags: ["Paimon", "数据湖","流式计算","流批一体"]
 published: true
 status: growing
 ---
-# 参考
-[字节跳动 Paimon 实践](https://bytedance.larkoffice.com/docx/KXmVd2QIxo1H34xNymEc442HnZ0)
 
-[Paimon 官方文档](https://paimon.apache.org/docs/0.8/)
+# Paimon
 
-# Paimon 数据湖是什么
+## Paimon介绍
 
-Apache Paimon 是一项新的流式数据湖存储技术，通过创新性的结合 LSM-Tree 结构和湖格式，可以为用户提供高吞吐、低延迟的数据摄入、完整的流式变更订阅以及高效的 OLAP 查询能力，并同时支持 Flink 和 Spark 计算引擎进行流批加工。
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260123210341-g9652wi.png)
 
-# 核心能力
+‍
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260123210912-bkccfzy.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260123210925-hd4tyjx.png)
+
+## 为什么选择Paimon
+
+**准实时替换离线**：一条 SQL 把 MySQL 全库搬到 Paimon，Schema 变更自动同步
+
+- 分钟级可见：Checkpoint 1 min 可见
+- 百倍存储节省：LSM 复用文件，10 TB 表每日 1 GB 更新，历史快照仅增量占用
+- 离线视图秒级创建：`CREATE TAG 20251111` 立即产生快照，供离线跑批，同时对于一些准实时 5min/30min/1h 指标都可以快速支持。
+
+**实现湖仓一次存储**：存储成本居高不下，很多实时性要求不高的场景，其实没有必要用成本较高的分布式存储服务来支持。Paimon 解决离线、实时双跑双存储问题，实现离线实时同时读一张表，降低存储成本。当前很多实时 realtime 表存到离线一份导致存储压力过大。
+
+**Kappa 的实时数仓，缺陷如下**：
+
+- Kafka 无法支持海量数据存储。对于海量数据量的业务线来说，Kafka 一般只能存储非常短时间的数据，比如最近一周，甚至最近一天。
+- Kafka 无法支持高效的 OLAP 查询。大多数业务都希望能在 DW/DDWS 层支持即席查询，但是 Kafka 无法非常友好地支持这样的需求，无法复用目前非常成熟的基于离线数仓的数据血缘、数据质量管理体系。需要重新实现一套数据血缘、数据质量管理体系。
+- Kafka 不支持 update/upsert，目前 Kafka 仅支持 append。
+
+**实时数据写入 hive 表会导致大量小文件产生**：  
+之前我们在讲小文件那节课也提到了实时数据写入离线表不会合并，如果要合并需要起调度任务，但这样效率太慢了（业务方在查询时仍然会收到小文件干扰），总不能 5min 跑一次离线调度去刷吧。。。
+
+# 元数据层
+
+paimon 使用的也是类似于 Hive 的双层架构，分为元数据层和数据层，但是其元数据层相对于 Hive 只用于指定 HDFS 数据路径在哪里来说要更复杂一些。
+
+每次写操作都会写出一组文件，包含：
+
+- 一个快照根文件（snapshotfile)
+- 两个清单列表文件（manifest-list））——**base与delta**
+- 一个索引清单文件（indexmanifest）—暂时可以不关注
+- 若干清单文件（manifestfiles)
+- 若干数据文件
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229154649-cj3sq8g.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260219235154-xp58775.png)
+
+左边是逻辑结构，右边是物理结构
+<SplitLayout layout="1/2">
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229153650-d42v8mx.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229153444-ru2tzwe.png)
+</SplitLayout>
 
 
-# 主键表与非主键表
 
-Paimon 表的 主键表（Primary Key Table）和 非主键表（Non-Primary Key Table）是两种核心表类型，其设计目标和适用场景截然不同，核心区别体现在 `数据操作能力、存储架构、适用场景` 等方面。以下是具体对比：
+## Snapshot快照
 
-**主键表：**
-- 概念：通过 PRIMARY KEY 定义唯一标识记录的字段（或字段组合），支持对已有记录的 更新（UPDATE） 和 删除（DELETE）。即`有更新的需求`，例如订单表（状态变更：待支付→已完成）、用户信息表（修改手机号）等。
-- 存储架构：
+快照文件存放在 <kbd>​`snapshot`​</kbd>​ 目录下，文件名以表的版本号为后缀。同时会维护 <kbd>​`LATEST`​</kbd>​ 和 <kbd>​`EARLIEST`​</kbd> 两个软链接，分别指向最新和最早的快照文件。
 
-**非主键表：** 无主键定义，仅支持 插入（INSERT） 操作，不允许更新或删除已有记录（本质是 “仅追加” 模式）。类似传统的 `OLTP` 数据库中的表。例如常见的日志表等。
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229153937-r6ynqit.png)
+
+可以看到，在快照文件包含的信息中，最重要的就是`baseManifestList`​ ，`DeltaManifestList`​以及`Manifest`文件。
+
+1. baseManifestList：表示的是存量的Manifest列表，即这个快照之前的Manifest文件，生成方式就是上一个快照的存量（baseManifestList）+增量（DeltaManifestList），就类似于我们想要创建一个今日全量表，可以用昨日全量表+昨日增量表来计算。
+2. DeltaManifestList：表示的是这个快照中新增的Manifest文件
+3. 使用 Base 和Delta 双ManifestList的好处：
+
+   1. 流式读取：**只需要扫描DeltaManifestList即可获取本次新增的文件**
+   2. 批式查询：**合并Base 和 Delta 即可获得完整的视图**
+
+## Schema
+
+Schema 文件的版本从 0 开始递增。目前 Paimon 会保留所有历史 Schema 版本。原因是多个快照可能依赖同一个 Schema 文件（例如表结构长时间未发生变更），如果贸然删除旧版本 Schema，可能导致依赖它的历史快照无法正确读取。Schema 文件采用 JSON 格式，主要包含以下字段：
+
+- fields：数据字段列表，描述表包含的所有列及其类型。
+- partitionKeys：分区字段名称列表，定义表的分区键（不可修改）。
+- primaryKeys：主键字段名称列表，定义表的主键（不可修改）。
+- options：Map\<String, String\> 类型，用于存储表的各种配置参数（无序）。
+
+‍
+
+# 数据层
+
+表的数据文件按两层进行划分，其实也是常见的分区分桶类型。
+
+**分区：** 按分区列切分（常见为时间维度），便于查询剪枝，读取的时候可以整目录跳过，提升效率
+
+**桶：** 每个分区再细分为若干桶，桶数可固定或动态。提供并行读写，**每一个桶对应了一个 LSM-Tree**。
+
+- 固定桶：按照主键进行哈希映射
+- 动态桶：在全局桶索引中维护一个 **“键->桶”** 的映射关系
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229161841-9ud4g7a.png)
+
+## LSM—Tree
+
+### SSTable
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229162320-ghtvfbr.png)
+
+在 LSM-Tree 中，最核心的数据结构就是SSTable，全称是**SortedStringTable**，SSTable是一种**不可变、按key有序、可持久化的键值结构**，其key和value均可为任意字节序列，它既支持按指定key的精确检索，也支持按key区间进行选代扫描。
+
+SSTable 的读取：当读取 SSTable 中的内容的时候，首先读取索引信息，通过**二分查找**定位到key 的偏移量，再讲数据读回。
+
+### 写入流程
+
+<SplitLayout layout="1/2">
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229162357-aon0cxi.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260219235238-vhctueu.png)
+</SplitLayout>
+
+<SplitLayout layout="1/2">
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260219235335-oypmlq9.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20260219235346-3xo9b3s.png)
+</SplitLayout>
+
+LSM-Tree的写路径可以概括为五步：
+
+1. 写请求首先追加到WAL Log，用作故障恢复。
+2. 当写完WAL Log后，会把该条数据写入内存的SSTable里面（删除是墓碑标记，更新是新记录一条数据），也称Memtable。注意：为了维持有序性，在内存中一般采用红黑树或者跳跃表相关的数据结构。
+3. 当Memtable超过一定的大小后，会在内存里面冻结，变成不可变的Memtable，同时为了不阻塞写操作，需要新生成一个Memtable继续提供服务。
+4. 把内存里面**不可变的Memtable dump到硬盘上的SSTable层中**，此步骤称为**flush**（也称为  
+   **Minor Compaction**）。
+5. 当每层的磁盘上的SSTable的体积超过一定的大小或者个数，也会周期地进行异步合并。
+
+   1. 此步骤也称为MajorCompaction，这个阶段会真正地清除掉被标记删除的数据以及多版本数据的合并，避免浪费空间。
+   2. 注意：由于SSTable都是有序的，我们可以直接采用mergesort进行高效合并。
+
+### 读取流程
+
+读取则分为了两步：
+
+1. 现在内存中查找，命中了就返回。
+2. 若内存中没有命中，则从上到下扫描磁盘中的SSTable。
+
+每一个层级都有很多的 SSTable，所以为了快速的判断这个 SSTable 中是否有想要的数据，使用**布隆过滤器（Bloom Filter）** 来做优化。如果布隆过滤器判断不在则跳过这个SSTable。
+
+### 布隆过滤器
+
+布隆过滤器（Bloom Filter）是一种空间高效的概率型数据结构，主要用于**快速判断一个元素是否可能存在于一个大规模集合中**。
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229163623-4hkbbel.png)
+
+非常的节省空间，但是有时候可能会误判，**将不在这个集合中的误判为在这个集合中**的。
+
+## Paimon 和 HBase的 LSM 对比
+
+Paimon和HBase都使用LSM树，但需要记住三点区别：
+
+1. Paimon依赖Flink，可以不使用WAL；HBase使用WAL。
+2. Paimon通过mergeengine实现了数据的**合并逻辑**，例如聚合累加、first_row等；HBase不支持。
+3. compaction行为：Paimon是利用Flink来做。HBase是使用HBaseServer来做。
+
+# 数据一致性
+
+## 两阶段提交
+
+**预提交（Pre-Commit）** ：参与者完成本地事务，并持久化“可回滚”的数据
+
+**提交（Commit）** ：协调者确认所有的参与者完成预提交后统一发出 Commit 指令
+
+在分布式系统中，可以使用两阶段提交来实现事务性从而保证数据的一致性，两阶段提交分为：**预提交阶段与提交阶段**，通常包含两个角色：**协调者与执行者**，协调者用于管理所有执行者的操作，执行者用于执行具体的提交操作，具体的操作流程：  
+1.首先协调者会送预提交(pre-commit)命令有的执行者  
+2.执行者执行预提交操作然后发送一条反馈(ack)消息给协调者  
+3.待协调者收到所有执行者的成功反馈，则发送一条提交信息（commit)给执行者  
+4.执行者执行提交操作
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229191232-nlka2pi.png)
+
+## Flink的两阶段提交
+
+<SplitLayout layout="1/2">
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229191434-spu7sd9.png)
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229191308-pf3fl33.png)
+</SplitLayout>
+
+Flink 的两阶段提交是为了保证端到端的精确一次性，主要依靠Checkpoint 的机制来实现，我们可以看一下 Checkpoint 的实现流程：
+
+1. JobManager 周期性的发送 Checkpoint命令
+2. 当**source端**收到执行指令后会**产生一条barrier消息插入到input消息队列中**，当处理到barrier  
+   时**会执行本地checkpoint**,并且会**将barrier发送到下一个节点**，当checkpoint完成之后会发送  
+   条ack信息给jobMaster;
+3. 当DAG图中所有节点都完成checkpoint之后，jobMaster会收到来自所有节点的ack信息，那么就表示一次完整的checkpoint的完成；
+4. JobMaster会**给所有节点发送一条callback信息**，表示通知checkpoint完成消息，这个过程是异步的，并非必须的，方便做一些其他的事情，例如kafkaoffset提交到kafka。
+
+## Paimon的两阶段提交
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229191622-4dfij08.png)
+
+Paimon **将Pre-commit 阶段放在了数据文件层，将Commit 阶段放在了元数据层**，实现了端到端的一致性。
+
+- 阶段一：Flink Writer Task 将数据追加到存储，不修改任何的元数据，产出的数据包括压缩的文件数据以及删除向量等，当阶段失败的时候，直接将文件丢弃即可。
+- 阶段二：Flink Committer Operator 检测snapshot 的 latest 是否为base，如果失败的话则直接丢弃临时的快照和清单文件即可。
 
 # 主键表
 
-## 表模式
+**主键表（Primary Key Table）** 是默认的表类型，也是最核心的表模式之一。它支持**实时插入、更新和删除记录**，非常适合处理 CDC（Change Data Capture）变更数据或流式 upsert 场景。
 
-### 主键表文件结构
+## 分桶策略
 
-![](./imgs/paimon-file-structure.png)
+分桶是Paimon 表的最小读写单元，毕竟一个桶中就是一个LSM-Tree ，主键表的分桶策略分为了**固定分桶**和**动态分桶**。
 
-要理解 Paimon 主键表的文件结构，我们可以用 **“文件柜 + 分层文件夹”** 的日常类比来拆解，主键表就是一个大文件柜，而其中的`Bucket`就是一个个的小抽屉，数据会按 `主键规则` 分到不同抽屉里（比如按主键哈希值分配，确保同一主键的数据一定在同一个抽屉里）。每个 Bucket 是完全独立的，各自处理自己的数据，避免 “一个抽屉乱了整个文件柜卡住”，能提升并行处理效率。
-
-在每一个 Bucket 中，数据不是杂乱堆放的，而是按 **分层文件树（LSM 树）** 的形式存储，即在每一个抽屉里，又分了很多层的文件夹，每层都放着 `SST 文件`（可以理解为 “打包好的数据文件”，里面存的是有序的主键数据）。
-
-### 分层逻辑
-分层的核心目的是 **平衡‘写得快’和‘读得顺’**，就像我们整理文件的逻辑：
-
-1. **L0 层：刚写的 “临时文件”**：当 Flink 处理数据时（比如实时写入、更新），不会直接把数据塞进深层，而是先在 L0 层 “临时存放”—— 每次 Flink 做 “ checkpoint ”（相当于 “保存快照”），就会把内存里的新数据打包成 L0 层的 SST 文件。
-2. **L1、L2 层：“整理好的归档文件”**：随着 L0 层文件越来越多，系统会自动触发 “合并操作（Compaction）”：把 L0 层的文件，或者 L0 与 L1 层的文件，按 “主键” 重新排序、去重（比如同一主键保留最新的那条数据），然后打包成更规整的 SST 文件，放进 L1 层；如果 L1 层文件也多了，再合并到 L2 层。
-
-### 合并模式
-根据写入的时候处理方式的不同，有三种处理模式：
-1. **MOR（Merge On Read）：** `默认的模式`，在读取的时候才进行 merge。
-2. **COW（Copy On Write）：** 建表时使用配置 `'full-compaction.delta-commits' = '1'`，即完全压缩，每次写数据都直接把 L0 合并到最下层（L2），所以读的时候不用整理，但写得慢；
-3. **MOW（Merge On Write）：** 建表时使用`'deletion-vectors.enabled' = 'true'`进行配置，通过`删除向量（Deletion Vectors）`和`特定合并策略`来进行合并，其实类似于有些大文件的删除，并不是真的删除了，而是告诉你这块存储区域没东西了，你可以写入到这里了，说白了就是逻辑删除。
-
-### MOW 写入时合并
-MOW 写数据的核心是 “先记‘删除标记’，再存新数据”。
-![](./imgs/mow.png)
-**L0 层只存 “新数据 + 删除向量”，不直接改旧文件：** 当有数据更新 / 删除时（比如把主键 = 2 的字段从 “b” 改成 “b_new”），MOW 不会去深层（L1/L2）找旧数据文件修改，而是做两件事：
-1. 生成一个 新的 L0 层 SST 文件：里面只存 “主键 = 2，字段 = b_new” 这条新数据（相当于 “新增一页记录，写上新内容”）；
-2. 生成一个 删除向量文件（Deletion Vector File）：专门标记 “旧数据在哪里”—— 比如记录 “在 L2 层的某个 SST 文件里，主键 = 2 的那行数据已经失效”（相当于 “贴个小纸条，告诉后续‘别读这行旧的’”）。
-
-通过L0 只放 “刚产生的新数据 + 对应的删除标记”，不做任何深层修改，保证 “写得快”（和 MOR 写 L0 的效率接近），但比 MOR 多了 “提前记删除标记” 的动作。
-
-![](./imgs/mow-l0.png)
-
-**L0 层文件默认 “不可见”，必须等合并后才能用：** 和 MOR 不同（MOR 的 L0 文件写完就能被读取，读的时候再合并），MOW 对 L0 层加了 `可见性控制`，刚写好的 L0 层 SST 文件和删除向量文件，**不会直接开放给读请求**，只有等这些 L0 文件被 “合并到深层” 后，新数据才会变成 “可读”—— 这是 MOW 保证数据一致性的关键，避免读的时候拿到 “没整理的临时数据”。
-
-**默认 “同步合并”：L0 写完就触发合并，避免 L0 堆积：** MOW 为了让 L0 层的 “临时数据尽快可用”，默认会在 **写数据后同步触发合并**（比如每次 Flink checkpoint 生成 L0 文件后，立刻启动合并），合并的目标是 “把 L0 层的新数据 + 删除向量，和深层（L1/L2）的旧数据做整合，生成干净的深层文件”。MOW 对 L0 的控制是 `不允许 L0 长期堆积`，通过同步合并快速把 L0 数据 “搬” 到 L1/L2，避免像 MOR 那样 L0 文件过多导致读性能差。
-
-**合并到 L2 等深层：“删除向量落地”，让深层文件更干净：** 当 L1 层的文件越来越多（比如达到配置的大小 / 数量阈值），MOW 会继续触发 “L1→L2 的合并”，逻辑和 L0→L1 类似，但多了一个 “删除向量落地” 的动作。合并时，会直接把 “删除向量标记的旧数据” 从新生成的 L2 文件里 “剔除”，不再保留任何删除标记；最终 L2 层的 SST 文件里，只有 “最新、有效的数据”（同一主键只会出现一次，没有冗余）—— 相当于 “把中层（L1）的文件再整理一遍，归档到下层（L2），并且彻底删掉没用的旧内容”。MOW 对 L2 的控制是 “保证深层文件的纯净度”，后续读 L2 数据时，不需要再处理删除向量（因为已经提前过滤了），所以读性能和 COW 的深层文件一样高效。
-
-**读取数据的各层逻辑：** 虽然 MOW 主要是 “写时控制层级”，但读的时候对层级的处理，也反过来体现了它对层级的控制目标（“读得快”）优先读深层（L2→L1）：因为 L2、L1 层的文件已经过合并，没有冗余数据，也不需要处理删除向量，所以读的时候会先从这些深层文件找数据，效率最高；只有深层没有时，才读 “已合并的 L0”：如果数据刚合并到 L1（还没到 L2），就读 L1；如果有极少量刚合并完的 L0 数据（理论上 MOW 会尽快合并 L0，所以这种情况很少），就读 L0—— 但此时 L0 已经过合并，里面的删除向量已经 “落地”，不会有冗余。
-
-<Callout type="warning">
-**MOW 与 changelog-producer**
-
-我们知道默认的表模式是 `MOR` 模式，而在很多的场景下，我们使用 paimon 表是为了其实时性质，希望能够快速的读取数据，所以固然我们需要去使用 `MOW` 的表模式，而在使用 `MOW` 的表模式的时候，有很多的注意事项，例如 `changelog-producer` 的配置只能使用 `lookup` ，而不能使用 `full-compaction`，原因也非常好理解。
-
-MOW 的核心是 `写时生成删除向量，合并只做增量（而非全量）` 写数据时，不直接改旧文件，而是生成 “L0 层新数据文件 + 删除向量”（标记旧数据失效），合并时，只做 增量合并（比如 L0→L1、L1→L2），不会把所有层（L0+L1+L2）一次性合并到最高层（如 L2）。这样的话就会保留了 `分层文件+删除向量` L0 存临时变更，L1/L2 存半整理 / 全整理数据，删除向量随合并 “落地”（合并时剔除标记的旧数据）。changelog-producer 的核心任务是 输出 **增量变更流**（比如 “新增了哪行、更新了哪行、删除了哪行”），它必须依赖 MOW 保留的 **增量痕迹**；而 full-compaction 的特性会直接摧毁这些痕迹，导致 changelog-producer 彻底失效。
-
-</Callout>
+**固定分桶**，即直接定义`bucket` 的数量为一个固定值
 
 
-
-
-## 合并引擎
-当 Paimon 接收器收到两条或多条具有相同主键的记录时，它会将它们合并为一条记录，以保持主键的唯一性。通过指定 merge-engine 表属性，用户可以选择如何合并记录。主要包含的合并引擎有以下几种：
-1. 重复删除（deduplicate）
-2. 部分列更新（Partial-Update）
-3. 聚合（aggregation）
-4. 首行数据
-
-<Callout type="info">
-实际上，上面的三种方式都是合并的方式，通俗点来说就是看数据是否为`同一个主键`，如果是同一个`同一个主键`则该如何合并的问题，当然每一行都有许多的字段，所以我们也可以自定义每个列该如何的合并。
-</Callout>
-
-### 重复删除（deduplicate）
-
-deduplicate 合并引擎是`默认的合并引擎`，Paimon 只会保留最新的记录，并丢弃其他具有相同主键的记录。具体来说，如果最新一条记录是 DELETE 记录，则所有主键相同的记录都会被删除。可以配置 `ignore-delete` 来忽略它。
-
-### 部分列更新
-部分列更新是指直接更新表中某些字段值，而不是全部字段值。Paimon 通过Partial Update合并引擎来实现部分列更新。在建表时需指定`'merge-engine' = 'partial-update' `，之后可使用 Update 语句更新部分字段值。例如流 A 更新列 A 和列 B，流 B 更新列 C 和列 D，最终会生成一行包含所有列的数据。
-
-![](./imgs/partial-update.png)
-
-例如，Paimon 先后表收到了下面的三条记录：
-```text
-<1, 20, 183, NULL>
-<1, NULL, NULL, '小明'>
-<1, 23, NULL, NULL>
-```
-第一列是主键，那么最后的结果为`<1, 23, 183, '小明'>`。所以，可以很明显的看出，部分列更新的默认合并方式是：`每个字段最后一个大于原字段的非空值`。可以将其看作版本号，当新的版本号大于原先的版本号的时候，版本中的数据才会发生变更。
-
-### 部分列更新序列组
-序列字段主要是用于解决多流更新部分更新表的乱序问题，因为多流更新时，序列字段可能会被另一个流的最新数据覆盖。最终取得的效果是`序列组内的字段是否更新取决于序列字段是否更新`。例如我们参考一下官网的这个案例：
-
-创建 Paimon 表
 ```sql
-CREATE TABLE t
-(
-    k   INT,
-    a   INT,
-    b   INT,
-    g_1 INT,
-    c   INT,
-    d   INT,
-    g_2 INT,
-    PRIMARY KEY (k) NOT ENFORCED
-) WITH (
-      'merge-engine' = 'partial-update',
-      'fields.g_1.sequence-group' = 'a,b',
-      'fields.g_2.sequence-group' = 'c,d'
-      );
+CREATE TABLE MyTable (
+    id BIGINT,
+    name STRING,
+    dt STRING,
+    PRIMARY KEY (id, dt) NOT ENFORCED
+) PARTITIONED BY (dt) WITH (
+    'bucket' = '4',                  -- 固定桶数
+    'merge-engine' = 'deduplicate'   -- 合并引擎
+);
 ```
-配置了两个序列字段，**g_1** 和 **g_2** ，a，b 属于g_1序列组中，而c 和 d 属于 g_2 序列组中。插入初始数据
+
+动态分桶，`bucket`​的参数值为<kbd>-1</kbd>，动态分桶的主键可以包含也可以不包含分区字段。
+
+## 分桶原理
+
+当一条新的数据到来的时候，需要判断两个问题：
+
+1. 这个数据是新的吗？
+2. 如果不是新的，那么原来的数据在哪里？
+
+对于**固定分桶**，由于主键相同，所以新数据计算的哈希值也相同，可以直接找到原来的数据所在的分区和 bucket。
+
+但是在跨分区的更新场景中，数据的主键是不变的，但是分区可能是会变化的，例如使用地区作为分区，那么当用户的地区发生改变的时候，新数据和老数据则不在同一个分区中，所以系统需要具备全局的视角，能够根据主键快速的定位到原先的数据所在的分区和分桶。**GlobalIndexAssigner就是用于维护一个全局的主键对应分区和分桶的映射关系。**
+
+## 桶策略优化
+
+‍
+
+# Append表
+
+创建 Paimon 表的时候如果**没有定义主键**，那么该表即为 **Append Only** 表，这种表类似于高级版的 Hive 表，只接受数据的插入操作，适用于**不需要流式更新的场景**，例如**日志数据，事件埋点**等。Append Only 表的**Compaction操作仅用于合并小文件**，不涉及数据的合并和去重。
+
+Append Only 表有两种模式，<kbd>​`Scalable`​</kbd>​ 表和 <kbd>​`Queue`​</kbd> 表，主要区别在于 bucket 的设置、数据写入/读取的并行度、顺序保证以及适用场景。
+
+## Scalable表
+
+无固定 bucket，写入时动态分配或单 bucket 模式，即配置`'bucket' = '-1'`，适合高吞吐追加，在流读的场景下，无全局顺序保证（普通 append 模式），适用于高吞吐日志同步、批处理/OLAP 查询、需要高写入扩展性（如迁移 Hive 表）。
+
+## Queue表
+
+'bucket' \> 0（固定 bucket 数），可选 `'bucket-key' `​指定分桶键，数据按 bucket-key（类似 Kafka partition key）分桶，每个 bucket 独立。并行度受 bucket 数限制，但可通过增加 bucket 提升，**每个 bucket 内严格顺序**，流式读取时按写入顺序传输记录（exactly-once order per bucket），类似于多 Partition 的Kafka，可以作为低成本的消息队列，适用于需要顺序消费的流式场景（如事件流、CDC 日志），也可以模拟消息队列。
+
+# Changelog Producer
+
+Changelog（变更日志）是记录数据表中每一行数据如何随时间变化的日志流。它不仅记录"当前状态"，更记录“状态是如何变化的"。
+
+**changelog** 是 Paimon 表中记录数据变更的增量数据流，包含完整的变更类型（RowKind），如：
+
+- +I：插入（Insert）
+- -U/+U：先删除旧值，再插入新值
+- -D：删除（Delete）
+
+Changelog文件**会进行单独的存储，存储在桶中**，生成的时机就是在Commit 的时候，快照生成的时候。
+
+Paimon是否生成Changelog、如何生成，由表属性`changelog-producer`控制。该配置决定了  
+Changelog的生成时机、准确性与性能开销。
+
+## None
+
+```properties
+'changelog-producer' = 'none' --默认值
+```
+
+默认的情况下，就是None模式，完全不生成Changelog，仅维护表的 SSTable 文件，不生成 Changelog文件，无法支持真正的CDC 流读。
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229202909-2525kcr.png)
+
+Flink 提供了`ChangelogNormalize`​ 算子，用于在消费端反推 Changelog，但是需要维护全局的状态，**资源消耗极大，不建议使用**。
+
+## Input
+
+```properties
+'changelog-producer' = 'input'
+```
+
+信任上游的输入，直接将上游的Changelog进行持久化到 Changelog 文件中，但是上游的 CDC 流必须是标准且完整的CDC 流，若上游不完整，则会导致下游的逻辑错误。
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229203312-3nozzsj.png)
+
+## Lookup
+
+```properties
+'changelog-producer' = 'lookup'
+```
+
+**在写入 Changelog 的时候，先查询一下当前表中是否存在相同主键的记录**。如果有的话则生成`-U/+U`，例如如下案例：
+
+1. 更新一条数据（`id=1，val = 'Hello World'`）
+2. 查询主键为 1 的数据，例如当前为（`id=1，val = 'Hello'`）
+3. 生成`-U（id=1，val = 'Hello'）`​和`+U（id=1，val = 'Hello World'）`
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229203511-ya4f03h.png)
+
+
+## Full-Compaction
+
+```properties
+'changelog-producer' = 'full-compaction'
+'full-compaction.delta-commits' = '10'
+```
+
+写入时不生成 Changelog，而是在后台执行 Full Compaction 的时候，通过对比前后的完整数据集来统一生成Changelog。
+
+触发机制由`full-compaction.delta-commits`控制，语义是多少次 Commit 才进行 Full Compaction，默认是每 Commit 一次，就触发一次。
+
+![image](https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/blog/paimon/image-20251229204603-9f0pn4w.png)
+
+适用于离线批处理后仍然需要流式消费的混合架构，由于需要经过多次的 Commit 之后才会进行Full Compaction，生成 Changelog，所以 Changelog 的生成延迟较高。
+
+# 快照管理与系统表
+
+## 快照机制概述
+
+**Snapshot（快照）**  是 Paimon 核心机制中的灵魂，它记录了表在某一特定时刻的完整状态。简单来说，每当有一批数据写入并提交（Commit）时，Paimon 就会生成一个新的 Snapshot。Snapshot 的功能主要有以下几个：
+
+1. **实现数据读取的隔离性与一致性**
+
+   Snapshot 保证了“读写分离”。当分析师在查询数据时，后台的流式写入任务可能正在进行。由于查询是基于某个特定的 Snapshot 进行的，读取操作不会受到正在写入的数据影响，从而保证了**事务的一致性**。
+2. **支持增量消耗（Incremental Consumption）**
+
+   这是流式数据湖的关键特性。流计算引擎（如 Flink）可以通过对比不同 Snapshot 之间的差异，准确地识别出哪些数据是新增的、哪些是修改的。
+3. **版本回溯与时间旅行（Time Travel）**
+
+   Snapshot 记录了历史状态。如果你发现最新的数据出错了，你可以通过指定 Snapshot ID 或时间戳，将查询切换到之前的状态。
+4. **故障恢复（State Recovery）**
+
+   在流处理中，如果作业崩溃，Flink 可以根据 Snapshot 信息快速定位到上一次成功提交的位置，确保数据**不丢不重（Exactly-once）** 。
+
+## 快照保留策略
+
+可通过表选项（**TableOptions**）或**SQL Hints**动态控制快照生命周期：
+
+- ​`snapshot.num-retained.min`：最少保留快照数，防止意外删除2
+- ​`snapshot.num-retained.max`：最多保留快照数，控制存储成本按业务需求 (如5~50)
+
+SQL Hints 的用法：
+
 ```sql
-INSERT INTO t VALUES (1, 1, 1, 1, 1, 1, 1);
+INSERT INTO paimon.<database>.<table>
+/*+ OPTIONS('snapshot.num-retained.min' = '2', 'snapshot.num-retained.max' = '10' */）
+SELECT user_id, age, name, event_time, dt
+FROM <data_source>
 ```
-现在进行更新数据，即有新的同主键的数据进入
+
+
+## 分区过期
+
+[Manage Partitions #](https://paimon.apache.org/docs/master/maintenance/manage-partitions/)
+
+针对于分区表，我们可以设置分区过期自动清理旧分区，即配置 TTL。
+
+
+**如何确定一个分区是否过期：** 在创建分区表时，可以设置 `partition.expiration-strategy`​，该策略决定了如何提取分区时间，并将其与当前时间进行比较，以查看存活时间是否超过了`partition.expiration-time`。支持的过期策略值有：
+
+- ​`values-time `​: 该策略比较**分区值中提取的时间与当前时间**，此策略为**默认策略**。
+- ​`update-time `​: 该策略比较**分区的最后更新时间与当前时间**。 此策略适用于什么场景：
+
+  - 分区值不是日期格式。
+  - 只想保留最近 n 天/月/年更新的数据。
+  - 数据初始化导入大量历史数据。
+
+​`values-time` 策略案例：
+
 ```sql
-INSERT INTO t VALUES (1, 2, 2, 2, 2, 2, CAST(NULL AS INT));
+CREATE TABLE t (...) PARTITIONED BY (dt) WITH (
+    'partition.expiration-time' = '7 d',
+    'partition.expiration-check-interval' = '1 d',
+    'partition.timestamp-formatter' = 'yyyyMMdd'   -- 时间格式，values-time策略必须配置
+);
+insert into t values('pk', '2024-07-01');
+
+CREATE TABLE t (...) PARTITIONED BY (other_key, dt) WITH (
+    'partition.expiration-time' = '7 d',
+    'partition.expiration-check-interval' = '1 d',
+    'partition.timestamp-formatter' = 'yyyyMMdd',
+    'partition.timestamp-pattern' = '$dt' -- 如果是多分区的话，指定时间分区字段是哪一个
+);
 ```
-| k      | a |b |g_1 |c |d |g_2 |
-| ----------- | ----------- |----------- |----------- |----------- |----------- |----------- |
-| 1     | 1 |1 |1 |1 |1 |1 |
-| 1      | 2 |2 |2 |2 |2 |NULL |
 
-我们知道`部分列更新`的字段聚合方式默认是`最后一个数据的这个字段大于原字段的非空值`，所以 **g_1** 被更新了，但是 **g_2** 却没有被更新，所以 a 和 b 如果有更新的话则会产生更新，但是对于 c 和 d，由于序列键没有被更新，所以这两个字段则无法更新。
+​`update-time` 策略案例：
 
-所以最终的数据则为：1,2,2,2,1,1,1，那么如果我们又插入了下面的数据：
-| k      | a |b |g_1 |c |d |g_2 |
-| ----------- | ----------- |----------- |----------- |----------- |----------- |----------- |
-| 1     | 2 |2 |2 |1 |1 |1 |
-| 1      | 3 |3 |1 |3 |3 |3 |
-
-由于 **g_1** 的值小于原先的值，所以可以理解为版本并没有被更新，那么作为 g_1 序列组中的数据 a 和 b 也自然无法更新，所以这个时候 g_2 的数据被更新了。
-
-所以这里需要着重注意的两个要点就是：
-1. 部分列更新的字段默认聚合方式为：`最后一个数据的这个字段大于原字段的非空值`
-2. 当序列键更新了，序列组中的内容才能更新
-
-### 聚合（aggregation）
-
-<Callout type="warning">
-在讲聚合引擎之前，需要着重强调的是聚合有两种概念
-1. 聚合引擎，即指定 Paimon 表的`merge-engine`字段内容为`aggregation`，这样的话就是针对相同的主键字段可以使用自定义的聚合函数，也可以使用默认的`last_non_null_value`函数进行聚合。
-2. 聚合函数，聚合函数是指针对一些函数，这里一般是同主键的同字段的一组数据要怎么聚合， 所以在 `部分列更新` 中也可以去指定聚合函数。
-</Callout>
-
-
-## 压缩
-随着写入 LSM 树的记录越来越多，排序运行的数量也会随之增加。由于查询 LSM 树需要合并所有排序运行，过多的排序运行会导致查询性能下降，甚至内存溢出。为了限制排序运行的数量，我们需要偶尔将多个排序运行合并成一个大的排序运行。这个过程称为压缩。
-
-### 专用压缩
-专用压缩是为了解决`多个作业同时写入一张表`的情况下，我们可以选择`跳过写入器中的压缩操作`，并`运行专门的作业来执行压缩操作`。由于压缩操作仅由专用作业执行，因此写入器可以连续写入记录而无需暂停，并且永远不会发生冲突。
-
-所以在使用专用压缩作业之前，我们需要先跳过写入器中的压缩操作，这里有两种方式：
-1. 第一种是通过在创建 Paimon 表的时候设置配置信息为`'write-only' = 'true'`。
-2. 我们也可以在写入的时候使用 `SQL Hints` 来跳过压缩操作，使用如下代码
 ```sql
-INSERT INTO T /*+OPTIONS('write-only' = 'true') */ SELECT ...;
+CREATE TABLE t (...) PARTITIONED BY (dt) WITH (
+    'partition.expiration-time' = '7 d',
+    'partition.expiration-check-interval' = '1 d',
+    'partition.expiration-strategy' = 'update-time'
+);
+
+-- 现在更新了，所以将不会过期
+insert into t values('pk', '2024-01-01');
+-- 也支持非时间类型的分区
+insert into t values('pk', 'par-1');
 ```
-然后我们就可以创建独立的压缩作业来执行压缩操作了。
+
+## 系统表
+
+[System Tables](https://paimon.apache.org/docs/master/concepts/system-tables/)
+
+Paimon提供了一套非常丰富的系统表，帮助用户更好地分析和查询 Paimon 表的状态，主要包含两种类型：
+
+1. **数据系统表**：查询数据表的状态
+2. **全局系统表**：查询整个目录的全局状态
+
+数据系统表主要包含以下几种
+
+![image](./imgs/image-20251230222656-86lv04o.png)
+
+**监控快照的增长趋势：**
+
 ```sql
--- 参数1: 表名
--- 参数2: 分区, 不指定为全部分区
--- 参数3: 排序策略: order, zorder, hilbert. 仅适用于批任务sort compaction
--- 参数4: 排序字段: 和参数3配合使用, 指定数据需要按什么字段排序, 以逗号分隔
--- 参数5: compaction job 参数
-
-use catalog paimon;
--- 指定compaction全分区, 不指定参数
-CALL paimon.sys.compact('paimon_mwj.paimon_test_table', '', '', '', '');
--- 指定compaction全分区, 指定sink并发
-CALL paimon.sys.compact('paimon_mwj.paimon_test_table', '', '', '', 'sink.parallelism=6,k1=v2');
+SELECT snapshot_id,commit_time,total_record_count
+FROM paimon.prod.fact_sales$snapshots
+ORDER BY commit_time DESC
+LIMIT 10;
 ```
-<Callout type="warning">
-但是在使用独立的 Compaction 作业时，需要注意的是
-1. 流式Compaction只支持`Flink`作业, 且只支持`1.17`版本
-2. 流式Compaction时无需指定分区
-3. 流式Compaction初始启动或无状态启动时会从最近一次 Compact 的Snapshot开始, 对后续的Snapshot数据进行增量Compaction
-</Callout>
 
-## Changelog Producer
-Changelog Producer 如同名字所述，其作用就是`控制主键表流式写入时生成变更日志`，其核心作用是为流式读取提供 **完整 / 高效的变更记录**。
+**给快照打 Tag，防止被清理：**
 
-### None（默认）
-不进行配置 `changelog-producer` 或者配置为 `none`，即使用默认的策略，不对写入器（SinkWriter）添加任何额外日志生成逻辑，Paimon 源（Source）仅能读取 “合并后的最终变更”（如 Key 的最新值、删除标记），不包含旧值。
-
-### Input
-**前提条件：** `假设写入 Paimon 的输入数据本身就是完整 Changelog`（如 MySQL CDC 同步的 INSERT/UPDATE/DELETE 记录、Flink 有状态计算输出的 “旧值 + 新值” 变更）；Paimon 不做额外处理，仅将所有输入记录保存到独立的 Changelog 文件中，供 Source 直接读取。
-![input.png](imgs/input.png)
-
-### Lookup
-当输入无法提供完整 Changelog，但需规避 normalize 算子的高开销；写入提交前，Paimon 会通过 `Lookup 机制` 查询 **内存 + 本地磁盘缓存** 的历史数据，获取 Key 的旧值，从而生成 “旧值 + 新值” 的完整 Changelog；同样的支持开启 Async Compaction（异步压缩），进一步降低写入延迟。
-
-![lookup.png](imgs/lookup.png)
-
-Lookup 会将查询的数据缓存在内存 + 本地磁盘缓存中，所以可以通过对应的参数进行性能调整：
-
-| 参数 | 默认值 | 描述 |
-| ----------- | ----------- | ----------- |
-| `lookup.cache-file-retention` | 1h | 缓存文件的保留时间，过期后需重新从分布式存储（DFS）读取并重建索引 |
-| `lookup.cache-max-disk-size` | 无限制 | 本地磁盘缓存的最大容量，避免磁盘被占满 |
-| `lookup.cache-max-memory-size` | 256MB | 内存缓存的最大容量，平衡内存开销与查询效率 |
-
-**关键优化配置：**
-1. `changelog-producer.row-deduplicate`：该配置是 Paimon 表级属性，仅适用于 lookup 和 full-compaction 两种 changelog-producer 策略，核心作用是避免对 “同一记录的重复更新” 生成冗余的 -U（旧值删除）和 +U（新值插入）日志，减少 Changelog 数据量和下游消费压力。配置方式如下：
 ```sql
-'changelog-producer.row-deduplicate' = 'true',  -- 启用去重（默认 false）
+--为当前最新快照打标签"monthly_backup
+CALL paimon.system.create_tag('prod.fact_sales','monthly_backup');
+-- 后续可通过Tag查询：...$files/*+ OPTIONS('scan.tag-name′='monthly_backup')
 ```
-2. `execution.checkpointing.max-concurrent-checkpoints`：该配置是 Flink 作业级 / 集群级全局配置。
-<Callout type="info">
-与 Paimon 表无关，但对 changelog-producer = 'lookup' 策略的性能至关重要。
-</Callout>
-该配置的核心作用是控制 Checkpoint 并发度，Flink 的 Checkpoint（ checkpoint ）是保障状态一致性的核心机制，默认情况下 同一时间仅允许 1 个 Checkpoint 运行（串行执行）。而该配置是指定 Flink 作业中可同时进行的 Checkpoint 最大数量，打破串行限制，提升作业吞吐量。
 
-Lookup 策略依赖 `Checkpoint 期间查询缓存的历史数据` 生成 Changelog，若 Checkpoint 串行执行（默认 1），会导致 “缓存查询” 与 “新数据写入” 相互阻塞，严重降低写入性能。增大该参数可让 Checkpoint 并行执行，缓解阻塞，提升 Lookup 策略的吞吐量。
+# Tag 管理与Bucket 缩放
 
-通过了解`execution.checkpointing.max-concurrent-checkpoints` 参数对 Lookup 策略的影响，我们可以更好地理解其工作原理，以及其本质作用，我们可以从下面的
-1. CheckPoint 并行逻辑
-2. CheckPoint 与 Paimon 表的关系
+## Tag 管理
 
-来进行深入的了解
+Paimon 自动维护的snapshot会按照过期策略被清理掉，那么就无法查询过期的快照信息。Tag 是针对于某个 Snapshot 的锚点，该 Tag 所对应的快照信息将会被完全的保留，包括数据信息。
 
-### CheckPoint 并行逻辑
-要理解CheckPoint 并行逻辑，我们需要先了解一下串行 Checkpoint 的 `阻塞问题`即为什么需要并行。在默认的串行 Checkpoint（max-concurrent-checkpoints=1）下，“缓存查询” 与 “新数据写入” 是完全串行的，会导致严重阻塞：
-1. Flink 触发 Checkpoint 后，会要求所有算子（包括 Paimon SinkWriter）“冻结当前状态”，准备生成快照；
-2. Paimon Lookup 策略需要在此时查询 “当前状态的缓存”（旧值），生成 Changelog；
-3. 在缓存查询和 Changelog 生成期间，新数据写入会被暂停（或等待 Checkpoint 完成）—— 因为若允许新数据写入，会修改缓存状态，导致 Checkpoint 读取的旧值不准确（破坏一致性）；
-4. 只有当 Checkpoint 完全完成（快照写入持久化存储、缓存查询结束），新数据才能继续写入。
+# Hive 数据迁移到 Paimon
 
-所以很显然可以看到`查询等写入、写入等查询`的串行逻辑，会导致作业吞吐量随 Checkpoint 耗时增加而显著下降（比如 Checkpoint 耗时 30s，写入就会被阻塞 30s）。
-
-
-而要理解 CheckPoint 的并行逻辑，也需要明确一点`Checkpoint 并行不是 “多个 Checkpoint 同时修改同一状态”，而是通过 “状态版本隔离” 实现 “查询旧状态” 与 “写入新状态” 的并行，既保障一致性，又避免阻塞。`核心原理是：`让不同阶段的 Checkpoint 读取 “不同版本的状态”，新数据写入不影响旧版本的查询`
-
-具体过程可以分为以下几步：
-1. Checkpoint 触发时：“冻结旧版本状态”，但不阻塞新写入
-    - Flink 会为当前算子状态（包括 Paimon 的缓存）创建一个只读快照版本（Version N），这个版本的状态会被冻结—— 后续的缓存查询（Lookup 旧值）会基于这个版本进行，确保查询结果的一致性； 
-    - 新数据会写入 “新版本状态（Version N+1）”，比如新数据更新的缓存会存到 Version N+1 中，完全不影响 Version N 的只读快照；此时两个版本可以并行存在，互不干扰。
-2. 缓存查询与写入并行
-    - 在 Paimon Look 进行缓存查询的时候，查询的是 Version N 的缓存，并根据此数据生成 Changelog，由于 Version N 是只读的，并不会有新数据的写入，所以结果是准确的。
-    - 新数据持续写入 “Version N+1 的缓存” 和 MemTable，不会等待 Checkpoint N 完成 —— 比如新数据 user_id=1 的 login_count=6 会更新到 Version N+1 的缓存，而 Checkpoint N 查询的仍是 Version N 中 user_id=1 的旧值 5，两者无冲突。
-3. 版本迭代与`无任何阻塞`
-    - Flink 会自动清理 “过期的状态版本”（比如只保留最近 2-3 个版本，避免内存溢出），后续触发的 Checkpoint N+1，会基于 “Version N+1 的状态” 生成新的只读快照，此时新数据会继续写入 “Version N+2”，重复上述并行逻辑。
-    - 当 Checkpoint 触发 “创建只读快照版本” 时，Flink 会对状态加一个短暂的 “读锁”（确保创建版本时状态不被修改），这个过程通常只有几毫秒，远短于串行 Checkpoint 的秒级阻塞；所以其`并非是完全无任何阻塞`，但是时间极短，对性能影响可忽略。
-
-### Changelog 的生成原理
-
-
-### Full-Compaction
-
-full-compaction 是一种完全压缩的策略，根据上面的合并模式，我们也了解到了 full-compaction全量合并是将 L0，L1以及 L2 直接进行全部合并，生成一个新的 L2 文件，所以其合并过程较为耗时，更适合延迟更大的场景。
-
-通过配置`'changelog-producer' = 'full-compaction'`来指定 Paimon 表使用 full-compaction 策略生成 Changelog。Paimon 将比较两次完全压缩之间的结果，并将差异生成为Changelog。Changelog的延迟受完全压缩频率的影响。
-
-通过使用 COW 的表模式，即指定`'full-compaction.delta-commits' = '1'`的表属性，每个checkpoint 都会触发一次完全压缩，并生成 changelog。
-
-![](imgs/full-compaction.png)
-
-但是 full-compaction 的成本和消耗都比较高，并且其实时性较差，所以更建议使用lookup。
+‍
