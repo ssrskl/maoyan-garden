@@ -40,7 +40,9 @@ const config = {
         ]
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-body)", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", ...fontFamily.sans],
+        display: ["var(--font-display)", "Songti SC", "STSong", ...fontFamily.serif],
+        mono: ["var(--font-mono)", ...fontFamily.mono],
       },
       colors: {
         border: "hsl(var(--border))",

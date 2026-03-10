@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { glossary } from "@/content/dict/glossary";
 import { track } from "@/lib/analytics";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import Image from "next/image";
 
 export function DictTooltip({ children }: { children: React.ReactNode }) {
   const text = typeof children === "string" ? children : String(children);
@@ -38,7 +39,9 @@ export function DictTooltip({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col">
           <div className="font-bold">{base.term}</div>
           <div className="flex items-center space-x-2">
-            <img className="flex h-6 w-6 shrink-0 overflow-hidden rounded-full my-2" src='/avatar.png' alt='avatar' />
+            <div className="relative h-7 w-7 overflow-hidden rounded-full my-2">
+              <Image src="/avatar.png" alt="avatar" fill className="object-cover" sizes="28px" />
+            </div>
             <div className="text-xs text-muted-foreground ml-2">{base.contributors} 贡献</div>
           </div>
           <div className="rounded-md text-sm bg-secondary max-w-fit px-2 my-2">{base.type}</div>

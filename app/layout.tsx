@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import {
+  Cormorant_Garamond,
+  Instrument_Sans,
+  Space_Grotesk,
+} from "next/font/google";
 import "./globals.css";
 import 'react-photo-view/dist/react-photo-view.css'
 import { cn } from "@/lib/utils";
@@ -8,7 +12,23 @@ import { Providers } from "@/components/providers";
 import { siteConfig } from "@/config/site";
 import { SiteFooter } from "@/components/site-footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const displayFont = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const bodyFont = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
+
+const monoFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -33,7 +53,9 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          inter.variable
+          displayFont.variable,
+          bodyFont.variable,
+          monoFont.variable
         )}
       >
         <Providers>

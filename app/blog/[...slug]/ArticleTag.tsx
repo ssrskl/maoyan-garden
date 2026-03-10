@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface ArticleTagProps {
     icon: React.ReactNode | string;
     tagName: string;
@@ -7,7 +9,9 @@ interface ArticleTagProps {
     return (
       <div className="flex items-center space-x-2 text-lg border border-border rounded-md py-1 px-2 hover:bg-accent cursor-pointer">
         {typeof icon === "string" ? (
-          <img src={icon} alt={tagName} className="w-6 h-6 rounded-lg" />
+          <div className="relative h-6 w-6 overflow-hidden rounded-lg">
+            <Image src={icon} alt={tagName} fill sizes="24px" className="object-cover" />
+          </div>
         ) : (
           icon
         )}

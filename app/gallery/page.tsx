@@ -10,6 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 import { PhotoView } from "react-photo-view";
+import Image from "next/image";
 
 // 定义相册图片类型
 interface GalleryImage {
@@ -19,6 +20,9 @@ interface GalleryImage {
     tags: string[];
     date: string;
     description?: string;
+    width?: number;
+    height?: number;
+    blurDataURL?: string;
 }
 
 import { galleryImages as data } from "@/lib/gallery-images";
@@ -26,12 +30,9 @@ import { galleryImages as data } from "@/lib/gallery-images";
 export default function GalleryPage() {
     const [activeTag, setActiveTag] = useState<string | null>(null);
     const [filteredImages, setFilteredImages] = useState<GalleryImage[]>(data.map((d) => ({
-        id: d.id,
-        src: d.src,
-        alt: d.alt,
+        ...d,
         tags: d.tags || [],
-        date: new Date().toISOString().slice(0,10),
-        description: d.description,
+        date: (d as any).date ?? new Date().toISOString().slice(0,10),
     })));
 
     return (
@@ -78,15 +79,18 @@ export default function GalleryPage() {
                     {/* 瀑布流展示 */}
                     <motion.div className="columns-1 sm:columns-2 lg:columns-3 gap-4 mt-6" variants={containerVariants}>
                         {filteredImages.map((image) => (
-                            <motion.div key={image.id} variants={itemVariants} className="break-inside-avoid mb-4 group overflow-hidden rounded-lg bg-muted shadow-sm hover:shadow-lg transition-all duration-300">
+                            <motion.div key={image.id} variants={itemVariants} className="break-inside-avoid mb-4 group overflow-hidden rounded-2xl bg-muted shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-strong)] transition-all duration-300 border border-border/70">
                                 <div className="relative">
                                     <PhotoView src={image.src}>
-                                        <img
+                                        <Image
                                             src={image.src}
                                             alt={image.alt}
+                                            width={image.width || 1200}
+                                            height={image.height || 800}
                                             className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.03] cursor-pointer"
-                                            loading="lazy"
-                                            decoding="async"
+                                            sizes="(max-width: 1024px) 100vw, 33vw"
+                                            placeholder={image.blurDataURL ? "blur" : undefined}
+                                            blurDataURL={image.blurDataURL}
                                         />
                                     </PhotoView>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-end">

@@ -146,6 +146,7 @@
     /* 浅灰色 */
     --chart-6: 333 70% 60%;
     /* 低饱和粉色 */
+
   }
 }
 
@@ -156,6 +157,44 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  }
+
+  a, button, input, textarea, select {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px color-mix(in srgb, hsl(var(--primary)) 18%, transparent);
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), "Songti SC", "STSong", serif;
+    letter-spacing: -0.015em;
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   }
 }
 

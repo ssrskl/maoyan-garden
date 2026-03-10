@@ -35,6 +35,7 @@ import { join } from 'path';
 import { readdirSync } from "fs";
 import { FaQq } from "react-icons/fa6";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import Image from "next/image";
 
 
 // 定义容器动画变体
@@ -299,7 +300,9 @@ export default function AboutContent() {
                                 </PopoverTrigger>
                                 <PopoverContent>
                                     <div className="flex flex-col items-center">
-                                        <img src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/qq.jpg" alt="QQ" />
+                                        <div className="relative h-36 w-36 overflow-hidden rounded-xl border border-border/70 shadow-[var(--shadow-soft)]">
+                                            <Image src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/qq.jpg" alt="QQ" fill className="object-cover" sizes="144px" />
+                                        </div>
                                     </div>
                                 </PopoverContent>
                             </Popover>
@@ -315,7 +318,9 @@ export default function AboutContent() {
                                 </PopoverTrigger>
                                 <PopoverContent>
                                     <div className="flex flex-col items-center">
-                                        <img src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/wechat.jpg" alt="Wechat" />
+                                        <div className="relative h-36 w-36 overflow-hidden rounded-xl border border-border/70 shadow-[var(--shadow-soft)]">
+                                            <Image src="https://maoyanimagehost.oss-cn-guangzhou.aliyuncs.com/tool/wechat.jpg" alt="Wechat" fill className="object-cover" sizes="144px" />
+                                        </div>
                                     </div>
                                 </PopoverContent>
                             </Popover>

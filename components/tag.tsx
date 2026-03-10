@@ -15,7 +15,7 @@ export function Tag({ tag, current, count }: TagProps) {
         badgeVariants({
           variant: current ? "default" : "secondary",
         }),
-        "no-underline rounded-md transition-transform duration-200 ease-in-out hover:scale-110"
+        "no-underline transition-transform duration-200 ease-in-out hover:scale-105"
       )}
       href={`/tags/${slug(tag)}`}
     >

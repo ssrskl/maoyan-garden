@@ -12,6 +12,7 @@ import {
   FastForward,
   Rewind,
 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -208,13 +209,16 @@ export function AlgorithmVisualizer({
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="rounded-lg overflow-hidden border bg-muted/30"
+              className="rounded-2xl overflow-hidden border border-border/70 bg-muted/30 shadow-[var(--shadow-soft)] relative aspect-[4/3]"
             >
               <PhotoView src={current.imageUrl}>
-                <img
+                <Image
                   src={current.imageUrl}
                   alt={current.imageAlt}
-                  className="w-full h-auto object-contain"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority={false}
                 />
               </PhotoView>
             </motion.div>

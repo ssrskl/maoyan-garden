@@ -11,6 +11,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { containerVariants, fadeInUp, itemVariants } from "@/styles/animation";
 import { PhotoView } from "react-photo-view";
 import {Moment,initialMoments} from "./moments"
+import Image from "next/image";
 
 // 格式化时间显示
 const formatTime = (date: Date) => {
@@ -119,10 +120,12 @@ export default function MomentsPage() {
                         className="aspect-square overflow-hidden rounded-md bg-muted relative group cursor-zoom-in"
                       >
                         <PhotoView src={src}>
-                          <img
+                          <Image
                             src={src}
                             alt={`动态图片 ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 1024px) 33vw, 320px"
                           />
                         </PhotoView>
                       </div>
